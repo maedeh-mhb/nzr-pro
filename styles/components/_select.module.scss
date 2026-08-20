@@ -1,0 +1,194 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.selectGroup {
+  margin-bottom: $spacing-xs;
+}
+
+.label {
+  display: block;
+  margin-bottom: $spacing-xs;
+  font-weight: 600;
+  color: $text-dark;
+  font-size: 0.85rem;
+}
+
+.selectWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.selectButton {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid $border-primary;
+  border-radius: $radius-md;
+  font-size: 0.9rem;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: border-color $duration-base $ease-out, box-shadow $duration-base $ease-out;
+  font-family: inherit;
+  text-align: start;
+  
+  @include focus-visible;
+
+  @include state-hover {
+    border-color: $color-primary;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $border-focus;
+    box-shadow: 0 0 0 3px rgba(54, 114, 96, 0.1);
+  }
+
+  &.open {
+    border-color: $color-primary;
+  }
+
+  &.error {
+    border-color: $border-error;
+    
+    &:focus {
+      border-color: $border-error;
+      box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+    }
+  }
+}
+
+.selectValue {
+  flex: 1;
+  color: $text-dark;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selectIcon {
+  font-size: 1.2rem;
+  color: $text-primary;
+  opacity: 0.6;
+  transition: transform $duration-base $ease-out;
+  flex-shrink: 0;
+  margin-left: $spacing-sm;
+}
+
+.selectIcon.rotated {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid $border-primary;
+  border-radius: $radius-md;
+  @include elevation(3);
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+  animation: slideDown $duration-base $ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.option {
+  width: 100%;
+  padding: 0.6rem;
+  border: none;
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: $text-primary;
+  transition: background-color $duration-base $ease-out;
+  font-family: inherit;
+  display: block;
+  
+  @include focus-visible;
+
+  @include state-hover {
+    background: rgba(108, 156, 184, 0.1);
+  }
+  
+  @include state-active {
+    background: rgba(108, 156, 184, 0.15);
+  }
+
+  &.selected {
+    background: rgba(54, 114, 96, 0.1);
+    color: $primary;
+    font-weight: 600;
+  }
+
+  &:first-child {
+    border-radius: $radius-md $radius-md 0 0;
+  }
+
+  &:last-child {
+    border-radius: 0 0 $radius-md $radius-md;
+  }
+}
+
+.optionText {
+  display: block;
+  width: 100%;
+  text-align: inherit;
+  direction: inherit;
+}
+
+.errorText {
+  color: $danger;
+  font-size: $font-sm;
+  margin-top: 0.25rem;
+}
+
+[dir="rtl"] {
+  .selectButton {
+    text-align: end;
+    direction: rtl;
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    flex-direction: row-reverse;
+  }
+
+  .selectValue {
+    direction: rtl;
+    text-align: right;
+  }
+
+  .selectIcon {
+    margin-left: 0;
+    margin-right: $spacing-sm;
+  }
+
+  .dropdown {
+    direction: rtl;
+  }
+
+  .option {
+    text-align: right;
+    direction: rtl;
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .optionText {
+    direction: rtl;
+    text-align: right;
+    unicode-bidi: embed;
+  }
+}
+

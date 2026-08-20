@@ -1,0 +1,54 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.errorState {
+  @include flex-center;
+  flex-direction: column;
+  padding: $spacing-3xl $spacing-lg;
+  text-align: center;
+  min-height: 250px;
+}
+
+.icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: $spacing-lg;
+  color: $color-danger;
+  
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.title {
+  font-size: $font-xl;
+  font-weight: $font-weight-semibold;
+  color: $text-dark;
+  margin-bottom: $spacing-sm;
+  
+  @include max-tablet {
+    font-size: $font-lg;
+  }
+}
+
+.message {
+  font-size: $font-base;
+  color: $text-secondary;
+  max-width: 400px;
+  margin: 0 auto $spacing-xl auto;
+  line-height: $line-height-relaxed;
+  
+  @include max-tablet {
+    font-size: $font-sm;
+    margin-bottom: $spacing-lg;
+  }
+}
+
+.retryButton {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  min-width: 120px;
+}
+

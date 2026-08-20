@@ -1,0 +1,114 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.phoneVerification {
+  padding: $spacing-lg;
+  background: rgba($primary, 0.03);
+  border-radius: $radius-lg;
+  border: 1px solid rgba($primary, 0.1);
+  
+  &.compact {
+    padding: $spacing-md;
+  }
+}
+
+.noPhone {
+  color: $text-dark;
+  font-size: $font-sm;
+  margin: 0;
+  text-align: center;
+}
+
+.sendCodeSection,
+.verifyCodeSection {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.instruction {
+  color: $text-dark;
+  font-size: $font-sm;
+  margin: 0;
+  text-align: center;
+  
+  strong {
+    color: $primary;
+    font-weight: 600;
+  }
+}
+
+.countdown {
+  color: $warning;
+  font-size: $font-xs;
+  margin: 0;
+  text-align: center;
+  font-weight: 600;
+}
+
+.codeInputWrapper {
+  width: 100%;
+  
+  :global(.formGroup) {
+    :global(input) {
+      text-align: center;
+      font-size: $font-xl;
+      font-weight: 600;
+      letter-spacing: 0.5rem;
+      padding: $spacing-md;
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  gap: $spacing-sm;
+  flex-direction: column;
+  
+  @include tablet {
+    flex-direction: row;
+  }
+}
+
+.sendButton,
+.verifyButton {
+  width: 100%;
+  
+  @include tablet {
+    width: auto;
+    flex: 1;
+  }
+}
+
+.cancelButton {
+  width: 100%;
+  
+  @include tablet {
+    width: auto;
+    flex: 1;
+  }
+}
+
+.resendLink {
+  background: none;
+  border: none;
+  color: $primary;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: $font-sm;
+  padding: $spacing-xs;
+  margin-top: $spacing-sm;
+  text-align: center;
+  width: 100%;
+  
+  &:hover {
+    color: darken($primary, 10%);
+    text-decoration: none;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+

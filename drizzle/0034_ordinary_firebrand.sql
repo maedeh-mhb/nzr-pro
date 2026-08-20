@@ -1,0 +1,1 @@
+ALTER TABLE "orders" ADD COLUMN "zibal_track_id" text;

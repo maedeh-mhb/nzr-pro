@@ -1,0 +1,142 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.label {
+  font-weight: 600;
+  font-size: $font-sm;
+  color: $text-dark;
+}
+
+.datePickerWrapper {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 2px solid $tertiary;
+  border-radius: $radius-md;
+  font-size: $font-base;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color $transition-base;
+  background: $text-light;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+
+  &.error {
+    border-color: $danger;
+  }
+}
+
+.calendarContainer {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: $spacing-xs;
+  z-index: 9999;
+  background: $text-light;
+  border-radius: $radius-md;
+  box-shadow: $shadow-lg;
+  padding: $spacing-md;
+  min-width: 300px;
+  
+  // Override date picker styles to ensure visibility
+  :global {
+    * {
+      box-sizing: border-box;
+    }
+    
+    .rdp {
+      font-family: inherit;
+      margin: 0;
+    }
+    
+    .rdp-calendar {
+      width: 100%;
+      display: block;
+    }
+    
+    .rdp-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .rdp-day {
+      padding: 0.5rem;
+      border-radius: $radius-sm;
+      cursor: pointer;
+      transition: all $transition-base;
+      text-align: center;
+      border: 1px solid transparent;
+      
+      &:hover {
+        background: $tertiary;
+        border-color: $primary;
+      }
+      
+      &.rdp-day_selected {
+        background: $primary;
+        color: $text-light;
+      }
+    }
+    
+    .rdp-month {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-sm;
+    }
+    
+    .rdp-caption {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: $spacing-sm;
+      font-weight: 600;
+      margin-bottom: $spacing-sm;
+    }
+    
+    .rdp-nav {
+      display: flex;
+      gap: $spacing-xs;
+    }
+    
+    .rdp-button {
+      padding: 0.25rem 0.5rem;
+      border: none;
+      background: $tertiary;
+      border-radius: $radius-sm;
+      cursor: pointer;
+      transition: all $transition-base;
+      font-size: $font-sm;
+      
+      &:hover {
+        background: $primary;
+        color: $text-light;
+      }
+    }
+    
+    .rdp-head_cell {
+      padding: 0.5rem;
+      font-weight: 600;
+      font-size: $font-sm;
+      color: $text-dark;
+    }
+  }
+}
+
+.errorText {
+  color: $danger;
+  font-size: $font-xs;
+  margin-top: $spacing-xs;
+}
+

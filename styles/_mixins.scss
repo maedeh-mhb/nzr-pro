@@ -1,0 +1,588 @@
+@use 'variables' as *;
+
+// Mobile First Breakpoints
+@mixin mobile-large {
+  @media (min-width: $breakpoint-mobile-large) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: $breakpoint-tablet) {
+    @content;
+  }
+}
+
+@mixin desktop-small {
+  @media (min-width: $breakpoint-desktop-small) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: $breakpoint-desktop) {
+    @content;
+  }
+}
+
+// Max-width breakpoints (for specific cases)
+@mixin max-mobile {
+  @media (max-width: #{$breakpoint-mobile-large - 1px}) {
+    @content;
+  }
+}
+
+@mixin max-tablet {
+  @media (max-width: #{$breakpoint-tablet - 1px}) {
+    @content;
+  }
+}
+
+@mixin max-desktop-small {
+  @media (max-width: #{$breakpoint-desktop-small - 1px}) {
+    @content;
+  }
+}
+
+@mixin max-desktop {
+  @media (max-width: #{$breakpoint-desktop - 1px}) {
+    @content;
+  }
+}
+
+// Utility Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin gradient-primary {
+  background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+}
+
+@mixin card {
+  background: $text-light;
+  border-radius: $radius-xl;
+  @include elevation(1);
+  padding: $spacing-lg;
+  transition: box-shadow $duration-base $ease-out;
+
+  &:hover {
+    @include elevation(2);
+  }
+}
+
+@mixin button-base {
+  border: none;
+  border-radius: $radius-full;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color $duration-base $ease-out,
+    transform $duration-base $ease-out,
+    opacity $duration-base $ease-out;
+
+  &:active:not(:disabled):not(.disabled) {
+    transform: scale(0.95);
+  }
+}
+
+// Focus-visible styles
+@mixin focus-visible {
+  &:focus-visible {
+    outline: 2px solid $border-focus;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(54, 114, 96, 0.1);
+  }
+}
+
+@mixin focus-visible-thick {
+  &:focus-visible {
+    outline: 3px solid $border-focus;
+    outline-offset: 3px;
+    box-shadow: 0 0 0 6px rgba(54, 114, 96, 0.15);
+  }
+}
+
+// RTL Typography - Apply Vazirmatn (with Rubik fallback) for Farsi/Persian text
+@mixin rtl-typography($font-weight: 400) {
+  [dir="rtl"] & {
+    font-family: 'Vazirmatn', 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: $font-weight;
+  }
+}
+
+// Mobile-Safe Container - Prevents horizontal overflow on mobile
+@mixin mobile-safe-container {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+// Glassmorphism effect
+@mixin glass-effect($blur: 12px, $opacity: 0.8, $bg-color: rgba(255, 255, 255, 0.1)) {
+  background: $bg-color;
+  backdrop-filter: blur($blur);
+  -webkit-backdrop-filter: blur($blur);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+// Smooth lift animation
+@mixin lift-hover($lift: 8px, $duration: $duration-base) {
+  transition: transform $duration $ease-out, box-shadow $duration $ease-out;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-$lift);
+  }
+}
+
+// Shimmer loading effect
+@mixin shimmer($duration: 2s) {
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.2) 20%,
+      rgba(255, 255, 255, 0.5) 60%,
+      rgba(255, 255, 255, 0));
+  background-size: 200% 100%;
+  animation: shimmer $duration infinite;
+}
+
+// Pulse animation
+@mixin pulse($scale: 1.05, $duration: 2s) {
+  animation: pulse $duration ease-in-out infinite;
+}
+
+// State Mixins
+@mixin state-hover {
+  &:hover:not(:disabled):not(.disabled) {
+    @content;
+  }
+}
+
+@mixin state-active {
+  &:active:not(:disabled):not(.disabled) {
+    @content;
+  }
+}
+
+@mixin state-focus {
+  &:focus-visible {
+    @content;
+  }
+}
+
+@mixin state-disabled {
+
+  &:disabled,
+  &.disabled {
+    @content;
+  }
+}
+
+// Shadow/Elevation Mixins
+@mixin elevation($level: 1) {
+  @if $level ==0 {
+    box-shadow: $elevation-0;
+  }
+
+  @else if $level ==1 {
+    box-shadow: $elevation-1;
+  }
+
+  @else if $level ==2 {
+    box-shadow: $elevation-2;
+  }
+
+  @else if $level ==3 {
+    box-shadow: $elevation-3;
+  }
+
+  @else if $level ==4 {
+    box-shadow: $elevation-4;
+  }
+
+  @else if $level ==5 {
+    box-shadow: $elevation-5;
+  }
+}
+
+@mixin shadow-colored($color, $opacity: 0.15) {
+  box-shadow: 0 4px 12px rgba($color, $opacity);
+}
+
+// Transition Mixins
+@mixin transition($property: all, $duration: $duration-base, $easing: $ease-out) {
+  transition: $property $duration $easing;
+}
+
+@mixin transition-multiple($properties...) {
+  transition-property: $properties;
+  transition-duration: $duration-base;
+  transition-timing-function: $ease-out;
+}
+
+// Typography Mixins
+@mixin text-xs {
+  font-size: $font-size-xs;
+  line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-normal;
+}
+
+@mixin text-sm {
+  font-size: $font-size-sm;
+  line-height: $line-height-normal;
+  letter-spacing: $letter-spacing-normal;
+}
+
+@mixin text-base {
+  font-size: $font-size-base;
+  line-height: $line-height-normal;
+  letter-spacing: $letter-spacing-normal;
+}
+
+@mixin text-md {
+  font-size: $font-size-md;
+  line-height: $line-height-normal;
+  letter-spacing: $letter-spacing-normal;
+}
+
+@mixin text-lg {
+  font-size: $font-size-lg;
+  line-height: $line-height-relaxed;
+  letter-spacing: $letter-spacing-normal;
+}
+
+@mixin text-xl {
+  font-size: $font-size-xl;
+  line-height: $line-height-relaxed;
+  letter-spacing: $letter-spacing-tight;
+}
+
+@mixin text-2xl {
+  font-size: $font-size-2xl;
+  line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-tight;
+}
+
+@mixin text-3xl {
+  font-size: $font-size-3xl;
+  line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-tight;
+}
+
+@mixin text-4xl {
+  font-size: $font-size-4xl;
+  line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-tight;
+}
+
+// Text Utilities
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin text-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Animation Keyframes
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  to {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+// Animation Mixins
+@mixin animate($name, $duration: $duration-base, $easing: $ease-out, $fill-mode: both) {
+  animation: $name $duration $easing $fill-mode;
+}
+
+@mixin loading-skeleton {
+  background: linear-gradient(90deg,
+      $tertiary 0%,
+      lighten($tertiary, 5%) 50%,
+      $tertiary 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: $radius-md;
+}
+
+// Performance Optimizations
+@mixin gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+@mixin contain($type: layout style paint) {
+  contain: $type;
+}
+
+@mixin transition-optimized($property: transform, $duration: $duration-base) {
+  transition: $property $duration $ease-out;
+  will-change: $property;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    will-change: auto;
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  background: $text-light;
+  color: $primary;
+}
+
+@mixin button-outline {
+  @include button-base;
+  background: transparent;
+  color: $text-light;
+  border: 2px solid $text-light;
+}
+
+// ============================================
+// ICON UTILITIES
+// ============================================
+
+// Icon Size Variants
+@mixin icon-xs {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+@mixin icon-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+@mixin icon-md {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+@mixin icon-lg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+@mixin icon-xl {
+  width: 2rem;
+  height: 2rem;
+}
+
+@mixin icon-2xl {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+// ============================================
+// MICRO-ANIMATIONS
+// ============================================
+
+// Button Press Animation
+@mixin button-press {
+  @include transition-optimized(transform, $duration-fast);
+
+  &:active:not(:disabled):not(.disabled) {
+    transform: scale(0.95);
+  }
+}
+
+// Card Hover Lift
+@mixin card-hover-lift {
+  @include transition-optimized(transform box-shadow, $duration-base);
+
+  &:hover {
+    transform: translateY(-2px);
+    @include elevation(2);
+  }
+}
+
+// Smooth Fade In
+@mixin fade-in($duration: $duration-base) {
+  @include animate(fadeIn, $duration, $ease-out);
+}
+
+// Slide In Animation
+@mixin slide-in($direction: up, $duration: $duration-base) {
+  @if $direction ==up {
+    @include animate(slideInUp, $duration, $ease-out);
+  }
+
+  @else if $direction ==down {
+    @include animate(slideInDown, $duration, $ease-out);
+  }
+
+  @else if $direction ==left {
+    @include animate(slideInLeft, $duration, $ease-out);
+  }
+
+  @else if $direction ==right {
+    @include animate(slideInRight, $duration, $ease-out);
+  }
+}
+
+// Scale In Animation
+@mixin scale-in($duration: $duration-base) {
+  @include animate(scaleIn, $duration, $ease-out);
+}
+
+// Pulse Animation
+@mixin pulse($duration: 2s) {
+  animation: pulse $duration $ease-in-out infinite;
+}
+
+// Bounce Animation
+@mixin bounce($duration: 1s) {
+  animation: bounce $duration $ease-bounce infinite;
+}
+
+// Shimmer Animation (for loading states)
+@mixin shimmer($duration: 1.5s) {
+  @include loading-skeleton;
+  animation: shimmer $duration linear infinite;
+}

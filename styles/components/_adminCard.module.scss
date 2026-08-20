@@ -1,0 +1,89 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.adminCard {
+  @include card;
+  margin-bottom: $spacing-md;
+  padding: $spacing-md;
+  transition: background-color $transition-base;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+
+  // Subtle darker background when expanded
+  &.expanded {
+    background: rgba(108, 156, 184, 0.06);
+  }
+}
+
+.cardHeader {
+  @include flex-between;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+  min-height: 56px;
+  padding: 0 0;
+}
+
+.cardTitle {
+  font-size: $font-md;
+  font-weight: 600;
+  color: $primary;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  height: 100%;
+  min-height: 32px;
+  line-height: 1.2;
+  margin-bottom: 0;
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+    display: inline-block;
+    vertical-align: middle;
+  }
+}
+
+.cardAction {
+  @include button-primary;
+  padding: $spacing-sm $spacing-md;
+  font-size: 0.9rem;
+}
+
+// Mobile optimizations
+@include max-tablet {
+  .adminCard {
+    padding: $spacing-sm;
+    margin-bottom: $spacing-sm;
+  }
+
+  .cardHeader {
+    padding: $spacing-xs 0;
+  }
+
+  .cardTitle {
+    font-size: $font-sm;
+
+    svg {
+      width: 0.9rem;
+      height: 0.9rem;
+    }
+  }
+
+  .cardAction {
+    padding: 0.4rem $spacing-sm;
+    font-size: 0.8rem;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

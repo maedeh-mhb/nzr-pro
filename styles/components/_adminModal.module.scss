@@ -1,0 +1,132 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: $bg-overlay;
+  z-index: $z-modal;
+  padding: $spacing-md;
+  overflow-y: auto;
+  backdrop-filter: blur(2px);
+
+  &.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    @include animate(fadeIn, $duration-fast);
+  }
+}
+
+.modalContent {
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbfa 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  border: 1px solid $tertiary;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  @include elevation(5);
+  @include animate(scaleIn, $duration-base);
+  @include gpu-accelerated;
+
+  @include max-tablet {
+    padding: $spacing-md;
+    max-height: 85vh;
+    border-radius: $radius-lg;
+  }
+}
+
+// Modal size variants
+.modal {
+  &.small .modalContent {
+    max-width: 400px;
+  }
+
+  &.medium .modalContent {
+    max-width: 600px;
+  }
+
+  &.large .modalContent {
+    max-width: 900px;
+
+    @include desktop {
+      max-width: 75vw;
+      width: 75vw;
+    }
+  }
+
+  &.fullscreen .modalContent {
+    max-width: 95vw;
+    max-height: 95vh;
+    width: 95vw;
+    height: 95vh;
+  }
+}
+
+.modalClose {
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &:hover {
+      transform: none;
+      background: transparent;
+    }
+  }
+}
+
+.modalHeader {
+  @include flex-between;
+  margin-bottom: $spacing-lg;
+}
+
+.modalTitle {
+  font-size: $font-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+
+  @include max-tablet {
+    font-size: $font-lg;
+  }
+}
+
+.modalClose {
+  background: none;
+  border: none;
+  font-size: $font-2xl;
+  cursor: pointer;
+  color: $text-tertiary;
+  transition: color $duration-base $ease-out, transform $duration-fast $ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: $radius-circle;
+
+  @include focus-visible;
+
+  @include state-hover {
+    color: $text-primary;
+    transform: rotate(90deg);
+    background: $bg-secondary;
+  }
+
+  @include state-active {
+    transform: rotate(90deg) scale(0.9);
+  }
+}
+
+.modalBody {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}

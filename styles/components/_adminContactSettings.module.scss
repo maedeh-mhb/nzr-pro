@@ -1,0 +1,152 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+// On tablet and desktop: make form more compact
+@include tablet {
+  // Social media section - flex column layout
+  .socialMediaSection {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  // Social media fields wrapper - grid for the three fields
+  .socialMediaFields {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: $spacing-md !important;
+    margin-top: 0 !important; // No top margin
+    margin-bottom: $spacing-3xl !important; // Bottom margin to separate from next section
+    
+    .formRow {
+      margin-bottom: 0 !important;
+      margin-top: 0 !important;
+    }
+  }
+
+  // Make social media labels and inputs more compact
+  .socialMediaFields {
+    :global(label) {
+      font-size: $font-xs !important;
+    }
+
+    :global(input) {
+      font-size: 0.85rem !important;
+      padding: 0.4rem 0.6rem !important;
+    }
+  }
+
+  // Contact info section - flex column layout
+  .contactInfoSection {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  // Contact info fields wrapper - grid for the two fields
+  .contactInfoFields {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: $spacing-md !important;
+    margin-top: 0 !important; // No top margin
+    margin-bottom: $spacing-3xl !important; // Bottom margin to separate from next section
+    
+    .formRow {
+      margin-bottom: 0 !important;
+      margin-top: 0 !important;
+    }
+  }
+
+  // Make contact info labels and inputs more compact
+  .contactInfoFields {
+    :global(label) {
+      font-size: $font-xs !important;
+    }
+
+    :global(input) {
+      font-size: 0.85rem !important;
+      padding: 0.4rem 0.6rem !important;
+    }
+  }
+
+  // Address section - flex column layout
+  .addressSection {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  // Address fields wrapper - grid for the two fields
+  .addressFields {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: $spacing-md !important;
+    margin-top: 0 !important; // No top margin
+    margin-bottom: 0 !important; // No bottom margin (last section)
+    
+    .formRow {
+      margin-bottom: 0 !important;
+      margin-top: 0 !important;
+    }
+  }
+
+  // Address textareas: smaller text; Farsi address uses Sahel font
+  .addressFields {
+    :global(textarea) {
+      font-size: 0.85rem !important;
+    }
+
+    :global(textarea[name="addressFa"]) {
+      font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    }
+  }
+
+  // Section title - clear visual hierarchy vs items
+  .sectionTitle {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    font-size: $font-md !important; // Slightly smaller than card title but larger than item labels
+    font-weight: 600;
+    margin-top: 0 !important; // No top margin (first section has no margin, others get spacing from previous section's fields wrapper)
+    margin-bottom: $spacing-md !important; // Small space to own fields
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+
+    svg {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+  }
+  
+  // Add top margin to section titles after the first section
+  .contactInfoSection .sectionTitle,
+  .addressSection .sectionTitle {
+    margin-top: 0 !important; // Spacing handled by previous section's fields wrapper margin-bottom
+  }
+
+  // Remove all spacing from formSection - spacing handled by title
+  .contactSettingsForm :global(.formSection) {
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  // Reduce input padding
+  .contactSettingsForm :global(.input) {
+    padding: 0.5rem !important;
+    font-size: 0.9rem !important;
+  }
+
+  // Reduce textarea padding and remove resize
+  .contactSettingsForm :global(textarea) {
+    padding: 0.5rem !important;
+    font-size: 0.9rem !important;
+    min-height: 60px !important;
+    resize: none !important; // Remove resize tool
+  }
+
+  // Compact form actions
+  .contactSettingsForm :global(.formActions) {
+    margin-top: $spacing-md !important;
+    padding-top: $spacing-md !important;
+  }
+}

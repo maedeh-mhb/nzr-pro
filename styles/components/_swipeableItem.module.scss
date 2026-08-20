@@ -1,0 +1,150 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.swipeableContainer {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 0; // Let child elements handle border-radius
+  background: transparent !important; // Don't add any background
+
+  // Mobile: enable overflow for swipe
+  @include max-tablet {
+    overflow: hidden;
+  }
+
+  // Desktop: no overflow needed
+  @include tablet {
+    overflow: visible;
+  }
+}
+
+.actionButtons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0;
+  padding: 0;
+  z-index: 1;
+  pointer-events: none; // Disable by default - controlled by inline style
+  opacity: 0; // Hide by default - controlled by inline style
+  transition: opacity 0.2s ease-out;
+  visibility: hidden; // Also hide with visibility for better performance
+
+  &[style*="opacity: 1"] {
+    visibility: visible; // Show when opacity is 1
+  }
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: $spacing-md $spacing-lg;
+  border: none;
+  color: $text-light;
+  font-weight: 600;
+  font-size: $font-sm;
+  cursor: pointer;
+  transition: all $duration-base $ease-out;
+  min-width: 80px;
+  height: 100%;
+  white-space: nowrap;
+
+  // Apply Sahel font for Farsi/RTL
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  svg {
+    font-size: $font-base;
+    flex-shrink: 0;
+  }
+
+  span {
+    display: none;
+
+    @include tablet {
+      display: inline;
+    }
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  @include state-hover {
+    opacity: 0.9;
+  }
+}
+
+.archiveButton {
+  background: $color-primary;
+
+  @include state-hover {
+    background: darken($color-primary, 10%);
+  }
+}
+
+.deleteButton {
+  background: $color-danger;
+
+  @include state-hover {
+    background: darken($color-danger, 10%);
+  }
+}
+
+.swipeableItem {
+  position: relative;
+  width: 100%;
+  z-index: 2;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  background: transparent; // Let child elements handle background
+  border-radius: inherit; // Inherit border-radius from container
+
+  &.swiping {
+    cursor: grabbing;
+  }
+
+  // Ensure child cards maintain their styling and have proper background
+  >* {
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    // Child elements should have their own background to cover action buttons
+  }
+}
+
+// Desktop: Hide swipe actions, show buttons normally
+@include tablet {
+  .swipeableContainer {
+    overflow: visible;
+  }
+
+  .actionButtons {
+    position: static;
+    display: none; // Hide swipe actions on desktop
+  }
+
+  .swipeableItem {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+// Mobile only: Enable swipe
+@include max-tablet {
+  .swipeableItem {
+    touch-action: pan-x;
+  }
+}

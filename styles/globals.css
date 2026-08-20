@@ -1,0 +1,48 @@
+:root {
+  /* Address Card Colors */
+  --success-bg: #f0f9f0;
+  --success-color: #22c55e;
+  --primary-bg: #f0f7ff;
+  --primary-color-light: rgba(59, 130, 246, 0.1);
+  
+  /* Background Colors */
+  --bg-secondary: #f8fafc;
+  --card-bg: #ffffff;
+  --input-bg: #ffffff;
+  
+  /* Text Colors */
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  
+  /* Border Colors */
+  --border-color: #e5e7eb;
+  
+  /* Status Colors */
+  --error-color: #ef4444;
+}
+
+/* Dark mode support */
+[data-theme="dark"] {
+  --success-bg: rgba(34, 197, 94, 0.1);
+  --primary-bg: rgba(59, 130, 246, 0.1);
+  --bg-secondary: #1f2937;
+  --card-bg: #111827;
+  --input-bg: #1f2937;
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+  --border-color: #374151;
+}
+
+:root {
+  --success-bg: #f0f9f0;
+  --success-color: #22c55e;
+  --bg-secondary: #f8fafc;
+  --card-bg: #ffffff;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --border-color: #e5e7eb;
+  --primary-color: #3b82f6;
+}

@@ -1,0 +1,1335 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+// Add this style for the remove button
+.removeButton {
+  border-color: #ff6b6b !important;
+  background: #fff !important;
+  color: #ff6b6b !important;
+
+  &:hover:not(:disabled),
+  &:active:not(:disabled) {
+    background: #fff !important;
+    color: #ff6b6b !important;
+    box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.08);
+  }
+}
+
+.container {
+  max-width: $container-standard;
+  margin: 0 auto;
+  padding: $spacing-xl 1rem;
+
+  // Add top padding for fixed navbar on tablet and mobile
+  @include max-tablet {
+    padding-top: calc(#{$navbar-height} + 2rem); // Navbar height + original padding
+  }
+}
+
+.productCard {
+  background: #ffffff;
+  border-radius: $radius-modal;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-xl;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.productDetail {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+.imageSection {
+  width: 100%;
+}
+
+.imageContainer {
+  position: relative;
+  width: 100%;
+  height: $image-height-default;
+  background: transparent;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.badge {
+  position: relative;
+  top: 0;
+  left: 0;
+  /* background is now set dynamically via inline style in the component */
+  color: #ffffff;
+  padding: 0.4rem 0.8rem;
+  border-radius: $radius-sm;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  z-index: 10;
+  line-height: 1.2;
+}
+
+.productTypeBadge {
+  position: relative;
+  top: 0;
+  left: 0;
+  color: #ffffff;
+  padding: 0.4rem 0.8rem;
+  border-radius: $radius-sm;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  z-index: 10;
+  line-height: 1.2;
+
+  // Apply Sahel font for Farsi/RTL
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.wishlistBtn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 44px;
+  height: 44px;
+  background: #ffffff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all $transition-base;
+  z-index: 10;
+  padding: 0;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &.active {
+    background: #ff4757;
+  }
+}
+
+.wishlistIcon {
+  color: #ff4757;
+  font-size: 1.4rem;
+  transition: color $transition-base;
+}
+
+.wishlistBtn.active .wishlistIcon {
+  color: #ffffff;
+}
+
+.shareBtn,
+.shareBtnMobile {
+  width: 44px;
+  height: 44px;
+  background: #f3f3f3;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all $transition-base;
+  padding: 0;
+  color: #1a252f;
+}
+
+.shareBtn:hover,
+.shareBtnMobile:hover {
+  transform: scale(1.05);
+}
+
+.shareIcon {
+  font-size: 1.4rem;
+}
+
+.shareBtnMobile {
+  display: flex;
+}
+
+.imageActions {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-end;
+  z-index: 10;
+}
+
+.imageActions .wishlistBtn {
+  position: static;
+  top: auto;
+  right: auto;
+}
+
+.shareBtn {
+  display: none;
+  position: absolute;
+  top: 5.75rem;
+  right: 1rem;
+  z-index: 10;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.productTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: $text-dark;
+  line-height: 1.3;
+}
+
+.shortDescription {
+  font-size: 1.1rem;
+  color: #7f8c8d;
+  line-height: 1.6;
+}
+
+.priceSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.5rem 0;
+  border-top: 2px solid $tertiary;
+  border-bottom: 2px solid $tertiary;
+}
+
+.price {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: $primary;
+}
+
+.weight {
+  font-size: 1rem;
+  color: #7f8c8d;
+}
+
+.rewardInfo {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(39, 174, 96, 0.1);
+  border-radius: $radius-md;
+  border-left: 4px solid #27ae60;
+
+  [dir="rtl"] & {
+    border-left: none;
+    border-right: 4px solid #27ae60;
+  }
+}
+
+.rewardText {
+  font-size: 0.95rem;
+  color: #27ae60;
+  font-weight: 600;
+  display: block;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.descriptionSection,
+.ingredientsSection,
+.tagsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sectionTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: $text-dark;
+}
+
+.longDescription,
+.ingredients {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.8;
+  white-space: pre-line;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  background: $tertiary;
+  color: $text-dark;
+  padding: 0.4rem 0.8rem;
+  border-radius: $radius-md;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.quantitySection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.quantityLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  color: $text-dark;
+  margin: 0;
+}
+
+.quantityRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+
+  @include max-tablet {
+    display: none;
+  }
+}
+
+.quantityControls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.quantityButton {
+  width: 40px;
+  height: 40px;
+  background: #ffffff;
+  border: 2px solid $primary;
+  color: $primary;
+  border-radius: $radius-md;
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-base;
+
+  &:hover:not(:disabled) {
+    background: $primary;
+    color: #ffffff;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.quantityInput {
+  width: 80px;
+  height: 40px;
+  text-align: center;
+  border: 2px solid $primary;
+  border-radius: $radius-md;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: $text-dark;
+  -moz-appearance: textfield; // Remove arrows in Firefox
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none; // Remove arrows in Chrome/Safari
+    margin: 0;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: darken($primary, 10%);
+  }
+}
+
+.quantityHint {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+}
+
+.actionButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.buyButton,
+.addToCartButton {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all $transition-base;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.buyButton {
+  background: $gradient-primary;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+
+  // Shine effect
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent);
+    transition: left 0.5s ease;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(54, 114, 96, 0.4);
+
+    &::after {
+      left: 100%;
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+  }
+}
+
+.addToCartButton {
+  background: $text-dark;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent);
+    transition: left 0.5s ease;
+  }
+
+  &:hover:not(:disabled) {
+    background: #1a252f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+
+    &::after {
+      left: 100%;
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+.outOfStock {
+  color: $danger;
+  font-weight: 600;
+  text-align: center;
+  padding: 1rem;
+  background: rgba(231, 76, 60, 0.1);
+  border-radius: $radius-md;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #7f8c8d;
+  font-size: 1.1rem;
+}
+
+.error {
+  color: $danger;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: $primary;
+  color: #ffffff;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-base;
+
+  &:hover {
+    background: darken($primary, 10%);
+    transform: translateY(-2px);
+  }
+}
+
+// Tablet and above
+@include tablet {
+  .productDetail {
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+  }
+
+  .imageContainer {
+    height: 500px;
+  }
+
+  .productTitle {
+    font-size: 2.5rem;
+  }
+
+  .actionButtons {
+    flex-direction: row;
+  }
+
+  .shareBtn {
+    display: flex;
+  }
+
+  .shareBtnMobile {
+    display: none;
+  }
+}
+
+// Desktop
+@include desktop {
+  .imageContainer {
+    height: 600px;
+  }
+}
+
+// Reviews Section
+.reviewsCard {
+  background: #ffffff;
+  border-radius: $radius-xl;
+  padding: 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.reviewsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.reviewsTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: $text-dark;
+  margin-bottom: 0;
+}
+
+.writeReview {
+  background: $tertiary;
+  padding: 1.5rem;
+  border-radius: $radius-md;
+}
+
+.writeReviewTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: $text-dark;
+  margin-bottom: 1rem;
+}
+
+.reviewForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  color: $text-dark;
+}
+
+.formInput,
+.formTextarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px solid #e0e0e0;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color $duration-base $ease-out,
+    box-shadow $duration-base $ease-out,
+    background $duration-base $ease-out;
+  background: #ffffff;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 0 4px rgba($primary, 0.1);
+    background: #fafafa;
+  }
+
+  &:hover:not(:focus) {
+    border-color: #c0c0c0;
+  }
+}
+
+.formTextarea {
+  resize: none;
+  min-height: 100px;
+}
+
+.submitReviewButton {
+  padding: 1rem;
+  background: $primary;
+  color: #ffffff;
+  border: none;
+  border-radius: $radius-md;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all $transition-base;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  &:hover:not(:disabled) {
+    background: darken($primary, 10%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(54, 114, 96, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.reviewsCardContainer {
+  background: rgba(108, 156, 184, 0.1); // Light blue background
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-top: $spacing-md;
+
+  @include max-tablet {
+    background: rgba(108, 156, 184, 0.15); // Slightly darker for mobile visibility
+    border: 1px solid rgba(108, 156, 184, 0.2);
+    padding: $spacing-md;
+  }
+}
+
+.reviewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  @include max-tablet {
+    gap: $spacing-md;
+  }
+}
+
+.reviewItem {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid $tertiary;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  @include max-tablet {
+    padding: $spacing-md 0;
+    border-bottom: 1px solid rgba(108, 156, 184, 0.2);
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+  }
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+
+  @include max-tablet {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: $spacing-sm;
+    gap: $spacing-xs;
+  }
+}
+
+.reviewActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+
+  @include max-tablet {
+    display: none; // Hide in mobile - use reviewActionsMobile instead
+  }
+}
+
+.reviewActionsMobile {
+  display: none; // Hidden by default (desktop)
+
+  @include max-tablet {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: $spacing-sm;
+  }
+}
+
+.editReviewButton,
+.deleteReviewButton {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-base;
+  white-space: nowrap;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.editReviewButton {
+  background: rgba($primary, 0.1);
+  color: $primary;
+
+  &:hover {
+    background: rgba($primary, 0.2);
+  }
+}
+
+.deleteReviewButton {
+  background: rgba($danger, 0.1);
+  color: $danger;
+
+  &:hover {
+    background: rgba($danger, 0.2);
+  }
+}
+
+.reviewerInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.reviewerAvatar {
+  width: 50px;
+  height: 50px;
+  background: $primary;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.reviewerDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+
+  @include max-tablet {
+    flex-direction: row;
+    align-items: center;
+    gap: $spacing-sm;
+    flex: 1;
+    width: 100%;
+  }
+}
+
+.reviewerName {
+  font-size: 1rem;
+  font-weight: 600;
+  color: $text-dark;
+  margin: 0;
+
+  @include max-tablet {
+    font-size: $font-base;
+    white-space: nowrap;
+  }
+}
+
+.reviewDate {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  margin: 0;
+
+  @include max-tablet {
+    font-size: $font-sm;
+    white-space: nowrap;
+    margin-left: auto;
+
+    [dir="rtl"] & {
+      margin-left: 0;
+      margin-right: auto;
+    }
+  }
+}
+
+.reviewText {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #555;
+  margin: 0;
+  white-space: pre-line;
+  background: rgba(0, 0, 0, 0.03); // Subtle darker background for large viewports
+  padding: $spacing-md;
+  border-radius: $radius-md;
+
+  @include max-tablet {
+    background: rgba(0, 0, 0, 0.03); // Keep background for mobile too
+    margin-bottom: $spacing-sm;
+    font-size: $font-sm;
+  }
+}
+
+.reviewsLoading,
+.noReviews {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #7f8c8d;
+  font-size: 1rem;
+}
+
+// Mobile optimizations
+@include max-tablet {
+
+  .productCard,
+  .reviewsCard {
+    padding: 1.5rem;
+  }
+
+  .reviewsTitle {
+    font-size: 1.5rem;
+  }
+
+  .writeReview {
+    padding: 1rem;
+  }
+
+  // Hide action buttons in mobile (shown in sticky bar instead)
+  .actionButtons {
+    display: none;
+  }
+}
+
+// Mobile Sticky Bar
+.mobileStickyBar {
+  display: none; // Hidden by default (desktop/tablet)
+  position: fixed;
+  bottom: 56px; // Above BottomBar (no gap, just 1px border)
+  left: 0;
+  right: 0;
+  @include glass-effect(16px, 0.95, rgba(255, 255, 255, 0.9));
+  border-top: 1px solid rgba(54, 114, 96, 0.1);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08), 0 -2px 8px rgba(0, 0, 0, 0.04);
+  z-index: $z-sticky-bar; // Below BottomBar but above content
+  padding: 0.6rem 1rem;
+  margin-bottom: 5px;
+  transition: all $transition-base;
+}
+
+.stickyBarInitial {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-md; // Increased gap for better spacing
+  animation: slideUp 0.3s ease-out;
+  margin-bottom: $spacing-md; // 15px bottom margin
+
+  &.centered {
+    justify-content: center;
+  }
+}
+
+.stickyBarExpanded {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-md; // Increased gap for better spacing
+  animation: slideUp 0.3s ease-out;
+}
+
+.stickyAddToCart {
+  flex: 0 0 auto; // Don't grow or shrink, use content width
+  min-width: fit-content; // Ensure button is wide enough for text
+  padding: 0.5rem $spacing-md; // Increased horizontal padding
+  background: $gradient-primary;
+  color: #ffffff;
+  border: none;
+  border-radius: $radius-sm;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all $transition-base;
+  white-space: nowrap; // Prevent text wrapping
+  position: relative;
+  overflow: hidden;
+
+  // Apply Sahel font for Farsi/RTL
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.25),
+        transparent);
+    transition: left 0.5s ease;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(54, 114, 96, 0.4);
+
+    &::after {
+      left: 100%;
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.stickyAddToCartFinal {
+  flex: 0 0 auto; // Don't grow or shrink, use content width
+  min-width: fit-content; // Ensure button is wide enough for text
+  padding: 0.5rem $spacing-md; // Increased horizontal padding
+  background: $primary;
+  color: #ffffff;
+  border: none;
+  border-radius: $radius-sm;
+  font-weight: 600;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all $transition-base;
+  white-space: nowrap;
+
+  // Apply Sahel font for Farsi/RTL
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  &:hover:not(:disabled) {
+    background: darken($primary, 10%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(54, 114, 96, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.stickyPrice {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $primary;
+  white-space: nowrap;
+  flex: 0 0 auto; // Don't grow or shrink
+  margin-left: auto; // Push to the right, creating space between price and button
+
+  .centered & {
+    margin-left: 0;
+    margin-right: 0;
+    flex: 1;
+    text-align: center;
+  }
+
+  [dir="rtl"] & {
+    margin-left: 0;
+    margin-right: auto; // Push to the left in RTL
+  }
+
+  [dir="rtl"] .centered & {
+    margin-right: 0;
+  }
+}
+
+.stickyPriceDynamic {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: $primary;
+  white-space: nowrap;
+  transition: all $transition-base;
+  flex: 0 0 auto; // Don't grow or shrink
+  margin-left: auto; // Push to the right, creating space between price and button
+
+  [dir="rtl"] & {
+    margin-left: 0;
+    margin-right: auto; // Push to the left in RTL
+  }
+}
+
+.stickyQuantityControls {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.stickyQuantityButton {
+  width: 24px;
+  height: 24px;
+  background: #ffffff;
+  border: 1.5px solid $primary;
+  color: $primary;
+  border-radius: $radius-sm;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-base;
+  padding: 0;
+
+  &:hover:not(:disabled) {
+    background: $primary;
+    color: #ffffff;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.stickyQuantityInput {
+  width: 40px;
+  height: 24px;
+  text-align: center;
+  border: 1.5px solid $primary;
+  border-radius: $radius-sm;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: $text-dark;
+  -moz-appearance: textfield;
+  padding: 0;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: darken($primary, 10%);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Show sticky bar only on mobile
+@include max-tablet {
+  .mobileStickyBar {
+    display: block;
+  }
+}
+
+.loginPrompt {
+  padding: $spacing-lg;
+  text-align: center;
+  color: #666;
+  background: rgba($primary, 0.05);
+  border-radius: $radius-md;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.reviewStatus {
+  margin-bottom: $spacing-md;
+  padding: $spacing-md;
+  background: rgba($warning, 0.1);
+  border-radius: $radius-md;
+  border-left: 3px solid $warning;
+
+  [dir="rtl"] & {
+    border-left: none;
+    border-right: 3px solid $warning;
+  }
+}
+
+.pendingStatus {
+  margin: 0;
+  color: $text-dark;
+  font-size: $font-sm;
+  line-height: 1.5;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: right;
+  }
+}
+
+.reviewFormActions {
+  display: flex;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+  }
+}
+
+.deleteReviewButton {
+  padding: $spacing-sm $spacing-md;
+  background: $danger;
+  color: $text-light;
+  border: none;
+  border-radius: $radius-md;
+  font-size: $font-sm;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-base;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  &:hover {
+    background: darken($danger, 10%);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.footerWrapper {
+  @include max-tablet {
+    :global {
+      ._footer_container__bRZa6 {
+        padding-bottom: $mobile-bottom-safe-area !important;
+      }
+    }
+  }
+}
+
+// Place Order Bar - Only on mobile
+.placeOrderBar {
+  display: none; // Hidden by default (desktop/tablet)
+  position: fixed;
+  bottom: calc(56px + 50px); // On top of mobile sticky bar
+  left: 0;
+  right: 0;
+  background: #f5f5f5; // Very light grey color
+  padding: $spacing-md $spacing-lg;
+  margin-bottom: $spacing-md; // 15px bottom margin
+  z-index: $z-base; // Behind all fixed bars
+  animation: slideUpFromBeneath 0.4s ease-out;
+  border-radius: 20px 20px 0 0; // Large border radius on top corners
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15); // Medium drop shadow
+
+  @include max-tablet {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-md;
+  }
+}
+
+.placeOrderQuantityControls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.placeOrderQuantityButton {
+  width: 32px;
+  height: 32px;
+  background: #ffffff;
+  border: 2px solid $primary;
+  color: $primary;
+  border-radius: $radius-sm;
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-base;
+
+  &:hover:not(:disabled) {
+    background: $primary;
+    color: #ffffff;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.placeOrderQuantityValue {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $primary;
+  min-width: 40px;
+  text-align: center;
+}
+
+.placeOrderButton {
+  background: transparent;
+  color: #2c3e50;
+  border: none;
+  border-radius: $radius-md;
+  padding: $spacing-sm $spacing-lg;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all $transition-base;
+  white-space: nowrap;
+  margin-left: auto; // Push to the right
+
+  // Apply Sahel font for Farsi/RTL
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  &:hover {
+    background: #f5f5f5;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUpFromBeneath {
+  from {
+    opacity: 0;
+    bottom: -80px;
+  }
+
+  to {
+    opacity: 1;
+    bottom: calc(56px + 50px);
+  }
+}

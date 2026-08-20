@@ -1,0 +1,900 @@
+﻿
+> nzr@0.1.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+
+./app/checkout/page.tsx
+90:63  Warning: React Hook useMemo has a missing dependency: 'getSelectedItems'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+186:6  Warning: React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+473:6  Warning: React Hook useEffect has missing dependencies: 'selectedItemsList' and 'selectedShippingMethod'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+713:87  Warning: React Hook useMemo has a missing dependency: 'getMissingCheckoutRequirements'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+714:5  Warning: React Hook useMemo has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked.  react-hooks/exhaustive-deps
+720:5  Warning: React Hook useMemo has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked.  react-hooks/exhaustive-deps
+
+./app/checkout/success/page.tsx
+382:29  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/contact/page.tsx
+153:6  Warning: React Hook useEffect has a missing dependency: 'generateCaptcha'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+451:19  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/dashboard/page.tsx
+34:30  Warning: React Hook "useLanguage" is called conditionally. React Hooks must be called in the exact same order in every component render.  react-hooks/rules-of-hooks
+60:30  Warning: React Hook "useLanguage" is called conditionally. React Hooks must be called in the exact same order in every component render.  react-hooks/rules-of-hooks
+
+./app/journal/[slug]/page.tsx
+135:13  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/products/page.tsx
+185:6  Warning: React Hook useEffect has a missing dependency: 'fetchProducts'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/admin/AdminLayout.tsx
+58:6  Warning: React Hook useEffect has a missing dependency: 'sectionTitles'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/admin/ImageUpload.tsx
+171:11  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/admin/Modal.tsx
+95:18  Warning: The ref value 'contentRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'contentRef.current' to a variable inside the effect, and use that variable in the cleanup function.  react-hooks/exhaustive-deps
+
+./components/admin/OrderDetailsModal.tsx
+117:6  Warning: React Hook useEffect has missing dependencies: 'fetchOrderDetails', 'fetchOrderNotes', and 'fetchStatusHistory'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/admin/sections/AuditTrailSection.tsx
+91:6  Warning: React Hook useEffect has a missing dependency: 'fetchEntries'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/admin/sections/ContentSection.tsx
+876:25  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/admin/sections/DashboardSection.tsx
+113:6  Warning: React Hook useEffect has a missing dependency: 'fetchActivities'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+164:6  Warning: React Hook useEffect has a missing dependency: 'fetchActivities'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/admin/sections/DiscountCodesSection.tsx
+172:6  Warning: React Hook useEffect has a missing dependency: 'fetchCodes'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/admin/sections/InventorySection.tsx
+146:13  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+276:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/admin/sections/PermissionsSection.tsx
+290:5  Warning: React Hook useMemo has a missing dependency: 'handleOpenPermissionModal'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/admin/sections/ProductsSection.tsx
+1825:21  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+1906:25  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/admin/sections/ReviewsSection.tsx
+93:6  Warning: React Hook useEffect has a missing dependency: 'loadReviews'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/admin/sections/SellersSections.tsx
+67:6  Warning: React Hook useEffect has a missing dependency: 'fetchSellers'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/admin/sections/SettingsSection.tsx
+389:6  Warning: React Hook useEffect has a missing dependency: 'loadShippingSettings'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+898:6  Warning: React Hook useEffect has a missing dependency: 'watchHero'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+898:7  Warning: React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked.  react-hooks/exhaustive-deps
+1812:25  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/admin/sections/SystemHealthSection.tsx
+102:6  Warning: React Hook useEffect has a missing dependency: 'fetchHealth'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+129:6  Warning: React Hook useEffect has a missing dependency: 'fetchErrorLog'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/admin/sections/UsersSection.tsx
+346:5  Warning: React Hook useMemo has missing dependencies: 'handleDelete' and 'handleEdit'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/cart/CartItem.tsx
+114:13  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/dashboard/AnimatedCounter.tsx
+46:6  Warning: React Hook useEffect has a missing dependency: 'displayValue'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/dashboard/sections/CouponsSection.tsx
+44:6  Warning: React Hook useEffect has a missing dependency: 'fetchCodes'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+51:6  Warning: React Hook useEffect has a missing dependency: 'fetchCodes'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/dashboard/sections/HomeSection.tsx
+317:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/dashboard/sections/NotificationsSection.tsx
+42:6  Warning: React Hook useEffect has a missing dependency: 'fetchNotifications'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/dashboard/sections/RecentActivitySection.tsx
+28:6  Warning: React Hook useEffect has a missing dependency: 'fetchActivities'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/dashboard/sections/WishlistSection.tsx
+138:21  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/journal/JournalCard.tsx
+60:11  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/products/ProductImageGallery.tsx
+55:17  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/SearchPanel.tsx
+260:27  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+307:27  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/ui/LazyImage.tsx
+65:9  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+75:13  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+82:11  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
+   Collecting page data ...
+ ΓÜá Using edge runtime on a page currently disables static generation for that page
+   Generating static pages (0/109) ...
+Error fetching dashboard stats: n [Error]: Dynamic server usage: Route /api/admin/dashboard/stats couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at h (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\dashboard\stats\route.js:1:1735)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/dashboard/stats couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching admin notifications: n [Error]: Dynamic server usage: Route /api/admin/notifications couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at g (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\notifications\route.js:1:1559)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/notifications couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error exporting orders: n [Error]: Dynamic server usage: Route /api/admin/orders/export couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at g (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\orders\export\route.js:1:1559)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/orders/export couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching permissions: n [Error]: Dynamic server usage: Route /api/admin/permissions couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at c (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\permissions\route.js:1:1536)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/permissions couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching chart data: n [Error]: Dynamic server usage: Route /api/admin/dashboard/charts couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at h (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\dashboard\charts\route.js:1:1565)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/dashboard/charts couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching analytics: n [Error]: Dynamic server usage: Route /api/admin/analytics couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at h (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\analytics\route.js:1:1580)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/analytics couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching permission audit log: n [Error]: Dynamic server usage: Route /api/admin/permissions/audit couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at c (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\permissions\audit\route.js:1:1531)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/permissions/audit couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+API Error: n [Error]: Dynamic server usage: Route /api/admin/orders couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at a (C:\Users\Amin\Desktop\nzr\.next\server\chunks\3446.js:1:4050)
+    at o (C:\Users\Amin\Desktop\nzr\.next\server\chunks\3446.js:1:4271)
+    at x (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\orders\route.js:1:3062)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518) {
+  description: "Route /api/admin/orders couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching sellers for dropdown: n [Error]: Dynamic server usage: Route /api/admin/sellers/dropdown couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at m (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\sellers\dropdown\route.js:1:1548)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/sellers/dropdown couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching system health: n [Error]: Dynamic server usage: Route /api/admin/system/health couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at c (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\system\health\route.js:1:1537)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/system/health couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching reviews: n [Error]: Dynamic server usage: Route /api/admin/reviews couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at w (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\reviews\route.js:1:1559)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/reviews couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching section counts: n [Error]: Dynamic server usage: Route /api/admin/section-counts couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at g (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\section-counts\route.js:1:1558)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/section-counts couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+   Generating static pages (27/109) 
+Error checking rewards: n [Error]: Dynamic server usage: Route /api/admin/rewards/check couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at m (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\rewards\check\route.js:1:1546)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/rewards/check couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching audit trail: n [Error]: Dynamic server usage: Route /api/admin/audit-trail couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\audit-trail\route.js:1:1526)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/audit-trail couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+API Error: n [Error]: Dynamic server usage: Route /api/admin/users couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at a (C:\Users\Amin\Desktop\nzr\.next\server\chunks\3446.js:1:4050)
+    at o (C:\Users\Amin\Desktop\nzr\.next\server\chunks\3446.js:1:4271)
+    at q (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\users\route.js:1:1556)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518) {
+  description: "Route /api/admin/users couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching contact settings: B [Error]: Dynamic server usage: Route /api/contact-settings couldn't be rendered statically because it used `request.headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at V (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:21778)
+    at Object.get (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:29465)
+    at o (C:\Users\Amin\Desktop\nzr\.next\server\app\api\contact-settings\route.js:1:2128)
+    at c (C:\Users\Amin\Desktop\nzr\.next\server\app\api\contact-settings\route.js:1:869)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/contact-settings couldn't be rendered statically because it used `request.headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching user role: n [Error]: Dynamic server usage: Route /api/auth/user-role couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at m (C:\Users\Amin\Desktop\nzr\.next\server\app\api\auth\user-role\route.js:1:1547)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/auth/user-role couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error deactivating expired discount codes: B [Error]: Dynamic server usage: Route /api/cron/expired-discount-codes couldn't be rendered statically because it used `request.headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at V (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:21778)
+    at Object.get (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:29465)
+    at r (C:\Users\Amin\Desktop\nzr\.next\server\app\api\cron\expired-discount-codes\route.js:1:841)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:122:103 {
+  description: "Route /api/cron/expired-discount-codes couldn't be rendered statically because it used `request.headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error cleaning up expired reservations: B [Error]: Dynamic server usage: Route /api/cron/expired-reservations couldn't be rendered statically because it used `request.headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at V (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:21778)
+    at Object.get (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:29465)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\app\api\cron\expired-reservations\route.js:1:841)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:122:103 {
+  description: "Route /api/cron/expired-reservations couldn't be rendered statically because it used `request.headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching dashboard stats: n [Error]: Dynamic server usage: Route /api/dashboard/stats couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at h (C:\Users\Amin\Desktop\nzr\.next\server\app\api\dashboard\stats\route.js:1:1558)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/dashboard/stats couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching journal posts: B [Error]: Dynamic server usage: Route /api/journal couldn't be rendered statically because it used `request.headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at V (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:21778)
+    at Object.get (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:29465)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\app\api\journal\route.js:1:3246)
+    at m (C:\Users\Amin\Desktop\nzr\.next\server\app\api\journal\route.js:1:891)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/journal couldn't be rendered statically because it used `request.headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error exporting audit trail: n [Error]: Dynamic server usage: Route /api/admin/audit-trail/export couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\audit-trail\export\route.js:1:1526)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/audit-trail/export couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+   Generating static pages (54/109) 
+Error validating products: B [Error]: Dynamic server usage: Route /api/products/validate couldn't be rendered statically because it used `request.url`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at V (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:21778)
+    at Object.get (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:29465)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\app\api\products\validate\route.js:1:896)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:122:103 {
+  description: "Route /api/products/validate couldn't be rendered statically because it used `request.url`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching products: B [Error]: Dynamic server usage: Route /api/products couldn't be rendered statically because it used `request.headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at V (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:21778)
+    at Object.get (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:29465)
+    at n (C:\Users\Amin\Desktop\nzr\.next\server\app\api\products\route.js:1:4894)
+    at h (C:\Users\Amin\Desktop\nzr\.next\server\app\api\products\route.js:1:913)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/products couldn't be rendered statically because it used `request.headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching payment settings: n [Error]: Dynamic server usage: Route /api/payment-settings couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at m (C:\Users\Amin\Desktop\nzr\.next\server\app\api\payment-settings\route.js:1:1901)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38411
+    at async e_.execute (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:27880)
+    at async e_.handle (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:39943)
+    at async exportAppRoute (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\export\routes\app-route.js:77:26)
+    at async exportPageImpl (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\export\worker.js:175:20) {
+  description: "Route /api/payment-settings couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching activities: n [Error]: Dynamic server usage: Route /api/user/activities couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at v (C:\Users\Amin\Desktop\nzr\.next\server\app\api\user\activities\route.js:1:1581)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/user/activities couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching discount codes: n [Error]: Dynamic server usage: Route /api/user/discount-codes couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at h (C:\Users\Amin\Desktop\nzr\.next\server\app\api\user\discount-codes\route.js:1:1569)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/user/discount-codes couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching user orders: n [Error]: Dynamic server usage: Route /api/user/orders couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at f (C:\Users\Amin\Desktop\nzr\.next\server\app\api\user\orders\route.js:1:1581)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/user/orders couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching contact messages: n [Error]: Dynamic server usage: Route /api/admin/contact-messages couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at g (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\contact-messages\route.js:1:1565)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/contact-messages couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching notifications: n [Error]: Dynamic server usage: Route /api/user/notifications couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at q (C:\Users\Amin\Desktop\nzr\.next\server\app\api\user\notifications\route.js:1:1596)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/user/notifications couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching user messages: n [Error]: Dynamic server usage: Route /api/user/messages couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at f (C:\Users\Amin\Desktop\nzr\.next\server\app\api\user\messages\route.js:1:1581)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/user/messages couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error calculating profile completeness: n [Error]: Dynamic server usage: Route /api/user/profile/completeness couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at m (C:\Users\Amin\Desktop\nzr\.next\server\app\api\user\profile\completeness\route.js:1:1547)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/user/profile/completeness couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching user profile: n [Error]: Dynamic server usage: Route /api/user/profile couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at f (C:\Users\Amin\Desktop\nzr\.next\server\app\api\user\profile\route.js:1:1573)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/user/profile couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+   Generating static pages (81/109) 
+Error fetching admin activities: n [Error]: Dynamic server usage: Route /api/admin/activities couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at g (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\activities\route.js:1:1559)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/activities couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /checkout/success. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /checkout/success. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /auth/signin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /auth/signin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[TypeError: fetch failed] {
+  [cause]: AggregateError [ECONNREFUSED]: 
+      at internalConnectMultiple (node:net:1193:18)
+      at afterConnectMultiple (node:net:1783:7) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: AggregateError [ECONNREFUSED]: 
+      at internalConnectMultiple (node:net:1193:18)
+      at afterConnectMultiple (node:net:1783:7) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: AggregateError [ECONNREFUSED]: 
+      at internalConnectMultiple (node:net:1193:18)
+      at afterConnectMultiple (node:net:1783:7) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /about. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /about. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+Error checking API health: n [Error]: Dynamic server usage: Route /api/admin/system/health/api couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\chunks\8948.js:1:37220)
+    at d (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:29073)
+    at s (C:\Users\Amin\Desktop\nzr\.next\server\chunks\6674.js:25:20859)
+    at c (C:\Users\Amin\Desktop\nzr\.next\server\app\api\admin\system\health\api\route.js:1:1645)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/system/health/api couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /privacy. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /privacy. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /terms. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /terms. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /dashboard. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /dashboard. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /products. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /products. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /reset-password. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /reset-password. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /contact. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /contact. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /auth/signup. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /auth/signup. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /journal. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /journal. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /checkout. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /checkout. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /login. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ΓÜá Unsupported metadata themeColor is configured in metadata export in /login. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+Error processing abandoned carts: B [Error]: Dynamic server usage: Route /api/cron/abandoned-cart couldn't be rendered statically because it used `request.headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at V (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:21778)
+    at Object.get (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:29465)
+    at l (C:\Users\Amin\Desktop\nzr\.next\server\app\api\cron\abandoned-cart\route.js:1:2083)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\Amin\Desktop\nzr\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854)
+    at C:\Users\Amin\Desktop\nzr\node_modules\next\dist\server\lib\trace\tracer.js:122:103 {
+  description: "Route /api/cron/abandoned-cart couldn't be rendered statically because it used `request.headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+ Γ£ô Generating static pages (109/109)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                          Size     First Load JS
+Γöî Γùï /                                                21.2 kB         160 kB
+Γö£ Γùï /_not-found                                      880 B          89.7 kB
+Γö£ Γùï /about                                           2.77 kB         141 kB
+Γö£ Γùï /admin                                           23.9 kB         139 kB
+Γö£ Γùï /api/about-us                                    0 B                0 B
+Γö£ ╞Æ /api/admin/about-us                              0 B                0 B
+Γö£ ╞Æ /api/admin/activities                            0 B                0 B
+Γö£ ╞Æ /api/admin/analytics                             0 B                0 B
+Γö£ ╞Æ /api/admin/audit-trail                           0 B                0 B
+Γö£ ╞Æ /api/admin/audit-trail/export                    0 B                0 B
+Γö£ ╞Æ /api/admin/audit-trail/rollback                  0 B                0 B
+Γö£ ╞Æ /api/admin/badges                                0 B                0 B
+Γö£ ╞Æ /api/admin/badges/[id]                           0 B                0 B
+Γö£ ╞Æ /api/admin/bank-settings                         0 B                0 B
+Γö£ ╞Æ /api/admin/categories                            0 B                0 B
+Γö£ ╞Æ /api/admin/categories/[id]                       0 B                0 B
+Γö£ ╞Æ /api/admin/change-superadmin-password            0 B                0 B
+Γö£ ╞Æ /api/admin/contact-messages                      0 B                0 B
+Γö£ ╞Æ /api/admin/contact-messages/[id]                 0 B                0 B
+Γö£ ╞Æ /api/admin/contact-settings                      0 B                0 B
+Γö£ ╞Æ /api/admin/create-admin                          0 B                0 B
+Γö£ ╞Æ /api/admin/dashboard/charts                      0 B                0 B
+Γö£ ╞Æ /api/admin/dashboard/stats                       0 B                0 B
+Γö£ ╞Æ /api/admin/discount-codes                        0 B                0 B
+Γö£ ╞Æ /api/admin/discount-codes/[id]                   0 B                0 B
+Γö£ ╞Æ /api/admin/discount-codes/[id]/usage             0 B                0 B
+Γö£ ╞Æ /api/admin/discount-codes/[id]/users             0 B                0 B
+Γö£ ╞Æ /api/admin/discount-codes/[id]/users/[userId]    0 B                0 B
+Γö£ ╞Æ /api/admin/hero-settings                         0 B                0 B
+Γö£ ╞Æ /api/admin/journal                               0 B                0 B
+Γö£ ╞Æ /api/admin/journal-categories                    0 B                0 B
+Γö£ ╞Æ /api/admin/journal/[id]                          0 B                0 B
+Γö£ ╞Æ /api/admin/messages/[id]/reply                   0 B                0 B
+Γö£ ╞Æ /api/admin/notifications                         0 B                0 B
+Γö£ ╞Æ /api/admin/notifications/mark-read               0 B                0 B
+Γö£ ╞Æ /api/admin/orders                                0 B                0 B
+Γö£ ╞Æ /api/admin/orders/[id]                           0 B                0 B
+Γö£ ╞Æ /api/admin/orders/[id]/distribute-rewards        0 B                0 B
+Γö£ ╞Æ /api/admin/orders/[id]/fulfill                   0 B                0 B
+Γö£ ╞Æ /api/admin/orders/[id]/history                   0 B                0 B
+Γö£ ╞Æ /api/admin/orders/[id]/invoice                   0 B                0 B
+Γö£ ╞Æ /api/admin/orders/[id]/modify                    0 B                0 B
+Γö£ ╞Æ /api/admin/orders/[id]/notes                     0 B                0 B
+Γö£ ╞Æ /api/admin/orders/[id]/shipping-label            0 B                0 B
+Γö£ ╞Æ /api/admin/orders/export                         0 B                0 B
+Γö£ ╞Æ /api/admin/payment-settings                      0 B                0 B
+Γö£ ╞Æ /api/admin/permissions                           0 B                0 B
+Γö£ ╞Æ /api/admin/permissions/audit                     0 B                0 B
+Γö£ ╞Æ /api/admin/permissions/check                     0 B                0 B
+Γö£ ╞Æ /api/admin/permissions/user/[userId]             0 B                0 B
+Γö£ ╞Æ /api/admin/products                              0 B                0 B
+Γö£ ╞Æ /api/admin/products/[id]                         0 B                0 B
+Γö£ ╞Æ /api/admin/products/[id]/hide                    0 B                0 B
+Γö£ ╞Æ /api/admin/products/[id]/show                    0 B                0 B
+Γö£ ╞Æ /api/admin/refunds                               0 B                0 B
+Γö£ ╞Æ /api/admin/refunds/[id]                          0 B                0 B
+Γö£ ╞Æ /api/admin/reviews                               0 B                0 B
+Γö£ ╞Æ /api/admin/reviews/[id]                          0 B                0 B
+Γö£ ╞Æ /api/admin/reward-thresholds                     0 B                0 B
+Γö£ ╞Æ /api/admin/rewards/check                         0 B                0 B
+Γö£ ╞Æ /api/admin/section-counts                        0 B                0 B
+Γö£ ╞Æ /api/admin/sellers                               0 B                0 B
+Γö£ ╞Æ /api/admin/sellers/[id]                          0 B                0 B
+Γö£ ╞Æ /api/admin/sellers/dropdown                      0 B                0 B
+Γö£ ╞Æ /api/admin/settings                              0 B                0 B
+Γö£ ╞Æ /api/admin/shipping-settings                     0 B                0 B
+Γö£ ╞Æ /api/admin/site-settings                         0 B                0 B
+Γö£ ╞Æ /api/admin/social-links                          0 B                0 B
+Γö£ ╞Æ /api/admin/system/errors                         0 B                0 B
+Γö£ ╞Æ /api/admin/system/health                         0 B                0 B
+Γö£ ╞Æ /api/admin/system/health/api                     0 B                0 B
+Γö£ ╞Æ /api/admin/upload-image                          0 B                0 B
+Γö£ ╞Æ /api/admin/upload-journal-image                  0 B                0 B
+Γö£ ╞Æ /api/admin/upload-journal-pdf                    0 B                0 B
+Γö£ ╞Æ /api/admin/upload-product-image                  0 B                0 B
+Γö£ ╞Æ /api/admin/users                                 0 B                0 B
+Γö£ ╞Æ /api/admin/users/[userId]                        0 B                0 B
+Γö£ ╞Æ /api/admin/users/[userId]/addresses              0 B                0 B
+Γö£ ╞Æ /api/admin/users/[userId]/addresses/[addressId]  0 B                0 B
+Γö£ ╞Æ /api/admin/users/[userId]/payment-methods        0 B                0 B
+Γö£ ╞Æ /api/auth/[...nextauth]                          0 B                0 B
+Γö£ ╞Æ /api/auth/forgot-password                        0 B                0 B
+Γö£ ╞Æ /api/auth/reset-password                         0 B                0 B
+Γö£ ╞Æ /api/auth/signup                                 0 B                0 B
+Γö£ ╞Æ /api/auth/user-role                              0 B                0 B
+Γö£ Γùï /api/bank-settings/default                       0 B                0 B
+Γö£ ╞Æ /api/captcha                                     0 B                0 B
+Γö£ ╞Æ /api/cart                                        0 B                0 B
+Γö£ ╞Æ /api/cart/merge                                  0 B                0 B
+Γö£ ╞Æ /api/cart/remove-items                           0 B                0 B
+Γö£ Γùï /api/categories                                  0 B                0 B
+Γö£ ╞Æ /api/checkout/validate                           0 B                0 B
+Γö£ ╞Æ /api/contact                                     0 B                0 B
+Γö£ ╞Æ /api/contact-settings                            0 B                0 B
+Γö£ ╞Æ /api/cron/abandoned-cart                         0 B                0 B
+Γö£ ╞Æ /api/cron/expired-discount-codes                 0 B                0 B
+Γö£ ╞Æ /api/cron/expired-reservations                   0 B                0 B
+Γö£ Γùï /api/csrf-token                                  0 B                0 B
+Γö£ ╞Æ /api/dashboard/stats                             0 B                0 B
+Γö£ ╞Æ /api/discount-codes/validate                     0 B                0 B
+Γö£ ╞Æ /api/hero-settings                               0 B                0 B
+Γö£ ╞Æ /api/journal                                     0 B                0 B
+Γö£ Γùï /api/journal-categories                          0 B                0 B
+Γö£ ╞Æ /api/journal/[slug]                              0 B                0 B
+Γö£ ╞Æ /api/og/journal/[slug]                           0 B                0 B
+Γö£ ╞Æ /api/orders                                      0 B                0 B
+Γö£ ╞Æ /api/orders/[orderNumber]                        0 B                0 B
+Γö£ ╞Æ /api/payment-settings                            0 B                0 B
+Γö£ ╞Æ /api/products                                    0 B                0 B
+Γö£ ╞Æ /api/products/[slug]                             0 B                0 B
+Γö£ ╞Æ /api/products/[slug]/reviews                     0 B                0 B
+Γö£ ╞Æ /api/products/[slug]/reviews/[reviewId]          0 B                0 B
+Γö£ ╞Æ /api/products/[slug]/reviews/all                 0 B                0 B
+Γö£ ╞Æ /api/products/validate                           0 B                0 B
+Γö£ ╞Æ /api/shipping/calculate                          0 B                0 B
+Γö£ Γùï /api/site-settings                               0 B                0 B
+Γö£ Γùï /api/social-links                                0 B                0 B
+Γö£ ╞Æ /api/user/activities                             0 B                0 B
+Γö£ ╞Æ /api/user/addresses                              0 B                0 B
+Γö£ ╞Æ /api/user/addresses/[addressId]                  0 B                0 B
+Γö£ ╞Æ /api/user/addresses/[addressId]/set-default      0 B                0 B
+Γö£ ╞Æ /api/user/discount-codes                         0 B                0 B
+Γö£ ╞Æ /api/user/email/send-code                        0 B                0 B
+Γö£ ╞Æ /api/user/email/verify                           0 B                0 B
+Γö£ ╞Æ /api/user/messages                               0 B                0 B
+Γö£ ╞Æ /api/user/messages/[id]                          0 B                0 B
+Γö£ ╞Æ /api/user/messages/[id]/read                     0 B                0 B
+Γö£ ╞Æ /api/user/notifications                          0 B                0 B
+Γö£ ╞Æ /api/user/notifications/[id]                     0 B                0 B
+Γö£ ╞Æ /api/user/notifications/mark-read                0 B                0 B
+Γö£ ╞Æ /api/user/orders                                 0 B                0 B
+Γö£ ╞Æ /api/user/orders/[id]/confirm-delivery           0 B                0 B
+Γö£ ╞Æ /api/user/orders/[id]/history                    0 B                0 B
+Γö£ ╞Æ /api/user/phone/send-code                        0 B                0 B
+Γö£ ╞Æ /api/user/phone/verify                           0 B                0 B
+Γö£ ╞Æ /api/user/profile                                0 B                0 B
+Γö£ ╞Æ /api/user/profile/completeness                   0 B                0 B
+Γö£ ╞Æ /api/user/rewards/convert                        0 B                0 B
+Γö£ ╞Æ /api/user/wishlist                               0 B                0 B
+Γö£ ╞Æ /api/user/wishlist/[productId]                   0 B                0 B
+Γö£ ╞Æ /api/webhooks/payment                            0 B                0 B
+Γö£ Γùï /auth/signin                                     3.89 kB         138 kB
+Γö£ Γùï /auth/signup                                     3.6 kB          165 kB
+Γö£ Γùï /checkout                                        14.7 kB         181 kB
+Γö£ Γùï /checkout/success                                5.74 kB         144 kB
+Γö£ Γùï /contact                                         5.52 kB         167 kB
+Γö£ Γùï /dashboard                                       27.6 kB         157 kB
+Γö£ Γùï /journal                                         3.95 kB         143 kB
+Γö£ ╞Æ /journal/[slug]                                  2.4 kB          141 kB
+Γö£ Γùï /login                                           5.64 kB         167 kB
+Γö£ Γùï /privacy                                         3.93 kB         142 kB
+Γö£ Γùï /products                                        6.98 kB         146 kB
+Γö£ ╞Æ /products/[slug]                                 9.06 kB         148 kB
+Γö£ Γùï /reset-password                                  3.75 kB         165 kB
+Γö£ Γùï /robots.txt                                      0 B                0 B
+Γö£ Γùï /sitemap.xml                                     0 B                0 B
+Γöö Γùï /terms                                           4.72 kB         143 kB
++ First Load JS shared by all                        88.9 kB
+  Γö£ chunks/2117-b2c0e15fba3139c1.js                  31.9 kB
+  Γö£ chunks/fd9d1056-9934d3af07d88578.js              53.6 kB
+  Γöö other shared chunks (total)                      3.31 kB
+
+
+╞Æ Middleware                                         27.1 kB
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+

@@ -1,0 +1,211 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.imageUpload {
+  width: 100%;
+}
+
+.label {
+  display: block;
+  margin-bottom: $spacing-sm;
+  font-weight: 600;
+  color: $text-dark;
+  font-size: $font-sm;
+}
+
+.dropZone {
+  border: 2px dashed $border-primary;
+  border-radius: $radius-lg;
+  padding: $spacing-2xl;
+  text-align: center;
+  cursor: pointer;
+  transition: all $duration-base $ease-out;
+  background: $bg-secondary;
+  position: relative;
+  min-height: 150px;
+  @include flex-center;
+  flex-direction: column;
+  gap: $spacing-md;
+
+  &:hover {
+    border-color: $primary;
+    background: rgba($primary, 0.05);
+  }
+
+  &.dragging {
+    border-color: $primary;
+    background: rgba($primary, 0.1);
+    transform: scale(1.02);
+  }
+
+  &.uploading {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+.fileInput {
+  display: none;
+}
+
+.uploadIcon {
+  width: 3rem;
+  height: 3rem;
+  color: $text-tertiary;
+  transition: color $duration-base $ease-out;
+}
+
+.dropZone:hover .uploadIcon {
+  color: $primary;
+}
+
+.uploadText {
+  font-size: $font-base;
+  color: $text-dark;
+  font-weight: 500;
+  margin: 0;
+}
+
+.uploadHint {
+  font-size: $font-sm;
+  color: $text-secondary;
+  margin: 0;
+}
+
+.uploadProgress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-md;
+  width: 100%;
+}
+
+.progressBar {
+  width: 100%;
+  max-width: 300px;
+  height: 8px;
+  background: $tertiary;
+  border-radius: $radius-full;
+  overflow: hidden;
+  position: relative;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, $primary 0%, $secondary 100%);
+  border-radius: $radius-full;
+  transition: width $duration-fast $ease-out;
+}
+
+.progressText {
+  font-size: $font-sm;
+  font-weight: 600;
+  color: $primary;
+}
+
+.imagePreview {
+  position: relative;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  border: 1px solid $border-primary;
+}
+
+.previewImage {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 400px;
+  object-fit: contain;
+  background: $bg-secondary;
+}
+
+.imageActions {
+  position: absolute;
+  top: $spacing-sm;
+  right: $spacing-sm;
+  z-index: 10;
+}
+
+.deleteButton {
+  @include button-base;
+  background: rgba($color-danger, 0.9);
+  color: $text-light;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: $radius-circle;
+  @include flex-center;
+  @include elevation(2);
+  transition: all $duration-base $ease-out;
+
+  &:hover {
+    background: $color-danger;
+    transform: scale(1.1);
+  }
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.deleteConfirm {
+  background: $text-light;
+  border-radius: $radius-md;
+  padding: $spacing-sm;
+  @include elevation(3);
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  white-space: nowrap;
+}
+
+.confirmText {
+  font-size: $font-sm;
+  color: $text-dark;
+  margin-right: $spacing-xs;
+}
+
+.confirmButton,
+.cancelButton {
+  @include button-base;
+  padding: $spacing-xs $spacing-sm;
+  font-size: $font-xs;
+  border-radius: $radius-sm;
+}
+
+.confirmButton {
+  background: $color-danger;
+  color: $text-light;
+}
+
+.cancelButton {
+  background: $tertiary;
+  color: $text-dark;
+}
+
+.altTextInput {
+  padding: $spacing-sm;
+  background: rgba(0, 0, 0, 0.7);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.altInput {
+  width: 100%;
+  padding: $spacing-xs $spacing-sm;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: $radius-sm;
+  background: rgba(255, 255, 255, 0.9);
+  color: $text-dark;
+  font-size: $font-sm;
+
+  &::placeholder {
+    color: $text-secondary;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    background: $text-light;
+  }
+}
+

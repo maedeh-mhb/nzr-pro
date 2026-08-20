@@ -1,0 +1,387 @@
+// Color Variables - Base
+$primary: #367260;
+$secondary: #6c9cb8;
+$tertiary: #e8e9ea;
+$text-dark: #2c3e50;
+$text-light: #ffffff;
+$success: #27ae60;
+$warning: #f39c12;
+$danger: #e74c3c;
+
+// Gradients
+$gradient-primary: linear-gradient(135deg, #367260 0%, #4a8a73 100%);
+$gradient-primary-subtle: linear-gradient(135deg, #367260 0%, #3d7a68 100%);
+$gradient-accent: linear-gradient(135deg, #6c9cb8 0%, #85b3cc 100%);
+$gradient-success: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+$gradient-warning: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+$gradient-featured: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+$gradient-shimmer: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+
+// Overlay Colors
+$overlay-dark: rgba(44, 62, 80, 0.85);
+$overlay-light: rgba(255, 255, 255, 0.95);
+$overlay-glass: rgba(255, 255, 255, 0.8);
+
+// Enhanced Color System - Primary Scale
+$color-primary-50: #e8f5e9;
+$color-primary-100: #c8e6c9;
+$color-primary-200: #a5d6a7;
+$color-primary-300: #81c784;
+$color-primary-400: #66bb6a;
+$color-primary-500: #367260; // Base primary
+$color-primary-600: #2e5f4f;
+$color-primary-700: #254c3f;
+$color-primary-800: #1d392f;
+$color-primary-900: #14261f;
+
+// Semantic Primary Colors with States
+$color-primary: $color-primary-500;
+$color-primary-hover: $color-primary-600;
+$color-primary-active: $color-primary-700;
+$color-primary-disabled: $color-primary-300;
+$color-primary-light: $color-primary-100;
+$color-primary-dark: $color-primary-800;
+
+// Secondary Color Scale
+$color-secondary-50: #e3f2fd;
+$color-secondary-100: #bbdefb;
+$color-secondary-200: #90caf9;
+$color-secondary-300: #64b5f6;
+$color-secondary-400: #42a5f5;
+$color-secondary-500: #6c9cb8; // Base secondary
+$color-secondary-600: #5a8aa3;
+$color-secondary-700: #4a778e;
+$color-secondary-800: #3a6479;
+$color-secondary-900: #2a5164;
+
+// Semantic Secondary Colors
+$color-secondary: $color-secondary-500;
+$color-secondary-hover: $color-secondary-600;
+$color-secondary-active: $color-secondary-700;
+$color-secondary-disabled: $color-secondary-300;
+
+// Success Color Scale
+$color-success-50: #e8f5e9;
+$color-success-100: #c8e6c9;
+$color-success-200: #a5d6a7;
+$color-success-300: #81c784;
+$color-success-400: #66bb6a;
+$color-success-500: #27ae60; // Base success
+$color-success-600: #229954;
+$color-success-700: #1e8449;
+$color-success-800: #196f3d;
+$color-success-900: #145a32;
+
+// Semantic Success Colors
+$color-success: $color-success-500;
+$color-success-hover: $color-success-600;
+$color-success-active: $color-success-700;
+$color-success-light: $color-success-100;
+
+// Warning Color Scale
+$color-warning-50: #fff3e0;
+$color-warning-100: #ffe0b2;
+$color-warning-200: #ffcc80;
+$color-warning-300: #ffb74d;
+$color-warning-400: #ffa726;
+$color-warning-500: #f39c12; // Base warning
+$color-warning-600: #e6890e;
+$color-warning-700: #d9770a;
+$color-warning-800: #cc6508;
+$color-warning-900: #bf5306;
+
+// Semantic Warning Colors
+$color-warning: $color-warning-500;
+$color-warning-hover: $color-warning-600;
+$color-warning-active: $color-warning-700;
+$color-warning-light: $color-warning-100;
+
+// Danger Color Scale
+$color-danger-50: #ffebee;
+$color-danger-100: #ffcdd2;
+$color-danger-200: #ef9a9a;
+$color-danger-300: #e57373;
+$color-danger-400: #ef5350;
+$color-danger-500: #e74c3c; // Base danger
+$color-danger-600: #d32f2f;
+$color-danger-700: #c62828;
+$color-danger-800: #b71c1c;
+$color-danger-900: #a01212;
+
+// Semantic Danger Colors
+$color-danger: $color-danger-500;
+$color-danger-hover: $color-danger-600;
+$color-danger-active: $color-danger-700;
+$color-danger-light: $color-danger-100;
+
+// Background Colors
+$bg-primary: $text-light;
+$bg-secondary: $tertiary;
+$bg-tertiary: #f5f5f5;
+$bg-overlay: rgba(0, 0, 0, 0.5);
+$bg-overlay-light: rgba(0, 0, 0, 0.1);
+$background: $bg-tertiary; // neutral app background
+
+// Surface Colors
+$surface: #ffffff; // default card surface
+
+// Text Colors
+$text-primary: $text-dark;
+$text-secondary: #666666;
+$text-muted: $text-secondary;
+$text-tertiary: #999999;
+$text-disabled: #cccccc;
+$text-inverse: $text-light;
+
+// Border Colors
+$border-primary: $tertiary;
+$border-secondary: #d0d0d0;
+$border-color: $border-secondary; // default neutral border
+$border-focus: $color-primary-500;
+$border-error: $color-danger-500;
+$border-success: $color-success-500;
+
+// Breakpoints (Mobile First)
+$breakpoint-mobile-large: 420px;
+$breakpoint-tablet: 640px;
+$breakpoint-desktop-small: 770px;
+$breakpoint-desktop: 1080px;
+
+// Spacing
+$spacing-xs: 0.25rem;
+$spacing-xxs: 0.125rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-2xl: 3rem;
+$spacing-3xl: 4rem;
+$spacing-4xl: 5rem;
+$spacing-5xl: 8rem;
+
+// Bottom Bar Specific Spacing
+$bottom-bar-icon-gap: 7rem;
+
+// Border Radius
+$radius-sm: 6px;
+$radius-md: 8px;
+$radius-lg: 10px;
+$radius-xl: 12px;
+$radius-2xl: 15px;
+$radius-3xl: 20px;
+$radius-full: 50px;
+$radius-circle: 50%;
+
+// Semantic Border Radius (Use these for consistency)
+$radius-button: 8px; // Standard buttons
+$radius-input: 8px; // Input fields
+$radius-card: 10px; // Product cards, content cards
+$radius-modal: 12px; // Modals, dialogs
+$radius-pill: 20px; // Pill-shaped elements (place order bar)
+
+// Component-Specific Sizes (converted to rem)
+$logo-size: 3.125rem; // 50px
+$image-height-default: 25rem; // 400px
+$image-height-small: 17.5rem; // 280px
+$icon-size-base: 1.5rem; // 24px
+$icon-size-sm: 1.25rem; // 20px
+$icon-size-lg: 1.875rem; // 30px
+$avatar-size: 2.5rem; // 40px
+$badge-size: 1.125rem; // 18px
+
+// Shadows - DEPRECATED (Use elevation system instead)
+// Legacy shadows kept for backward compatibility only
+// TODO: Migrate all usages to @include elevation(n) mixin
+$shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.05); // → Use elevation(1)
+$shadow-md: 0 2px 10px rgba(0, 0, 0, 0.1); // → Use elevation(2)
+$shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.1); // → Use elevation(3)
+$shadow-xl: 0 10px 25px rgba(0, 0, 0, 0.2); // → Use elevation(4)
+
+// Enhanced Shadow & Elevation System (PREFERRED - Use this)
+$elevation-0: none;
+$elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+$elevation-2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+$elevation-3: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+$elevation-4: 0 15px 25px rgba(0, 0, 0, 0.2), 0 5px 10px rgba(0, 0, 0, 0.22);
+$elevation-5: 0 20px 40px rgba(0, 0, 0, 0.25), 0 8px 10px rgba(0, 0, 0, 0.22);
+
+// Colored Shadows
+$shadow-primary: 0 4px 12px rgba(54, 114, 96, 0.15);
+$shadow-primary-hover: 0 8px 24px rgba(54, 114, 96, 0.25);
+$shadow-success: 0 4px 12px rgba(39, 174, 96, 0.15);
+$shadow-danger: 0 4px 12px rgba(231, 76, 60, 0.15);
+$shadow-warning: 0 4px 12px rgba(243, 156, 18, 0.15);
+
+// Inset Shadows
+$shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+
+// Transitions - Legacy (kept for backward compatibility)
+$transition-fast: 0.2s;
+$transition-base: 0.3s;
+$transition-slow: 0.5s;
+
+// Enhanced Transition System
+// Easing Functions (Material Design)
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+$ease-out: cubic-bezier(0, 0, 0.2, 1);
+$ease-in: cubic-bezier(0.4, 0, 1, 1);
+$ease-sharp: cubic-bezier(0.4, 0, 0.6, 1);
+$ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+// Transition Durations
+$duration-instant: 0ms;
+$duration-fast: 150ms;
+$duration-base: 250ms;
+$duration-slow: 350ms;
+$duration-slower: 500ms;
+
+// Z-index
+$z-base: 1;
+// Z-index - Enhanced hierarchy
+$z-base: 1;
+$z-badge: 10;
+$z-dropdown: 100;
+$z-sticky: 200;
+$z-fixed: 300;
+$z-modal-backdrop: 400;
+$z-modal: 500;
+$z-navbar: 500; // Navbar/sticky navigation
+$z-sticky-bar: 998; // Product detail mobile bars (just below bottom nav)
+$z-bottom-bar: 999; // Mobile bottom navigation
+$z-toast: 2000; // Toast notifications
+$z-popover: 600;
+$z-tooltip: 700;
+
+// Component Heights
+$navbar-height: 70px;
+$navbar-height-mobile: 70px;
+$bottom-bar-height: 60px;
+
+// Mobile Safe Areas
+$mobile-bottom-safe-area: calc(#{$bottom-bar-height} + #{$spacing-lg});
+$mobile-content-padding-bottom: calc(#{$bottom-bar-height} + #{$spacing-xl});
+
+// Fluid Typography System (responsive font sizes)
+$font-fluid-xs: clamp(0.75rem, 1vw, 0.875rem);
+$font-fluid-sm: clamp(0.875rem, 1.2vw, 1rem);
+$font-fluid-base: clamp(1rem, 1.5vw, 1.125rem);
+$font-fluid-md: clamp(1.1rem, 1.75vw, 1.25rem);
+$font-fluid-lg: clamp(1.2rem, 2vw, 1.5rem);
+$font-fluid-xl: clamp(1.5rem, 2.5vw, 2rem);
+$font-fluid-2xl: clamp(1.75rem, 3vw, 2.5rem);
+$font-fluid-3xl: clamp(2rem, 4vw, 3rem);
+$font-fluid-4xl: clamp(2.5rem, 5vw, 4rem);
+
+// Font Sizes - Legacy (kept for backward compatibility)
+$font-xs: 0.75rem;
+$font-sm: 0.85rem;
+$font-base: 1rem;
+$font-md: 1.1rem;
+$font-lg: 1.2rem;
+$font-xl: 1.3rem;
+$font-2xl: 1.5rem;
+$font-3xl: 1.8rem;
+$font-4xl: 2rem;
+$font-5xl: 2.5rem;
+$font-6xl: 3rem;
+$font-7xl: 3.5rem;
+
+// Enhanced Typography Scale (Modular Scale - 1.25)
+$font-size-xs: 0.64rem; // 10.24px
+$font-size-sm: 0.8rem; // 12.8px
+$font-size-base: 1rem; // 16px
+$font-size-md: 1.25rem; // 20px
+$font-size-lg: 1.563rem; // 25px
+$font-size-xl: 1.953rem; // 31.25px
+$font-size-2xl: 2.441rem; // 39px
+$font-size-3xl: 3.052rem; // 48.8px
+$font-size-4xl: 3.815rem; // 61px
+
+// Line Heights
+$line-height-tight: 1.2;
+$line-height-normal: 1.5;
+$line-height-relaxed: 1.75;
+$line-height-loose: 2;
+
+// Font Weights
+$font-weight-light: 300;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+$font-weight-extrabold: 800;
+$font-weight-black: 900;
+
+// Letter Spacing
+$letter-spacing-tight: -0.025em;
+$letter-spacing-heading: -0.02em;
+$letter-spacing-normal: 0;
+$letter-spacing-wide: 0.025em;
+$letter-spacing-wider: 0.05em;
+
+// Max Widths
+$max-width-sm: 600px;
+$max-width-md: 800px;
+$max-width-lg: 1200px;
+$max-width-xl: 1400px;
+
+// Container Widths (Semantic)
+$container-content: 900px; // Reading content (journal posts, articles)
+$container-standard: 1200px; // Standard layouts (products, forms)
+$container-wide: 1400px; // Wide layouts (hero, full-width sections)
+
+// Animation Keyframes
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}

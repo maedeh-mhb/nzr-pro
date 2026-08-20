@@ -1,0 +1,56 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.chartContainer {
+  padding: $spacing-lg;
+  min-height: 350px;
+}
+
+.chartHeader {
+  @include flex-between;
+  margin-bottom: $spacing-md;
+  
+  h4 {
+    font-size: $font-lg;
+    font-weight: 600;
+    color: $text-dark;
+  }
+}
+
+.chartControls {
+  display: flex;
+  gap: $spacing-xs;
+}
+
+.chartTypeButton {
+  @include button-base;
+  padding: $spacing-xs $spacing-sm;
+  background: $tertiary;
+  color: $text-dark;
+  font-size: $font-sm;
+  border-radius: $radius-md;
+  
+  &:hover {
+    background: darken($tertiary, 5%);
+  }
+  
+  &.active {
+    background: $primary;
+    color: $text-light;
+  }
+}
+
+.chartLoading {
+  @include flex-center;
+  padding: $spacing-3xl;
+  min-height: 350px;
+}
+
+.chartEmpty {
+  @include flex-center;
+  padding: $spacing-3xl;
+  min-height: 350px;
+  color: $text-secondary;
+  font-size: $font-base;
+}
+

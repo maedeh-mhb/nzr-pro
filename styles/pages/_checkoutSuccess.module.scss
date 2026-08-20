@@ -1,0 +1,494 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.container {
+  min-height: calc(100vh - 200px);
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+  padding: $spacing-xl $spacing-md;
+
+  // On mobile: add padding-top to account for fixed navbar
+  @include max-tablet {
+    padding-top: calc(#{$navbar-height} + #{$spacing-xl});
+  }
+}
+
+.successCard {
+  background: $text-light;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-lg;
+  padding: $spacing-2xl;
+  text-align: center;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+
+  @include max-tablet {
+    padding: $spacing-xl $spacing-lg;
+    max-width: 100%;
+  }
+}
+
+.successIcon {
+  width: 80px;
+  height: 80px;
+  color: $success;
+  margin: 0 auto $spacing-lg;
+
+  @include max-mobile {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+.title {
+  font-size: $font-4xl;
+  color: $primary;
+  margin-bottom: $spacing-md;
+
+  @include max-mobile {
+    font-size: $font-3xl;
+  }
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.message {
+  color: #666;
+  margin-bottom: $spacing-xl;
+  line-height: 1.6;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.orderNumber {
+  background: $tertiary;
+  padding: $spacing-lg;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-lg;
+}
+
+.orderNumberLabel {
+  display: block;
+  font-size: $font-sm;
+  color: #666;
+  margin-bottom: $spacing-xs;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.orderNumberValue {
+  display: block;
+  font-size: $font-2xl;
+  font-weight: 700;
+  color: $primary;
+  font-family: monospace;
+}
+
+.note {
+  color: #666;
+  font-size: $font-sm;
+  margin-bottom: $spacing-xl;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-md;
+}
+
+// Order Summary Section
+.orderSummary {
+  text-align: left;
+  margin: $spacing-xl 0;
+  padding: $spacing-lg;
+  background: rgba($primary, 0.03);
+  border-radius: $radius-lg;
+  border: 1px solid rgba($primary, 0.1);
+
+  [dir="rtl"] & {
+    text-align: right;
+  }
+}
+
+.sectionTitle {
+  font-size: $font-xl;
+  color: $primary;
+  margin-bottom: $spacing-lg;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  justify-content: flex-start;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: right;
+    justify-content: flex-end;
+    flex-direction: row-reverse;
+  }
+
+  svg {
+    font-size: $font-lg;
+    flex-shrink: 0;
+  }
+
+  @include max-tablet {
+    font-size: $font-lg;
+    margin-bottom: $spacing-md;
+
+    [dir="rtl"] & {
+      text-align: right;
+      justify-content: flex-end;
+      flex-direction: row-reverse;
+    }
+  }
+}
+
+.orderItems {
+  margin-bottom: $spacing-lg;
+}
+
+.orderItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md 0;
+  border-bottom: 1px solid rgba($primary, 0.1);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  flex: 1;
+}
+
+.itemName {
+  font-weight: 500;
+  color: $text-dark;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.itemQuantity {
+  font-size: $font-sm;
+  color: #666;
+}
+
+.itemPrice {
+  font-weight: 600;
+  color: $primary;
+}
+
+.priceBreakdown {
+  margin-top: $spacing-lg;
+  padding-top: $spacing-lg;
+  border-top: 2px solid rgba($primary, 0.2);
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm 0;
+  font-size: $font-base;
+  color: $text-dark;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.priceRowTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md 0;
+  margin-top: $spacing-md;
+  border-top: 1px solid rgba($primary, 0.2);
+  font-size: $font-xl;
+  font-weight: 700;
+  color: $primary;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+// Bank Card Section
+.bankCardSection {
+  text-align: left;
+  margin: $spacing-xl 0;
+  padding: $spacing-lg;
+  background: rgba($primary, 0.05);
+  border-radius: $radius-lg;
+  border: 2px solid rgba($primary, 0.2);
+
+  [dir="rtl"] & {
+    text-align: right;
+  }
+
+  @include max-tablet {
+    padding: $spacing-md;
+
+    [dir="rtl"] & {
+      text-align: right;
+    }
+  }
+}
+
+.bankCard {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  margin-top: $spacing-md;
+}
+
+.bankInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-sm;
+  background: $text-light;
+  border-radius: $radius-md;
+  flex-direction: row; // Default: label left, value right
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse; // RTL: label right, value left
+    justify-content: flex-start;
+  }
+
+  @include max-tablet {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-sm;
+
+    [dir="rtl"] & {
+      align-items: flex-end;
+      flex-direction: column; // Keep column on mobile
+    }
+  }
+}
+
+.bankLabel {
+  font-weight: 600;
+  color: $text-dark;
+  min-width: 120px;
+  flex-shrink: 0;
+  text-align: left; // English: left aligned
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: right; // Farsi: right aligned
+    order: 2; // In RTL desktop, label comes after value (visually on right)
+  }
+
+  @include max-tablet {
+    min-width: auto;
+    width: 100%;
+    margin-bottom: $spacing-xs;
+    text-align: left;
+
+    [dir="rtl"] & {
+      text-align: right;
+      order: 1; // Mobile RTL: label on line 1 (first)
+      margin-bottom: $spacing-xs;
+    }
+  }
+}
+
+.bankValue {
+  font-size: $font-lg;
+  font-weight: 700;
+  color: $primary;
+  font-family: monospace;
+  word-break: break-all;
+  flex: 1;
+  min-width: 0; // Allow text to shrink
+  text-align: left; // English: left aligned
+
+  [dir="rtl"] & {
+    text-align: left; // Farsi: value on left side
+    order: 1; // In RTL desktop, value comes before label (visually on left)
+  }
+
+  @include max-tablet {
+    font-size: $font-base;
+    word-break: keep-all;
+    white-space: nowrap;
+    overflow-x: auto;
+    flex: 1;
+    min-width: 0;
+
+    [dir="rtl"] & {
+      text-align: right; // Mobile RTL: value right-aligned
+      order: 2; // Mobile RTL: value on line 2 (second)
+      margin-top: 0;
+    }
+  }
+}
+
+.bankValueWithCopy {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  flex: 1;
+  min-width: 0; // Allow flex item to shrink
+  flex-direction: row; // English: value left, copy button right
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse; // Farsi: copy button left, value right (but overall on left side of container)
+    justify-content: flex-start;
+    order: 1; // In RTL desktop, value container comes before label (visually on left)
+  }
+
+  @include max-tablet {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    [dir="rtl"] & {
+      flex-direction: row-reverse;
+      order: 2; // Mobile RTL: value container on line 2 (second)
+      width: 100%;
+    }
+  }
+}
+
+.copyButton {
+  background: $primary;
+  color: $text-light;
+  border: none;
+  border-radius: $radius-sm;
+  padding: $spacing-xs $spacing-sm;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-base;
+  flex-shrink: 0;
+
+  svg {
+    font-size: $font-base;
+  }
+
+  &:hover {
+    background: darken($primary, 10%);
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// Instructions Section
+.instructionsSection {
+  text-align: left;
+  margin: $spacing-xl 0;
+  padding: $spacing-lg;
+  background: #fffef0;
+  border-radius: $radius-lg;
+  border: 1px solid rgba($primary, 0.1);
+
+  [dir="rtl"] & {
+    text-align: right;
+  }
+}
+
+.instructionText {
+  color: $text-dark;
+  line-height: 1.6;
+  margin-bottom: $spacing-lg;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.socialLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+  justify-content: center;
+  margin: $spacing-lg 0;
+}
+
+.socialLink {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  background: $primary;
+  color: $text-light;
+  text-decoration: none;
+  border-radius: $radius-md;
+  font-weight: 600;
+  transition: all $transition-base;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  svg {
+    font-size: $font-xl;
+  }
+
+  &:hover {
+    background: darken($primary, 10%);
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+}
+
+.courierNotice {
+  margin-top: $spacing-lg;
+  padding: $spacing-md;
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  border-radius: $radius-md;
+
+  p {
+    margin: 0;
+    color: #856404;
+    font-weight: 600;
+
+    [dir="rtl"] & {
+      font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+  }
+}
+
+.errorCard {
+  background: $text-light;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-lg;
+  padding: $spacing-2xl;
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+
+  p {
+    color: $danger;
+    margin-bottom: $spacing-lg;
+  }
+}

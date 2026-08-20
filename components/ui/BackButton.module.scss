@@ -1,0 +1,101 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.backButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: $radius-button;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease,
+        transform 0.2s ease,
+        opacity 0.2s ease;
+    text-decoration: none;
+    background: none;
+    margin-bottom: 1.5rem;
+
+    @include rtl-typography(500);
+
+    .icon {
+        width: 20px;
+        height: 20px;
+        transition: transform 0.2s ease;
+    }
+
+    &:hover .icon {
+        transform: translateX(-2px);
+
+        [dir="rtl"] & {
+            transform: translateX(2px);
+        }
+    }
+
+    // Default variant (light blue - most common in your app)
+    &.default {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        color: #1976d2;
+        border: none;
+        position: relative;
+        overflow: hidden;
+
+        // Shine effect on hover
+        &::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.4),
+                    transparent);
+            transition: left 0.5s ease;
+        }
+
+        &:hover {
+            background: linear-gradient(135deg, #bbdefb 0%, #90caf9 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
+
+            &::after {
+                left: 100%;
+            }
+        }
+    }
+
+    // Minimal variant (for pages that need subtle navigation)
+    &.minimal {
+        background-color: transparent;
+        color: $primary;
+        border: none;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.04);
+        }
+    }
+
+    // Outlined variant (for checkout-like flows)
+    &.outlined {
+        background-color: white;
+        color: #333;
+        border: 2px solid #ddd;
+        justify-content: center;
+        padding: $spacing-md $spacing-xl;
+        font-size: $font-lg;
+
+        &:hover {
+            border-color: #999;
+            background-color: #f5f5f5;
+        }
+    }
+
+    @include max-tablet {
+        font-size: 13px;
+        padding: 8px 14px;
+    }
+}

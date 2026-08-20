@@ -1,0 +1,91 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  
+  // Size variants
+  &.sm {
+    width: 16px;
+    height: 16px;
+    
+    .spinnerRing {
+      width: 16px;
+      height: 16px;
+      border-width: 2px;
+    }
+  }
+  
+  &.md {
+    width: 24px;
+    height: 24px;
+    
+    .spinnerRing {
+      width: 24px;
+      height: 24px;
+      border-width: 2.5px;
+    }
+  }
+  
+  &.lg {
+    width: 40px;
+    height: 40px;
+    
+    .spinnerRing {
+      width: 40px;
+      height: 40px;
+      border-width: 3px;
+    }
+  }
+  
+  // Color variants
+  &.primary .spinnerRing {
+    border-color: $color-primary transparent transparent transparent;
+  }
+  
+  &.secondary .spinnerRing {
+    border-color: $color-secondary transparent transparent transparent;
+  }
+  
+  &.light .spinnerRing {
+    border-color: $text-light transparent transparent transparent;
+  }
+  
+  &.dark .spinnerRing {
+    border-color: $text-dark transparent transparent transparent;
+  }
+}
+
+.spinnerRing {
+  position: absolute;
+  border-radius: $radius-circle;
+  border-style: solid;
+  animation: spin 1s linear infinite;
+  
+  &:nth-child(1) {
+    animation-delay: 0s;
+  }
+  
+  &:nth-child(2) {
+    animation-delay: 0.15s;
+    opacity: 0.7;
+  }
+  
+  &:nth-child(3) {
+    animation-delay: 0.3s;
+    opacity: 0.4;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+

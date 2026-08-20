@@ -1,0 +1,188 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.button {
+  @include button-base;
+  @include focus-visible;
+  padding: 0.7rem $spacing-lg;
+  border-radius: $radius-2xl;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $duration-base $ease-out;
+
+  // Apply Sahel font for Farsi text in buttons
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.primary {
+  background: $color-primary;
+  color: $text-light;
+  border: none;
+
+  @include state-hover {
+    background: $color-primary-hover;
+    @include elevation(2);
+    @include shadow-colored($color-primary, 0.2);
+    transform: translateY(-1px);
+  }
+
+  @include state-active {
+    background: $color-primary-active;
+    @include elevation(1);
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.outline {
+  background: transparent;
+  color: $text-dark;
+  border: 2px solid $tertiary;
+
+  &:hover {
+    background: $tertiary;
+    border-color: $tertiary;
+  }
+}
+
+.save {
+  background: $color-success;
+  color: $text-light;
+  border: none;
+
+  @include state-hover {
+    background: $color-success-hover;
+    @include shadow-colored($color-success, 0.2);
+    transform: translateY(-2px);
+  }
+
+  @include state-active {
+    background: $color-success-active;
+    transform: translateY(0);
+  }
+}
+
+.secondary {
+  background: $color-secondary;
+  color: $text-light;
+  border: none;
+
+  @include state-hover {
+    background: $color-secondary-hover;
+    @include shadow-colored($color-secondary, 0.2);
+    transform: translateY(-2px);
+  }
+
+  @include state-active {
+    background: $color-secondary-active;
+    transform: translateY(0);
+  }
+}
+
+.danger {
+  background: $color-danger;
+  color: $text-light;
+  border: none;
+
+  @include state-hover {
+    background: $color-danger-hover;
+    @include shadow-colored($color-danger, 0.2);
+    transform: translateY(-2px);
+  }
+
+  @include state-active {
+    background: $color-danger-active;
+    transform: translateY(0);
+  }
+}
+
+.small {
+  padding: 0.5rem 1rem;
+  font-size: $font-sm;
+  border-radius: $radius-md;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.medium {
+  padding: 0.7rem $spacing-lg;
+  font-size: $font-base;
+}
+
+.large {
+  padding: 1rem $spacing-xl;
+  font-size: $font-md;
+}
+
+// Mobile optimizations
+@include max-tablet {
+  .button {
+    padding: 0.5rem $spacing-md;
+    font-size: 0.85rem;
+    border-radius: $radius-lg;
+  }
+
+  .small {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  .medium {
+    padding: 0.5rem $spacing-md;
+    font-size: 0.85rem;
+  }
+}
+
+// Enhanced sizing for tablets
+@include tablet {
+  .button {
+    padding: 0.7rem $spacing-lg;
+    font-size: $font-base;
+  }
+
+  .small {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.85rem;
+  }
+
+  .medium {
+    padding: 0.7rem $spacing-lg;
+    font-size: $font-base;
+  }
+
+  .large {
+    padding: 1rem $spacing-xl;
+    font-size: $font-md;
+  }
+}
+
+// Enhanced sizing for desktops
+@include desktop {
+  .button {
+    padding: 0.85rem $spacing-xl;
+    font-size: $font-md;
+  }
+
+  .small {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .medium {
+    padding: 0.85rem $spacing-xl;
+    font-size: $font-md;
+  }
+
+  .large {
+    padding: 1.2rem $spacing-2xl;
+    font-size: $font-lg;
+  }
+}

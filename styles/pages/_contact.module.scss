@@ -1,0 +1,675 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.pageHeader {
+  @include gradient-primary;
+  color: $text-light;
+  padding: $spacing-3xl 5%;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  // Add padding-top on mobile to account for fixed navbar
+  @include max-tablet {
+    padding-top: calc(#{$navbar-height} + #{$spacing-3xl});
+  }
+
+  h1 {
+    font-size: $font-4xl;
+    font-weight: 700;
+    margin-bottom: $spacing-sm;
+  }
+
+  p {
+    opacity: 0.9;
+    font-size: $font-base;
+  }
+
+  @include tablet {
+    padding: $spacing-4xl 5%;
+
+    h1 {
+      font-size: $font-6xl;
+    }
+
+    p {
+      font-size: $font-lg;
+    }
+  }
+}
+
+.contactContainer {
+  max-width: $max-width-lg;
+  margin: 0 auto;
+  padding: $spacing-xl 5%;
+
+  @include max-tablet {
+    padding-left: 5vw;
+    padding-right: 5vw;
+  }
+
+  @include tablet {
+    padding: $spacing-2xl 1.5rem;
+  }
+
+  @include desktop {
+    max-width: 1600px; // Much larger width on desktop
+    padding: $spacing-3xl 1rem; // Reduced horizontal padding to allow more expansion
+  }
+}
+
+.contactLayout {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+
+  @include desktop-small {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-2xl;
+  }
+
+  @include desktop {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: $spacing-2xl;
+    width: 80vw;
+    max-width: 1600px; // Cap at 1600px
+  }
+}
+
+.contactFormCard {
+  background: $text-light;
+  padding: $spacing-xl;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-sm;
+  flex: 1;
+
+  @include max-tablet {
+    width: 95vw;
+    max-width: none;
+    margin-left: -2.5vw;
+    margin-right: -2.5vw;
+    padding: $spacing-lg $spacing-md;
+  }
+
+  @include tablet {
+    width: 80vw;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: $spacing-2xl;
+  }
+
+  // On desktop: make form twice the width of contact info
+  @include desktop {
+    flex: 2 1 0%;
+    max-width: calc(100% - 420px - #{$spacing-2xl}); // 2x contactInfo, minus gap
+  }
+
+  h2 {
+    color: $primary;
+    font-size: $font-2xl;
+    margin-bottom: $spacing-xl;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+}
+
+.formGroup {
+  margin-bottom: $spacing-lg;
+}
+
+.label {
+  display: block;
+  margin-bottom: $spacing-sm;
+  font-weight: 600;
+  font-size: $font-base;
+  color: $text-dark;
+
+  @include tablet {
+    font-size: $font-md;
+    margin-bottom: $spacing-md;
+  }
+
+  @include desktop {
+    font-size: $font-lg;
+  }
+}
+
+.optional {
+  // Use higher-contrast secondary text color for accessibility
+  color: $text-secondary;
+  font-weight: 400;
+  font-size: $font-sm;
+  margin-left: $spacing-xs;
+
+  [dir="rtl"] & {
+    margin-left: 0;
+    margin-right: $spacing-xs;
+  }
+}
+
+.textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.fieldError {
+  color: $danger;
+  font-size: $font-sm;
+  margin-top: $spacing-xs;
+}
+
+.captchaSection {
+  background: $tertiary;
+  padding: $spacing-xl;
+  border-radius: $radius-lg;
+  margin-bottom: $spacing-xl;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+// Mobile: captchaActionsWrapper is a column
+@include max-tablet {
+  .captchaActionsWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
+    width: 100%;
+  }
+
+  // Code display on line 1
+  .captchaDisplay {
+    width: 100% !important;
+    margin-bottom: 0;
+  }
+
+  // On mobile: Stack code and input vertically (code first, then input)
+  .captchaCodeInputRow {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    width: 100%;
+
+    .captchaDisplay {
+      flex: none;
+      margin-bottom: 0;
+      width: 100%;
+    }
+
+    .captchaInput {
+      flex: none;
+      height: 48px !important;
+      width: 100%;
+    }
+
+    @include desktop {
+      flex-direction: row;
+      gap: $spacing-md;
+      align-items: stretch;
+
+      .captchaDisplay,
+      .captchaInput {
+        flex: 1 1 0;
+        min-width: 0;
+        margin-bottom: 0;
+        box-sizing: border-box;
+        padding: 0;
+        border-width: 2px;
+        height: 56px;
+        margin: 0;
+        width: auto;
+        max-width: none;
+      }
+    }
+  }
+
+  // Line 2: Buttons in their own row on mobile
+  .captchaActionsWrapper .formActions {
+    display: flex;
+    flex-direction: row;
+    gap: $spacing-sm;
+    width: 100% !important;
+    min-width: 0;
+    margin: 0;
+    margin-top: $spacing-sm;
+
+    button {
+      flex: 1 1 0;
+      min-width: 0;
+      min-height: 44px;
+      font-size: $font-base;
+      font-weight: 600;
+      width: 100%;
+      max-width: none;
+      box-sizing: border-box;
+    }
+  }
+}
+
+.captchaLabel {
+  font-weight: 600;
+  margin-bottom: $spacing-lg;
+  display: block;
+  font-size: $font-base;
+  color: $text-dark;
+
+  // On mobile: reduce bottom margin
+  @include max-tablet {
+    margin-bottom: $spacing-sm;
+  }
+}
+
+.captchaDisplayWrapper {
+  display: block;
+  width: 100% !important;
+  display: block;
+}
+
+.captchaDisplay {
+  background: $text-light;
+  padding: 0;
+  border-radius: $radius-md;
+  margin-bottom: 0;
+  position: relative;
+  border: 2px solid rgba($primary, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px; // Match input field height exactly
+  gap: $spacing-md;
+  box-shadow: $shadow-sm;
+  transition: border-color $transition-base, box-shadow $transition-base;
+
+  &:focus-within {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+  }
+
+  // On mobile only: make display full width with smaller padding and border
+  @include max-tablet {
+    width: 100% !important;
+    padding: $spacing-sm;
+    border-width: 1px;
+    height: 48px;
+    gap: $spacing-sm;
+  }
+}
+
+.captchaCode {
+  font-size: $font-2xl;
+  font-weight: 700;
+  letter-spacing: 0.4rem;
+  color: $primary;
+  font-family: 'Courier New', monospace;
+  user-select: none;
+  background: transparent;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-sm;
+  flex: 1;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  border: none;
+  box-shadow: none;
+
+  // On mobile: reduce padding
+  @include max-tablet {
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-xl;
+    letter-spacing: 0.3rem;
+  }
+
+  // On desktop: ensure code is properly centered
+  @include desktop {
+    margin-left: 0;
+  }
+}
+
+.captchaRefresh {
+  position: static;
+  background: $secondary;
+  color: $text-light;
+  border: none;
+  border-radius: $radius-circle;
+  padding: 0;
+  cursor: pointer;
+  font-size: $font-base;
+  transition: all $transition-base;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: $shadow-sm;
+  margin: 0;
+
+  // On mobile: smaller size
+  @include max-tablet {
+    width: 32px;
+    height: 32px;
+  }
+
+  [dir="rtl"] & {
+    margin: 0;
+  }
+
+  &:hover:not(:disabled) {
+    background: $primary;
+    transform: rotate(180deg) scale(1.05);
+    box-shadow: $shadow-md;
+  }
+
+  &:active:not(:disabled) {
+    transform: rotate(180deg) scale(0.95);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+
+    @include max-tablet {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+}
+
+// Make captcha input visually match code display
+
+.captchaInput {
+  text-align: center;
+  letter-spacing: 0.4rem;
+  font-size: $font-2xl;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  height: 56px; // Match code display height
+  padding: $spacing-sm $spacing-md;
+  border: 2px solid rgba($primary, 0.2);
+  border-radius: $radius-sm;
+  background: $text-light;
+  color: $primary;
+  transition: border-color $transition-base, box-shadow $transition-base;
+  box-shadow: $shadow-sm;
+  width: 100%;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+  }
+
+  &::placeholder {
+    font-size: $font-sm;
+    letter-spacing: 0.15rem;
+    color: rgba($text-dark, 0.5);
+    font-weight: 500;
+  }
+
+  // On mobile only: make input equal width with code display, smaller padding and border
+  @include max-tablet {
+    max-width: none !important;
+    width: 100% !important;
+    height: 48px !important;
+    padding: $spacing-xs $spacing-sm;
+    border-width: 1px;
+    font-size: $font-base;
+  }
+}
+
+// On desktop: wrap captcha display and input in flex container
+@include desktop {
+  .captchaSection {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
+  }
+
+  .captchaLabel {
+    margin-bottom: 0;
+  }
+
+  // Container for code/input row and buttons row
+  .captchaActionsWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
+    width: 100%;
+  }
+
+  // Line 1: Code display and input field in one row
+  .captchaCodeInputRow {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: $spacing-sm;
+    width: 100%;
+  }
+
+  .captchaDisplay {
+    margin-bottom: 0;
+    width: calc((100% - #{$spacing-sm}) / 2);
+    flex: 0 0 calc((100% - #{$spacing-sm}) / 2);
+  }
+
+  .captchaInput {
+    width: 100% !important;
+    flex: 1 1 0 !important;
+    max-width: none;
+    min-width: 0;
+  }
+
+  // Ensure code is visible on desktop
+  .captchaCode {
+    margin-left: 0;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .captchaInput {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: none;
+  }
+
+  // Line 2: Buttons in their own row - equal width, fill the row
+  .captchaActionsWrapper .formActions {
+    display: flex;
+    flex-direction: row;
+    gap: $spacing-sm;
+    margin: 0;
+    width: 100%;
+
+    button {
+      flex: 1;
+      min-height: 52px;
+      font-size: $font-base;
+      font-weight: 600;
+      border-radius: $radius-md;
+      transition: all $transition-base;
+    }
+  }
+}
+
+.formActions {
+  display: flex;
+  gap: $spacing-md;
+  width: 100% !important;
+  min-width: 0;
+
+  button {
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+  }
+
+  // Style the submit button with navbar color
+  button[type="submit"] {
+    background: $primary;
+    color: $text-light;
+    border: none;
+    box-shadow: $shadow-sm;
+    font-weight: 600;
+
+    &:hover:not(:disabled) {
+      background: darken($primary, 10%);
+      box-shadow: $shadow-md;
+      transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+      background: darken($primary, 15%);
+      transform: translateY(0);
+      box-shadow: $shadow-sm;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+  }
+
+  // Style cancel/secondary button
+  button[type="button"] {
+    background: $tertiary;
+    color: $text-dark;
+    border: 2px solid rgba($text-dark, 0.1);
+    font-weight: 600;
+    transition: all $transition-base;
+
+    &:hover:not(:disabled) {
+      background: darken($tertiary, 5%);
+      border-color: rgba($text-dark, 0.2);
+      transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  // On mobile only: make buttons equal width and fill the line in a row
+  @include max-tablet {
+    flex-direction: row;
+    gap: $spacing-md;
+
+    button {
+      flex: 1 !important;
+    }
+  }
+}
+
+.contactInfo {
+  @include desktop {
+    flex: 1 1 0%;
+    max-width: 420px;
+  }
+
+  background: $text-light;
+  padding: $spacing-xl;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-sm;
+
+  @include max-tablet {
+    width: 95vw;
+    max-width: none;
+    margin-left: -2.5vw;
+    margin-right: -2.5vw;
+    padding: $spacing-lg $spacing-md;
+  }
+
+  @include tablet {
+    width: 80vw;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: $spacing-2xl;
+  }
+
+  @include desktop-small {
+    flex: 0 0 350px;
+  }
+
+  // On desktop: make contact info take 1 part (form takes 2 parts)
+  @include desktop {
+    flex: 1; // Contact info takes 1 part
+  }
+
+  h2 {
+    color: $primary;
+    font-size: $font-2xl;
+    margin-bottom: $spacing-xl;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: $tertiary;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-md;
+  text-decoration: none;
+  color: $text-dark;
+  transition: all $transition-base;
+
+  &:hover {
+    background: $secondary;
+    color: $text-light;
+    transform: translateX(5px);
+  }
+
+  [dir="rtl"] &:hover {
+    transform: translateX(-5px);
+  }
+}
+
+.contactIcon {
+  font-size: $font-2xl;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.contactDetails {
+  flex: 1;
+}
+
+.contactLabel {
+  font-weight: 600;
+  font-size: $font-sm;
+  margin-bottom: $spacing-xs;
+}
+
+// Always show contact values LTR (e.g. usernames, emails, phone numbers)
+.contactValue {
+  font-size: $font-base;
+  opacity: 0.9;
+  direction: ltr;
+  unicode-bidi: plaintext;
+}

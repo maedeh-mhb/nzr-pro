@@ -1,0 +1,211 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.progressBarContainer {
+    width: 100%;
+    margin-bottom: $spacing-2xl;
+    padding: $spacing-lg 0;
+    background: $surface;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+
+    @include max-tablet {
+        padding: $spacing-md 0;
+        margin-bottom: $spacing-xl;
+    }
+}
+
+.progressBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 $spacing-xl;
+    position: relative;
+
+    @include max-tablet {
+        padding: 0 $spacing-md;
+    }
+
+    @include max-mobile {
+        padding: 0 $spacing-sm;
+    }
+}
+
+.stepWrapper {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    position: relative;
+
+    &:first-child {
+        flex: 0;
+    }
+}
+
+.stepLine {
+    flex: 1;
+    height: 3px;
+    background: $border-color;
+    transition: background-color 0.3s ease;
+    margin: 0 $spacing-xs;
+
+    @include max-tablet {
+        margin: 0 $spacing-xxs;
+    }
+}
+
+.stepLineActive {
+    background: $primary;
+}
+
+.stepItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-sm;
+    transition: all 0.3s ease;
+    cursor: default;
+
+    @include max-tablet {
+        gap: $spacing-xs;
+    }
+
+    &.clickable {
+        cursor: pointer;
+
+        &:hover {
+            transform: scale(1.05);
+        }
+
+        &:focus {
+            outline: 2px solid $primary;
+            outline-offset: 4px;
+            border-radius: $radius-sm;
+        }
+    }
+}
+
+.stepIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $font-xl;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    background: $surface;
+    border: 3px solid $border-color;
+    color: $text-muted;
+
+    @include max-tablet {
+        width: 40px;
+        height: 40px;
+        font-size: $font-lg;
+        border-width: 2px;
+    }
+
+    @include max-mobile {
+        width: 36px;
+        height: 36px;
+        font-size: $font-md;
+    }
+
+    .iconWrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .checkIcon {
+        font-size: $font-2xl;
+
+        @include max-tablet {
+            font-size: $font-xl;
+        }
+    }
+}
+
+.stepLabel {
+    font-size: $font-sm;
+    font-weight: 500;
+    color: $text-muted;
+    text-align: center;
+    white-space: nowrap;
+    transition: color 0.3s ease;
+
+    @include max-tablet {
+        font-size: $font-xs;
+    }
+
+    @include max-mobile {
+        font-size: 10px;
+    }
+}
+
+// Status: Completed
+.stepItem.completed {
+    .stepIcon {
+        background: $primary;
+        border-color: $primary;
+        color: $text-light;
+        box-shadow: 0 2px 8px rgba($primary, 0.3);
+    }
+
+    .stepLabel {
+        color: $primary;
+        font-weight: 600;
+    }
+}
+
+// Status: Current
+.stepItem.current {
+    .stepIcon {
+        background: $primary;
+        border-color: $primary;
+        color: $text-light;
+        box-shadow: 0 4px 12px rgba($primary, 0.4);
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    .stepLabel {
+        color: $primary;
+        font-weight: 700;
+    }
+}
+
+// Status: Upcoming
+.stepItem.upcoming {
+    .stepIcon {
+        background: $surface;
+        border-color: $border-color;
+        color: $text-muted;
+    }
+
+    .stepLabel {
+        color: $text-muted;
+    }
+}
+
+// Pulse animation for current step
+@keyframes pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 4px 12px rgba($primary, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 4px 16px rgba($primary, 0.6);
+    }
+}
+
+// RTL Support
+[dir="rtl"] {
+    .progressBar {
+        direction: rtl;
+    }
+}

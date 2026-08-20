@@ -1,0 +1,235 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.journalCard {
+  width: 100%;
+  background: $text-light;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+  transition: transform $transition-base, box-shadow $transition-base;
+  cursor: pointer;
+  text-decoration: none !important;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: $shadow-lg;
+    text-decoration: none !important;
+
+    .image {
+      transform: scale(1.1);
+    }
+
+    .readMore {
+      gap: 0.6rem;
+    }
+
+    .title,
+    .excerpt,
+    .authorName,
+    .readMore {
+      text-decoration: none !important;
+    }
+  }
+}
+
+.imageContainer {
+  width: 100%;
+  height: 240px;
+  position: relative;
+  overflow: hidden;
+  background: $tertiary;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform $transition-slow;
+  display: block;
+}
+
+.imagePlaceholder {
+  width: 100%;
+  height: 100%;
+  background: $tertiary;
+}
+
+.category {
+  position: absolute;
+  top: $spacing-md;
+  left: $spacing-md;
+  background: $primary;
+  color: $text-light;
+  padding: 0.4rem $spacing-md;
+  border-radius: $radius-full;
+  font-size: $font-xs;
+  font-weight: 600;
+  text-transform: uppercase;
+  z-index: 10;
+}
+
+.content {
+  padding: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0; // Ensure content can shrink
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+  font-size: $font-sm;
+  color: #7f8c8d;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.title {
+  font-size: $font-2xl;
+  font-weight: 700;
+  color: $text-dark;
+  margin-bottom: 0.8rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.excerpt {
+  font-size: $font-base;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: $spacing-lg;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: $spacing-md;
+  border-top: 1px solid $tertiary;
+}
+
+.authorName {
+  font-size: $font-sm;
+  font-weight: 600;
+  color: $text-dark;
+}
+
+.readMore {
+  color: $primary;
+  font-weight: 600;
+  font-size: $font-sm;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: gap $transition-base;
+}
+
+.arrowIcon {
+  font-size: $font-base;
+  
+  // Flip arrow to point left in RTL/Farsi
+  [dir="rtl"] & {
+    transform: scaleX(-1);
+  }
+}
+
+// Tablet and above - horizontal layout
+@include tablet {
+  .journalCard {
+    flex-direction: row;
+    max-width: 100%;
+    overflow: visible; // Ensure content is visible
+  }
+
+  .imageContainer {
+    width: 350px;
+    height: auto;
+    min-height: 280px;
+    flex-shrink: 0;
+    flex-grow: 0;
+  }
+}
+
+// Large viewports - make cards wider to fill container
+@include desktop {
+  .journalCard {
+    width: 100%;
+    max-width: 100%;
+    
+    // Force RTL cards to match LTR width exactly (1096px as measured)
+    [dir="rtl"] & {
+      width: 1096px;
+      max-width: 1096px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  .imageContainer {
+    width: 450px; // Larger image on desktop
+    min-height: 320px;
+  }
+
+  .content {
+    padding: $spacing-xl;
+    flex: 1;
+    min-width: 0; // Allow content to shrink if needed
+    width: auto; // Allow content to take available space
+    display: flex;
+    flex-direction: column;
+    overflow: visible; // Ensure content is visible
+    position: relative; // Ensure it's in the normal flow
+    z-index: 1; // Ensure it's above image
+    background: $text-light; // Ensure background is set
+  }
+
+  .title {
+    font-size: $font-3xl;
+    // Keep -webkit-box for line clamping but ensure visibility
+    visibility: visible;
+    opacity: 1;
+    color: $text-dark; // Ensure text color is set
+  }
+
+  .excerpt {
+    -webkit-line-clamp: 3;
+    // Keep -webkit-box for line clamping but ensure visibility
+    visibility: visible;
+    opacity: 1;
+    color: #555; // Ensure text color is set
+  }
+
+  .meta {
+    display: flex; // Ensure meta is visible
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .footer {
+    display: flex; // Ensure footer is visible
+    visibility: visible;
+    opacity: 1;
+  }
+}
+

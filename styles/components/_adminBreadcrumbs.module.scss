@@ -1,0 +1,93 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.breadcrumbs {
+  margin-bottom: $spacing-lg;
+  padding: $spacing-sm 0;
+
+  [dir="rtl"] & {
+    text-align: right;
+    direction: rtl;
+  }
+}
+
+.breadcrumbList {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $spacing-xs;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: $font-sm;
+
+  [dir="rtl"] & {
+    font-family: 'Vazirmatn', 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+  }
+}
+
+.breadcrumbItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  color: #666;
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+  }
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  color: #999;
+  font-size: $font-xs;
+  margin: 0 $spacing-xs;
+
+  svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  [dir="rtl"] & {
+    transform: rotate(180deg);
+  }
+}
+
+.breadcrumbLink {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  color: #666;
+  text-decoration: none;
+  transition: color $transition-base;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
+
+  &:hover {
+    color: $primary;
+    text-decoration: none;
+  }
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+}
+
+.breadcrumbCurrent {
+  color: $text-dark;
+  font-weight: 600;
+  font-family: 'Vazirmatn', 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  [dir="rtl"] & {
+    font-family: 'Vazirmatn', 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}

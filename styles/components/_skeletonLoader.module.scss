@@ -1,0 +1,32 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.skeleton {
+  @include loading-skeleton;
+  display: inline-block;
+  
+  &.text {
+    height: 1em;
+    margin-bottom: $spacing-xs;
+    border-radius: $radius-sm;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  &.circular {
+    border-radius: $radius-circle;
+  }
+  
+  &.rectangular {
+    border-radius: $radius-md;
+  }
+  
+  &.card {
+    border-radius: $radius-lg;
+    padding: $spacing-lg;
+    min-height: 200px;
+  }
+}
+

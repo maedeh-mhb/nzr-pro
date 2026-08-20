@@ -1,0 +1,473 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.navbar {
+  background: $primary;
+  padding: $spacing-md 5%;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: $z-navbar;
+  box-shadow: $shadow-md;
+
+  // Use fixed positioning on mobile for reliable sticky behavior
+  @include max-tablet {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: $z-navbar;
+  }
+
+  // Store navbar height for menu positioning
+  &::after {
+    content: '';
+    display: none;
+  }
+}
+
+.container {
+  max-width: $max-width-xl;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $spacing-xl;
+  position: relative;
+}
+
+.left {
+  display: flex;
+  gap: clamp(1rem, 2vw, 2rem); // Gap shrinks dynamically
+  list-style: none;
+  align-items: center;
+}
+
+.link {
+  color: $text-light;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all $transition-base;
+  font-size: clamp(0.75rem, 1.2vw, 1rem); // Dynamically shrinks from 1rem to 0.75rem
+
+  // Mobile/Tablet: keep opacity change
+  @include max-desktop {
+    &:hover {
+      opacity: 0.8;
+      text-decoration: none; // Ensure no underline
+    }
+  }
+
+  // Large viewports: keep original color, add shadow, and remove underline
+  @include desktop {
+    &:hover {
+      color: $text-light !important; // Keep original white color, override global link styles
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.3);
+      text-decoration: none !important; // Remove underline
+    }
+  }
+}
+
+.logo {
+  width: $logo-size;
+  height: $logo-size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  background: transparent;
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.15));
+}
+
+.logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.right {
+  display: flex;
+  gap: clamp(0.75rem, 1.5vw, 1.5rem); // Gap shrinks dynamically
+  align-items: center;
+}
+
+.icon {
+  background: none;
+  border: none;
+  color: $text-light;
+  font-size: $font-xl;
+  cursor: pointer;
+  transition: opacity $duration-base $ease-out,
+    transform $duration-base $ease-out,
+    background $duration-base $ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.5rem;
+  border-radius: $radius-lg;
+
+  &:hover {
+    opacity: 0.9;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.95);
+  }
+
+  svg {
+    width: clamp(1rem, 1.5vw, 1.3rem); // Dynamically shrinks from 1.3rem to 1rem
+    height: clamp(1rem, 1.5vw, 1.3rem);
+    transition: width $transition-base, height $transition-base,
+      transform $duration-fast $ease-out;
+  }
+
+  &:hover svg {
+    transform: scale(1.1);
+  }
+}
+
+.iconLoggedIn {
+  color: $success; // Green color for logged in state
+  background: rgba(39, 174, 96, 0.15); // Light green background using success color
+  border-radius: $radius-full;
+  padding: 0.4rem;
+
+  &:hover {
+    opacity: 1;
+    background: rgba(39, 174, 96, 0.25);
+  }
+
+  svg {
+    color: $success;
+  }
+}
+
+.cartBadge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: $gradient-warning;
+  color: $text-light;
+  border-radius: $radius-circle;
+  // Scale badge proportionally with icon size (approximately 70% of icon size)
+  // Icon base: clamp(1rem, 1.5vw, 1.3rem) = 16px to 20.8px
+  // Badge should be: ~11px to ~15px
+  width: clamp(11px, 1.05vw, 15px);
+  height: clamp(11px, 1.05vw, 15px);
+  font-size: clamp(0.55rem, 0.7vw, 0.65rem);
+  box-shadow: 0 2px 8px rgba($danger, 0.4);
+  animation: pulse 2s ease-in-out infinite;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 11px; // Ensure minimum size for readability
+  min-height: 11px;
+  line-height: 1;
+
+  [dir="rtl"] & {
+    right: auto;
+    left: -5px;
+  }
+}
+
+.langSwitcher {
+  display: flex;
+  gap: 0.3rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: $radius-3xl;
+  padding: 0.2rem;
+}
+
+.langBtn {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: $radius-2xl;
+  font-weight: 600;
+  color: $text-light;
+  transition: all $transition-base;
+  font-size: 0.9rem;
+  font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; // Use Sahel for Farsi text
+
+  &.active {
+    background: $text-light;
+    color: $primary;
+  }
+}
+
+.menuToggle,
+.searchIconMobile {
+  display: none;
+  background: none;
+  border: none;
+  color: $text-light;
+  font-size: $font-2xl;
+  cursor: pointer;
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+// Responsive styles for >= 641px (tablet and above)
+@include tablet {
+  .logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+  }
+
+  .left {
+    flex: 1;
+    justify-content: flex-start;
+    padding-right: clamp(50px, 8vw, 80px); // Space for centered logo, shrinks dynamically
+
+    // In LTR (English), push links closer to left edge
+    [dir="ltr"] & {
+      padding-left: 0;
+      padding-right: clamp(50px, 8vw, 80px);
+    }
+
+    // In RTL (Farsi), push links closer to right edge
+    [dir="rtl"] & {
+      padding-left: clamp(50px, 8vw, 80px);
+      padding-right: 0;
+    }
+  }
+
+  .mobileLangSwitcher {
+    display: none; // Hide language switcher in mobile menu on desktop
+  }
+
+  .right {
+    flex: 1;
+    justify-content: flex-end;
+    padding-left: clamp(50px, 8vw, 80px); // Space for centered logo, shrinks dynamically
+
+    // In LTR (English), push icons closer to right edge
+    [dir="ltr"] & {
+      padding-left: clamp(50px, 8vw, 80px);
+      padding-right: 0;
+    }
+
+    // In RTL (Farsi), push icons closer to left edge
+    [dir="rtl"] & {
+      padding-left: 0;
+      padding-right: clamp(50px, 8vw, 80px);
+    }
+  }
+
+  // Additional responsive adjustments for links
+  @include max-desktop-small {
+    .link {
+      font-size: clamp(0.7rem, 1vw, 0.9rem);
+    }
+  }
+
+  @include max-desktop {
+    .link {
+      font-size: clamp(0.65rem, 0.9vw, 0.85rem);
+    }
+  }
+
+  // Additional responsive adjustments for icons
+  @include max-desktop-small {
+    .icon svg {
+      width: clamp(0.9rem, 1.3vw, 1.2rem);
+      height: clamp(0.9rem, 1.3vw, 1.2rem);
+    }
+
+    .cartBadge {
+      // Icon: 14.4px to 19.2px, Badge should be ~70% = 10px to 13.5px
+      width: clamp(10px, 0.91vw, 13.5px);
+      height: clamp(10px, 0.91vw, 13.5px);
+      font-size: clamp(0.5rem, 0.63vw, 0.6rem);
+      top: -4px;
+      right: -4px;
+      min-width: 10px;
+      min-height: 10px;
+
+      [dir="rtl"] & {
+        right: auto;
+        left: -4px;
+      }
+    }
+  }
+
+  @include max-desktop {
+    .icon svg {
+      width: clamp(0.85rem, 1.2vw, 1.1rem);
+      height: clamp(0.85rem, 1.2vw, 1.1rem);
+    }
+
+    .cartBadge {
+      // Icon: 13.6px to 17.6px, Badge should be ~70% = 9.5px to 12.3px
+      width: clamp(9.5px, 0.84vw, 12.3px);
+      height: clamp(9.5px, 0.84vw, 12.3px);
+      font-size: clamp(0.45rem, 0.56vw, 0.55rem);
+      top: -3px;
+      right: -3px;
+      min-width: 9.5px;
+      min-height: 9.5px;
+
+      [dir="rtl"] & {
+        right: auto;
+        left: -3px;
+      }
+    }
+  }
+
+  // Language switcher also shrinks
+  .langBtn {
+    font-size: clamp(0.75rem, 1vw, 0.9rem);
+    padding: clamp(0.3rem, 0.5vw, 0.4rem) clamp(0.6rem, 0.8vw, 0.8rem);
+  }
+}
+
+// Mobile First Responsive (<= 640px)
+@include max-tablet {
+  .container {
+    justify-content: space-between;
+  }
+
+  .logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+
+    [dir="rtl"] & {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+
+  .left {
+    position: fixed;
+    left: -100%;
+    top: 0; // Will be adjusted by JavaScript to match navbar height exactly
+    flex-direction: column;
+    background: $primary;
+    width: 100%;
+    padding: $spacing-xl;
+    transition: left $transition-base;
+    gap: $spacing-md;
+    align-items: flex-start;
+    z-index: 999;
+
+    [dir="rtl"] & {
+      left: auto;
+      right: -100%;
+      transition: right $transition-base; // Animate from right in RTL
+    }
+
+    &.active {
+      left: 0;
+
+      [dir="rtl"] & {
+        left: auto;
+        right: 0; // Opens from right in RTL
+      }
+    }
+  }
+
+  .closeButton {
+    background: none;
+    border: none;
+    color: $text-light;
+    font-size: $font-xl;
+    cursor: pointer;
+    padding: 0.4rem 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all $transition-base;
+    border-radius: $radius-2xl;
+    margin-left: $spacing-md;
+
+    &:hover {
+      opacity: 0.8;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+
+    svg {
+      width: 1.2rem;
+      height: 1.2rem;
+    }
+  }
+
+  .mobileLangSwitcher {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: $spacing-md;
+    padding-top: $spacing-md;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+
+    .langSwitcher {
+      width: auto;
+    }
+  }
+
+  .searchIconMobile {
+    display: block;
+    order: -1;
+
+    [dir="rtl"] & {
+      order: 1;
+    }
+  }
+
+  .menuToggle {
+    display: block;
+    order: 1;
+
+    [dir="rtl"] & {
+      order: -1;
+    }
+  }
+
+  .right {
+    display: none;
+  }
+}
+
+// Account Dropdown (tablet and desktop only)
+.accountDropdown {
+  position: relative;
+
+  @include max-tablet {
+    display: none;
+  }
+}
+
+.accountButton {
+  position: relative;
+}
+
+@include max-mobile {
+  .navbar {
+    padding: $spacing-md 3%;
+  }
+}

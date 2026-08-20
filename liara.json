@@ -1,0 +1,16 @@
+{
+    "build": {
+        "location": "iran",
+        "builder": "node",
+        "commands": [
+            "npm install",
+            "npm run build"
+        ]
+    },
+    "disks": [
+        {
+            "name": "nazira-data",
+            "mountTo": "/app/uploads"
+        }
+    ]
+}

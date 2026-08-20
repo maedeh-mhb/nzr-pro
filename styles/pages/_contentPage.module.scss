@@ -1,0 +1,99 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.contentPage {
+  padding: calc(#{$navbar-height} + #{$spacing-3xl}) 5% $spacing-3xl;
+  max-width: $max-width-xl;
+  margin: 0 auto;
+  min-height: calc(100vh - #{$navbar-height});
+
+  @include max-tablet {
+    padding-bottom: calc(80px + #{$spacing-3xl});
+  }
+}
+
+.container {
+  background: $text-light;
+  border-radius: $radius-xl;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: $spacing-xl;
+  width: 100%;
+
+  @include max-mobile {
+    padding: $spacing-md;
+    border-radius: $radius-lg;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  @include tablet {
+    padding: $spacing-xl;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  @include desktop-small {
+    padding: $spacing-2xl;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  [dir="rtl"] & {
+    text-align: right;
+  }
+
+  [dir="ltr"] & {
+    text-align: left;
+  }
+}
+
+.title {
+  color: $primary;
+  font-size: $font-4xl;
+  margin-bottom: $spacing-xl;
+  font-weight: 700;
+
+  @include max-mobile {
+    font-size: $font-3xl;
+  }
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', sans-serif;
+  }
+}
+
+.content {
+  color: $text-dark;
+  line-height: 1.8;
+
+  p {
+    margin-bottom: $spacing-md;
+    font-size: $font-base;
+  }
+
+  h2 {
+    color: $secondary;
+    font-size: $font-2xl;
+    margin: $spacing-xl 0 $spacing-md;
+    font-weight: 600;
+
+    @include max-mobile {
+      font-size: $font-xl;
+    }
+
+    [dir="rtl"] & {
+      font-family: 'Sahel', sans-serif;
+    }
+  }
+
+  ul {
+    margin: $spacing-md 0;
+    padding-left: $spacing-xl;
+
+    [dir="rtl"] & {
+      padding-left: 0;
+      padding-right: $spacing-xl;
+    }
+  }
+
+  li {
+    margin-bottom: $spacing-sm;
+  }
+}

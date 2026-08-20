@@ -1,0 +1,379 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.productCard {
+  width: 398px;
+  max-width: 100%;
+  min-width: 0;
+  background: #ffffff;
+  border-radius: $radius-card;
+  @include elevation(2);
+  overflow: hidden;
+  position: relative;
+  transition: transform $duration-base $ease-out,
+    box-shadow $duration-base $ease-out,
+    background $duration-base $ease-out;
+  display: flex;
+  flex-direction: column;
+
+  @include state-hover {
+    transform: translateY(-8px);
+    @include elevation(6);
+
+    // Add subtle inner glow on hover
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: $radius-card;
+      background: radial-gradient(circle at 50% 0%,
+          rgba($primary, 0.08),
+          transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
+  }
+
+  &.unavailable {
+    filter: grayscale(100%);
+    opacity: 0.7;
+
+    &:hover {
+      transform: none;
+      @include elevation(2);
+    }
+  }
+
+  // On mobile: ensure card fits within viewport
+  @include max-tablet {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  // On tablet and larger: allow card to fill grid column
+  @include tablet {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  // On large viewports: allow card to fill grid column (3 per row)
+  @include desktop {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  // Modifier for featured products: align price and buttons at bottom
+  &.alignPriceAtBottom {
+    .productInfo {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+
+      .productPrice {
+        margin-top: auto;
+      }
+    }
+  }
+
+}
+
+.productImageContainer {
+  width: 100%;
+  height: $image-height-small;
+  background: $tertiary;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // Gradient overlay on hover
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+        transparent 0%,
+        transparent 60%,
+        rgba(0, 0, 0, 0.4) 100%);
+    opacity: 0;
+    transition: opacity $duration-base $ease-out;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &:hover::after {
+    opacity: 1;
+  }
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.6s $ease-out;
+  display: block;
+}
+
+.productImageContainer:hover .productImage {
+  transform: scale(1.12);
+}
+
+.wishlistBtn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @include elevation(2);
+  transition: all $duration-base $ease-out;
+  z-index: 10;
+  padding: 0;
+
+  @include focus-visible;
+
+  @include state-hover {
+    transform: scale(1.15);
+    @include elevation(4);
+    background: rgba(255, 255, 255, 1);
+  }
+
+  @include state-active {
+    transform: scale(0.95);
+  }
+
+  &.active {
+    background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%);
+
+    @include state-hover {
+      background: linear-gradient(135deg, #ff3847 0%, #ff5338 100%);
+    }
+  }
+}
+
+.wishlistIcon {
+  color: #ff4757;
+  font-size: 1.2rem;
+  transition: color $transition-base;
+}
+
+.wishlistBtn.active .wishlistIcon {
+  color: #ffffff;
+}
+
+.shareBtn {
+  position: absolute;
+  top: 58px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @include elevation(2);
+  transition: all $duration-base $ease-out;
+  z-index: 10;
+  padding: 0;
+
+  @include focus-visible;
+
+  @include state-hover {
+    transform: scale(1.15);
+    @include elevation(4);
+    background: rgba(255, 255, 255, 1);
+  }
+
+  @include state-active {
+    transform: scale(0.95);
+  }
+}
+
+.shareIcon {
+  color: #1a252f;
+  font-size: 1.1rem;
+}
+
+.badge {
+  color: #ffffff;
+  padding: 0.4rem 0.8rem;
+  border-radius: $radius-sm;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.productTypeBadge {
+  color: #ffffff;
+  padding: 0.4rem 0.8rem;
+  border-radius: $radius-sm;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.productInfo {
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.productTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: $text-dark;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+
+  // Apply Sahel font for Farsi text in RTL mode
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.productSubtitle {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  margin-bottom: 1rem;
+
+  // Apply Sahel font for Farsi text in RTL mode
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.productPrice {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $text-dark;
+  margin-bottom: 1rem;
+
+  // Apply Sahel font for Farsi text in RTL mode
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.btnBuy,
+.btnView {
+  width: 100%;
+  padding: 0.9rem;
+  border: none;
+  border-radius: $radius-md;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all $transition-base;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  margin-bottom: 0.8rem;
+
+  // Apply Sahel font for Farsi text in RTL mode
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.btnBuy {
+  background: $text-dark;
+  color: #ffffff;
+
+  @include focus-visible;
+
+  @include state-hover {
+    background: #1a252f;
+    transform: translateY(-2px);
+    @include elevation(3);
+  }
+
+  @include state-active {
+    transform: translateY(0);
+    @include elevation(1);
+  }
+
+  @include state-disabled {
+    background: #95a5a6;
+    color: #ffffff;
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+    transform: none;
+  }
+}
+
+.btnView {
+  background: transparent;
+  color: $color-primary;
+  border: 2px solid $color-primary;
+  margin-bottom: 0;
+  text-decoration: none !important;
+
+  @include focus-visible;
+
+  @include state-hover {
+    background: $color-primary;
+    color: #ffffff;
+    transform: translateY(-2px);
+    @include shadow-colored($color-primary, 0.3);
+    text-decoration: none !important;
+  }
+
+  @include state-active {
+    background: $color-primary-active;
+    transform: translateY(0);
+  }
+
+  @include state-disabled {
+    background: transparent;
+    color: #95a5a6;
+    border-color: #95a5a6;
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+    transform: none;
+  }
+}
+
+
+@include max-tablet {
+  .productImageContainer {
+    height: 240px;
+  }
+
+  .productInfo {
+    padding: 1rem;
+  }
+
+  .productTitle {
+    font-size: 1rem;
+  }
+
+  .productPrice {
+    font-size: 1.3rem;
+  }
+
+  .btnBuy,
+  .btnView {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
+}

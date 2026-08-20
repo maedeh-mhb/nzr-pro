@@ -1,0 +1,657 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.sidebar {
+  display: none; // Hidden on mobile
+  width: 260px;
+  background: linear-gradient(180deg, $text-light 0%, #f8f9fa 100%);
+  box-shadow: $shadow-lg;
+  position: fixed;
+  top: 60px; // Height of top bar (approximate)
+  left: 0;
+  bottom: 0;
+  height: calc(100vh - 60px); // Fixed height to prevent recalculation
+  min-height: calc(100vh - 60px); // Ensure minimum height
+  max-height: calc(100vh - 60px); // Ensure maximum height
+  overflow-y: auto;
+  overflow-x: hidden; // Prevent horizontal overflow from transform
+  z-index: $z-dropdown;
+  padding: $spacing-md 0;
+  border-right: 1px solid rgba(54, 114, 96, 0.1);
+  padding-left: 0;
+  padding-right: 0; // Remove right padding to allow rounded edges
+  transition: width $transition-base;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(54, 114, 96, 0.2);
+    border-radius: $radius-full;
+
+    &:hover {
+      background: rgba(54, 114, 96, 0.3);
+    }
+  }
+}
+
+[dir="rtl"] .sidebar {
+  left: auto;
+  right: 0;
+  border-right: none;
+  border-left: 1px solid rgba(54, 114, 96, 0.1);
+  padding-left: $spacing-md; // Add left padding to prevent border cutoff
+  padding-right: 0; // Remove right padding
+  overflow-x: hidden; // Prevent horizontal overflow that cuts off borders
+  overflow-y: auto; // Keep vertical scrolling
+}
+
+.sidebarList {
+  list-style: none;
+  padding: calc(#{$spacing-lg} + #{$spacing-sm} + 32px + #{$spacing-sm}) 0 $spacing-sm 0; // Top padding to accommodate collapse button
+  margin: 0;
+  flex: 1;
+  overflow: hidden; // Prevent overflow issues
+  min-height: 0; // Allow flexbox to shrink properly
+}
+
+.sidebarItem {
+  margin: 0;
+  overflow: hidden; // Prevent layout shift from transform
+}
+
+.sidebarLink {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  color: $text-dark;
+  text-decoration: none;
+  transition: all $transition-base;
+  border-left: 3px solid transparent;
+  border-radius: 0 $radius-md $radius-md 0;
+  margin: 0.2rem $spacing-md 0.2rem 0;
+  width: calc(100% - #{$spacing-md});
+  font-size: $font-base;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+  overflow: visible;
+
+  [dir="rtl"] & {
+    font-family: 'Vazirmatn', 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  // Allow rounded corners to show
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: $primary;
+    transform: scaleY(0);
+    transition: transform $transition-base;
+  }
+
+  &:hover {
+    background: rgba(54, 114, 96, 0.08);
+    border-left-color: $primary;
+    transform: translateX(4px);
+    box-shadow: $shadow-sm;
+
+    &::before {
+      transform: scaleY(1);
+    }
+  }
+
+  &.active {
+    background: linear-gradient(90deg, rgba(54, 114, 96, 0.15) 0%, rgba(54, 114, 96, 0.05) 100%);
+    border-left-color: $primary;
+    color: $primary;
+    font-weight: 600;
+    box-shadow: $shadow-sm;
+
+    &::before {
+      transform: scaleY(1);
+    }
+  }
+
+  svg {
+    width: 1.3rem;
+    height: 1.3rem;
+    flex-shrink: 0;
+    transition: transform $transition-base;
+  }
+
+  &:hover svg {
+    transform: scale(1.1);
+  }
+
+  &.active svg {
+    color: $primary;
+  }
+}
+
+[dir="rtl"] .sidebarLink {
+  border-left: none;
+  border-right: 3px solid transparent;
+  border-radius: $radius-md 0 0 $radius-md;
+  margin: 0.2rem 0; // No left/right margin - padding is handled by sidebar
+  width: 100%; // Full width within sidebar padding
+  overflow: visible; // Allow rounded corners to show
+  box-sizing: border-box; // Include border in width
+
+  &::before {
+    left: auto;
+    right: 0;
+  }
+
+  &:hover {
+    border-right-color: $primary;
+    transform: translateX(-4px);
+  }
+
+  &.active {
+    border-right-color: $primary;
+    background: linear-gradient(270deg, rgba(54, 114, 96, 0.15) 0%, rgba(54, 114, 96, 0.05) 100%);
+  }
+}
+
+.logoutButton {
+  margin-top: auto;
+  margin-bottom: $spacing-md;
+  padding: 0 $spacing-lg;
+}
+
+.logoutLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  color: $danger;
+  text-decoration: none;
+  transition: all $transition-base;
+  border-radius: $radius-md;
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(231, 76, 60, 0.05) 100%);
+  border: 2px solid rgba(231, 76, 60, 0.2);
+  width: calc(100% - #{$spacing-md * 2});
+  margin: 0 $spacing-md;
+  cursor: pointer;
+  font-size: $font-base;
+  font-weight: 600;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+  overflow: hidden;
+
+  [dir="rtl"] & {
+    font-family: 'Vazirmatn', 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(231, 76, 60, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.2) 0%, rgba(231, 76, 60, 0.1) 100%);
+    border-color: rgba(231, 76, 60, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+
+    &::before {
+      width: 300px;
+      height: 300px;
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  svg {
+    width: 1.3rem;
+    height: 1.3rem;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    transition: transform $transition-base;
+  }
+
+  span {
+    position: relative;
+    z-index: 1;
+  }
+
+  &:hover svg {
+    transform: rotate(-15deg) scale(1.1);
+  }
+}
+
+// Resize Handle
+.resizeHandle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  cursor: col-resize;
+  background: transparent;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background $transition-base;
+
+  &:hover {
+    background: rgba($primary, 0.1);
+  }
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+    color: rgba($primary, 0.5);
+    opacity: 0;
+    transition: opacity $transition-base;
+  }
+
+  &:hover svg {
+    opacity: 1;
+  }
+}
+
+[dir="rtl"] .resizeHandle {
+  right: auto;
+  left: 0;
+  cursor: col-resize;
+}
+
+// Collapse Toggle
+.collapseToggle {
+  position: absolute;
+  top: calc(#{$spacing-lg} + #{$spacing-sm});
+  right: $spacing-md;
+  background: rgba($primary, 0.1);
+  border: none;
+  border-radius: $radius-md;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all $transition-base;
+  z-index: 10;
+  color: $primary;
+
+  &:hover {
+    background: rgba($primary, 0.2);
+    transform: scale(1.1);
+  }
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
+[dir="rtl"] .collapseToggle {
+  right: auto;
+  left: $spacing-md;
+}
+
+// Collapsed State
+.sidebar.collapsed {
+  width: 60px !important;
+  padding: $spacing-md 0;
+
+  .sidebarList,
+  .logoutButton {
+    display: none;
+  }
+
+  .collapseToggle {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    width: 44px;
+    height: 44px;
+    margin: $spacing-md auto $spacing-sm auto;
+    background: transparent;
+    border: none;
+
+    &:hover {
+      background: rgba($primary, 0.1);
+      transform: scale(1);
+    }
+  }
+
+  [dir="rtl"] & .collapseToggle {
+    right: auto;
+    left: auto;
+  }
+}
+
+// Sidebar Groups
+.sidebarGroup {
+  margin-bottom: $spacing-sm;
+}
+
+.groupHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-lg;
+  margin: 0.2rem $spacing-md 0.2rem 0;
+  background: transparent;
+  border: none;
+  color: $text-dark;
+  font-size: $font-sm;
+  font-weight: 600;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  cursor: pointer;
+  transition: all $transition-base;
+  width: calc(100% - #{$spacing-md});
+  text-align: left;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &:hover {
+    opacity: 1;
+    color: $primary;
+  }
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  svg:last-child {
+    margin-left: auto;
+    width: 0.9rem;
+    height: 0.9rem;
+    transition: transform $transition-base;
+  }
+
+  [dir="rtl"] & {
+    font-family: 'Vazirmatn', 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+[dir="rtl"] .groupHeader {
+  text-align: right;
+  margin: 0.2rem 0;
+
+  svg:last-child {
+    margin-left: 0;
+    margin-right: auto;
+    transform: rotate(180deg);
+  }
+}
+
+.groupLabel {
+  flex: 1;
+  font-size: $font-xs;
+}
+
+.groupItems {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-top: $spacing-xs;
+  padding-left: $spacing-xl; // Indent sub-items to show hierarchy
+
+  [dir="rtl"] & {
+    padding-left: 0;
+    padding-right: $spacing-xl;
+  }
+
+  // Sub-items - ensure they get all modern styling with explicit button reset
+  .sidebarItem {
+    margin: 0.2rem 0;
+
+    .sidebarLink {
+      // Button reset to ensure no global styles interfere
+      all: unset;
+      box-sizing: border-box;
+
+      // Override margin and width for sub-items
+      margin: 0;
+      width: 100%;
+      font-size: $font-sm; // Slightly smaller font for sub-items
+
+      // Re-apply all base styles explicitly
+      display: flex !important;
+      align-items: center !important;
+      gap: $spacing-md !important;
+      padding: $spacing-md $spacing-lg !important;
+      color: $text-dark !important;
+      text-decoration: none !important;
+      transition: all $transition-base !important;
+      border-left: 3px solid transparent !important;
+      border-radius: 0 $radius-md $radius-md 0 !important;
+      font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+      position: relative !important;
+      overflow: visible !important;
+      cursor: pointer !important;
+      background: transparent !important;
+      border-top: none !important;
+      border-bottom: none !important;
+      border-right: none !important;
+
+      // Pseudo-element for animated border
+      &::before {
+        content: '' !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        width: 3px !important;
+        background: $primary !important;
+        transform: scaleY(0) !important;
+        transition: transform $transition-base !important;
+      }
+
+      &:hover {
+        background: rgba(54, 114, 96, 0.08) !important;
+        border-left-color: $primary !important;
+        transform: translateX(4px) !important;
+        box-shadow: $shadow-sm !important;
+
+        &::before {
+          transform: scaleY(1) !important;
+        }
+      }
+
+      &.active {
+        background: linear-gradient(90deg, rgba(54, 114, 96, 0.15) 0%, rgba(54, 114, 96, 0.05) 100%) !important;
+        border-left-color: $primary !important;
+        color: $primary !important;
+        font-weight: 600 !important;
+        box-shadow: $shadow-sm !important;
+
+        &::before {
+          transform: scaleY(1) !important;
+        }
+      }
+
+      svg {
+        width: 1.2rem !important;
+        height: 1.2rem !important;
+        flex-shrink: 0 !important;
+        transition: transform $transition-base !important;
+      }
+
+      &:hover svg {
+        transform: scale(1.1) !important;
+      }
+
+      &.active svg {
+        color: $primary !important;
+      }
+    }
+  }
+}
+
+// Ensure RTL styles apply to sub-items
+[dir="rtl"] .groupItems .sidebarItem .sidebarLink {
+  border-left: none !important;
+  border-right: 3px solid transparent !important;
+  border-radius: $radius-md 0 0 $radius-md !important;
+  margin: 0 !important;
+  width: 100% !important;
+
+  &::before {
+    left: auto !important;
+    right: 0 !important;
+  }
+
+  &:hover {
+    border-right-color: $primary !important;
+    transform: translateX(-4px) !important;
+  }
+
+  &.active {
+    border-right-color: $primary !important;
+    background: linear-gradient(270deg, rgba(54, 114, 96, 0.15) 0%, rgba(54, 114, 96, 0.05) 100%) !important;
+  }
+}
+
+// Badge
+.badge {
+  margin-left: auto;
+  background: $danger;
+  color: $text-light;
+  border-radius: $radius-full;
+  padding: 0.15rem 0.5rem;
+  font-size: $font-xs;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+  line-height: 1.2;
+}
+
+[dir="rtl"] .badge {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.linkLabel {
+  flex: 1;
+}
+
+// Collapsed Menu
+.collapsedMenu {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-sm;
+  height: 100%;
+}
+
+.collapsedLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: $radius-md;
+  background: transparent;
+  border: none;
+  color: $text-dark;
+  cursor: pointer;
+  transition: all $transition-base;
+  position: relative;
+  margin: 0 auto;
+
+  &:hover {
+    background: rgba($primary, 0.1);
+    color: $primary;
+  }
+
+  &.active {
+    background: rgba($primary, 0.15);
+    color: $primary;
+  }
+
+  svg {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
+}
+
+.collapsedBadge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: $danger;
+  color: $text-light;
+  border-radius: $radius-full;
+  width: 18px;
+  height: 18px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid $text-light;
+}
+
+.collapsedLogout {
+  margin-top: auto;
+  padding: $spacing-md $spacing-sm $spacing-md $spacing-sm;
+  display: flex;
+  justify-content: center;
+}
+
+.collapsedLogoutLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: $radius-md;
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(231, 76, 60, 0.05) 100%);
+  border: 2px solid rgba(231, 76, 60, 0.2);
+  color: $danger;
+  cursor: pointer;
+  transition: all $transition-base;
+  margin: 0;
+
+  &:hover {
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.2) 0%, rgba(231, 76, 60, 0.1) 100%);
+    border-color: rgba(231, 76, 60, 0.4);
+    transform: scale(1.1);
+  }
+
+  svg {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
+}
+
+// Show sidebar on tablet and above
+@include tablet {
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+  }
+}

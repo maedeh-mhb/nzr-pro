@@ -1,0 +1,4347 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+// Horizontal line for order groups
+.ordersSectionDivider {
+  border: none;
+  border-top: 1.5px solid $border-color;
+  margin: 2.5rem 0 2rem 0;
+  width: 100%;
+}
+
+.topNav {
+  background: $primary;
+  padding: $spacing-md;
+  position: sticky;
+  top: 0;
+  z-index: $z-sticky;
+  box-shadow: $shadow-md;
+}
+
+.topNavContainer {
+  @include flex-between;
+  max-width: $max-width-xl;
+  margin: 0 auto;
+  padding: 0 $spacing-md;
+
+  // Enhanced spacing for tablets and desktops
+  @include tablet {
+    padding: 0 $spacing-lg;
+  }
+
+  @include desktop {
+    padding: 0 $spacing-xl;
+  }
+}
+
+.navTitle {
+  color: $text-light;
+  font-size: $font-lg;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity $transition-base;
+
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-sm;
+
+  // Enhanced font sizing for tablets and desktops
+  @include tablet {
+    font-size: $font-xl;
+  }
+
+  @include desktop {
+    font-size: $font-2xl;
+  }
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.navBrand {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.navLogo {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: $radius-md;
+  object-fit: contain;
+}
+
+.navBrandText {
+  line-height: 1.1;
+}
+
+.navIcons {
+  display: flex;
+  gap: $spacing-md;
+  align-items: center;
+}
+
+.navIconBtn {
+  background: none;
+  border: none;
+  color: $text-light;
+  font-size: $font-xl;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
+}
+
+.langSwitcher {
+  display: flex;
+  gap: 0.2rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: $radius-3xl;
+  padding: 0.2rem;
+}
+
+.langBtn {
+  padding: 0.3rem 0.6rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: $radius-2xl;
+  font-weight: 600;
+  color: $text-light;
+  font-size: 0.8rem;
+  transition: all $transition-base;
+  font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; // Use Sahel for Farsi text
+
+  &.active {
+    background: $text-light;
+    color: $primary;
+  }
+}
+
+// Hide logout on mobile
+@include max-tablet {
+  .logoutBtn {
+    display: none;
+  }
+}
+
+.notificationBadge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: $danger;
+  color: $text-light;
+  border-radius: $radius-circle;
+  width: 18px;
+  height: 18px;
+  font-size: 0.7rem;
+  @include flex-center;
+}
+
+.notificationIndicator {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 20px;
+  height: 20px;
+  background: $danger;
+  border-radius: $radius-circle;
+  @include flex-center;
+  border: 2px solid $text-light;
+}
+
+.notificationExclamation {
+  color: $text-light;
+  font-weight: 700;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.userHeader {
+  @include gradient-primary;
+  color: $text-light;
+  padding: $spacing-md $spacing-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-md;
+  position: relative;
+  overflow: hidden;
+
+  // Subtle animated background pattern
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    animation: shimmer 20s linear infinite;
+    opacity: 0.3;
+  }
+
+  @include tablet {
+    padding: $spacing-lg $spacing-xl;
+    gap: $spacing-lg;
+  }
+
+  @include desktop {
+    padding: $spacing-xl $spacing-2xl;
+  }
+}
+
+.userAvatar {
+  width: 50px;
+  height: 50px;
+  background: $text-light;
+  border-radius: $radius-circle;
+  @include flex-center;
+  font-size: $font-xl;
+  color: $color-primary;
+  font-weight: $font-weight-bold;
+  flex-shrink: 0;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  position: relative;
+  z-index: 1;
+  @include elevation(2);
+  transition: transform $duration-base $ease-out, box-shadow $duration-base $ease-out;
+
+  @include tablet {
+    width: 60px;
+    height: 60px;
+    font-size: $font-2xl;
+    border-width: 3px;
+  }
+
+  @include desktop {
+    width: 70px;
+    height: 70px;
+    font-size: $font-3xl;
+  }
+
+  // Status indicator (optional - can be added later)
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 12px;
+    height: 12px;
+    background: $color-success;
+    border: 2px solid $text-light;
+    border-radius: $radius-circle;
+    display: none; // Hidden by default, can be enabled when status is available
+  }
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.userName {
+  font-size: $font-lg;
+  font-weight: $font-weight-bold;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  @include tablet {
+    font-size: $font-xl;
+  }
+
+  @include desktop {
+    font-size: $font-2xl;
+  }
+}
+
+.userEmail {
+  opacity: 0.95;
+  font-size: $font-sm;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  @include tablet {
+    font-size: $font-base;
+  }
+
+  @include desktop {
+    font-size: $font-md;
+  }
+}
+
+.dashboardContainer {
+  max-width: $max-width-xl;
+  margin: 0 auto;
+  padding: $spacing-md;
+  width: 100%;
+  box-sizing: border-box;
+
+  @include max-mobile {
+    padding: $spacing-xs;
+    margin: 0;
+    max-width: 100%;
+    // Add bottom padding to account for fixed bottom navigation bar
+    // Bottom nav height: 0.8rem (top padding) + 1.5rem (icon) + 0.3rem (gap) + 0.8rem (bottom padding) ≈ 3.4rem
+    padding-bottom: calc(#{$spacing-xs} + 3.4rem + #{$spacing-sm});
+  }
+
+  // Enhanced spacing for tablets
+  @include tablet {
+    padding: $spacing-lg;
+    max-width: $max-width-lg;
+  }
+
+  // On desktop, constrain width based on stats grid
+  @include desktop-small {
+    padding: $spacing-xl;
+    margin-left: auto;
+    margin-right: auto;
+    // Width will be constrained by statsGrid
+    width: fit-content;
+    max-width: $max-width-xl;
+  }
+
+  // Enhanced spacing for large desktops
+  @include desktop {
+    padding: $spacing-2xl;
+    max-width: $max-width-xl;
+  }
+
+  @include state-active {
+    // Removed transform to prevent page shift on active state
+  }
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+    transition: transform $duration-base $ease-out;
+  }
+
+  // Remove horizontal movement on hover for timeline icons
+  &:hover svg {
+    transform: none;
+  }
+
+  @include tablet {
+    font-size: $font-md;
+    padding: $spacing-md $spacing-lg;
+    margin-bottom: $spacing-lg;
+  }
+
+  @include desktop {
+    font-size: $font-lg;
+  }
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); // 2 columns on mobile
+  gap: $spacing-md;
+  margin-top: $spacing-md;
+  margin-bottom: $spacing-lg;
+  width: 100%;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+
+  // Enhanced grid for tablets
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-lg;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  // On desktop, make it 4 columns with square cards
+  @include desktop-small {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: $spacing-xl;
+    width: 100%;
+    max-width: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.statCard {
+  @include card;
+  text-align: center;
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+
+  // Make stat cards square on desktop
+  @include desktop-small {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-width: 0;
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.statIcon {
+  margin-bottom: $spacing-sm;
+  @include flex-center;
+
+  svg {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: $primary;
+  }
+}
+
+.statValue {
+  font-size: $font-3xl;
+  font-weight: 700;
+  color: $primary;
+  margin-bottom: 0.3rem;
+}
+
+.statLabel {
+  color: #666;
+  font-size: $font-sm;
+  text-transform: uppercase;
+}
+
+.dashboardCard {
+  @include card;
+  margin-bottom: $spacing-lg;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  @include gpu-accelerated;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba($color-primary, 0.08);
+  transition: all $duration-base $ease-out;
+
+  // Subtle background pattern
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 50%, rgba($color-primary, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba($color-secondary, 0.03) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity $duration-base $ease-out;
+    pointer-events: none;
+  }
+
+  @include max-mobile {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    padding: $spacing-md;
+    margin-bottom: 80px !important;
+  }
+
+  // Ensure proper width in mobile-large range
+  @include mobile-large {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  // On desktop, match the width of statsGrid
+  @include desktop-small {
+    width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  // Enhanced hover effect
+  @include state-hover {
+    @include elevation(3);
+    // Removed transform to prevent page shift on active state
+  }
+}
+
+.cardHeader {
+  @include flex-between;
+  margin-bottom: $spacing-lg;
+}
+
+.cardTitle {
+  font-size: $font-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+
+  // Apply Sahel font for Farsi/RTL
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  span:first-child {
+    display: flex;
+    align-items: center;
+    transition: transform $duration-base $ease-out;
+
+    svg {
+      width: 1.2rem;
+      height: 1.2rem;
+      color: $color-primary;
+      transition: color $duration-base $ease-out;
+    }
+  }
+
+  @include tablet {
+    font-size: $font-xl;
+
+    span:first-child svg {
+      width: 1.3rem;
+      height: 1.3rem;
+    }
+  }
+
+  @include desktop {
+    font-size: $font-2xl;
+
+    span:first-child svg {
+      width: 1.4rem;
+      height: 1.4rem;
+    }
+  }
+}
+
+.cardAction {
+  color: $secondary;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.refreshButton {
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background: white;
+  border: 1px solid rgba($primary, 0.3);
+  border-radius: $radius-lg;
+  color: $primary;
+  font-weight: 600;
+  font-size: $font-base;
+  cursor: pointer;
+  transition: all $transition-base;
+  margin-bottom: $spacing-lg;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    flex-direction: row-reverse;
+  }
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+
+  &:hover {
+    background: rgba($primary, 0.1);
+    border-color: $primary;
+    transform: translateX(-2px);
+  }
+
+  [dir="rtl"] &:hover {
+    transform: translateX(2px);
+  }
+
+  &:active {
+    transform: translateX(0);
+  }
+
+  @include max-tablet {
+    margin-top: $spacing-md;
+    margin-bottom: $spacing-md;
+    padding: $spacing-xs $spacing-md;
+    font-size: $font-sm;
+  }
+}
+
+.quickActions {
+  display: grid;
+  grid-template-columns: 1fr; // Mobile first - single column
+  gap: $spacing-md;
+}
+
+.actionBtn {
+  padding: 1.2rem;
+  background: $bg-secondary;
+  border: none;
+  border-radius: $radius-xl;
+  cursor: pointer;
+  text-align: center;
+  transition: all $duration-base $ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  @include elevation(1);
+  @include focus-visible;
+  @include gpu-accelerated;
+
+  @include state-active {
+    transform: scale(0.95);
+    @include elevation(0);
+  }
+
+  @include state-hover {
+    background: $color-secondary;
+    color: $text-light;
+    transform: translateY(-4px);
+    @include elevation(3);
+
+    .actionIcon svg {
+      transform: scale(1.1);
+    }
+  }
+
+  @include tablet {
+    padding: $spacing-lg;
+  }
+
+  @include desktop {
+    padding: $spacing-xl;
+  }
+}
+
+.actionIcon {
+  @include flex-center;
+  transition: transform $duration-base $ease-out;
+
+  svg {
+    width: 2.5rem;
+    height: 2.5rem;
+    transition: transform $duration-base $ease-out, color $duration-base $ease-out;
+    color: $color-primary;
+
+    @include tablet {
+      width: 2.8rem;
+      height: 2.8rem;
+    }
+
+    @include desktop {
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+
+  .actionBtn:hover & svg {
+    color: $text-light;
+  }
+}
+
+.actionLabel {
+  font-weight: $font-weight-semibold;
+  font-size: $font-sm;
+  transition: color $duration-base $ease-out;
+
+  // Apply Sahel font for Farsi text in Quick Actions
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  @include tablet {
+    font-size: $font-base;
+  }
+
+  @include desktop {
+    font-size: $font-md;
+  }
+}
+
+// Active Cart Section
+.activeCart {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.cartLoading {
+  text-align: center;
+  padding: $spacing-lg;
+  color: $text-tertiary;
+  font-size: $font-base;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.cartItems {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.cartItemRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-xs $spacing-sm;
+  background: rgba($primary, 0.05);
+  border-radius: $radius-md;
+  font-size: $font-sm;
+}
+
+.cartItemName {
+  flex: 1;
+  color: $text-dark;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cartItemQuantity {
+  color: $primary;
+  font-weight: 600;
+  margin-left: $spacing-xs;
+}
+
+.cartItemMore {
+  font-size: $font-sm;
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  padding: $spacing-xs;
+}
+
+.cartTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md;
+  background: rgba($primary, 0.1);
+  border-radius: $radius-md;
+  margin-top: $spacing-sm;
+}
+
+.cartTotalLabel {
+  font-size: $font-lg;
+  font-weight: 600;
+  color: $text-dark;
+}
+
+.cartTotalPrice {
+  font-size: $font-xl;
+  font-weight: 700;
+  color: $primary;
+}
+
+.continueCheckoutBtn {
+  padding: $spacing-md;
+  background: $color-primary;
+  color: $text-light;
+  text-decoration: none;
+  text-align: center;
+  border-radius: $radius-lg;
+  font-weight: $font-weight-semibold;
+  transition: all $duration-base $ease-out;
+  margin-top: $spacing-sm;
+  display: block;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  @include focus-visible;
+  @include gpu-accelerated;
+  @include elevation(1);
+
+  // Ripple effect background
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width $duration-base $ease-out, height $duration-base $ease-out;
+  }
+
+  @include max-mobile {
+    padding: $spacing-sm $spacing-md;
+    font-size: $font-sm;
+  }
+
+  @include state-hover {
+    background: $color-primary-hover;
+    transform: translateY(-2px);
+    @include elevation(2);
+    @include shadow-colored($color-primary, 0.3);
+
+    &::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    color: #fff;
+  }
+
+  @include state-active {
+    transform: translateY(0) scale(0.98);
+    @include elevation(0);
+  }
+}
+
+.orderItem {
+  padding: 0;
+  background: $text-light;
+  border: 1px solid rgba($color-primary, 0.1);
+  border-radius: $radius-xl;
+  margin-bottom: $spacing-md;
+  position: relative;
+  overflow: hidden;
+  @include elevation(1);
+  @include gpu-accelerated;
+  transition: all $duration-base $ease-out;
+  display: flex;
+  flex-direction: column;
+
+  // Gradient border effect on hover
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: $radius-xl;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba($color-primary, 0.2) 0%, rgba($color-secondary, 0.2) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity $duration-base $ease-out;
+    pointer-events: none;
+  }
+
+  @include state-hover {
+    @include elevation(3);
+    border-color: rgba($color-primary, 0.3);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  @include tablet {
+    border-radius: $radius-2xl;
+  }
+
+  @include desktop {}
+}
+
+.orderItemHeader {
+  padding: $spacing-sm $spacing-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: all $duration-base $ease-out;
+
+  [dir="rtl"] & {
+    text-align: right;
+  }
+
+  &:hover {
+    background: rgba($color-primary, 0.03);
+  }
+
+  @include tablet {
+    padding: $spacing-lg;
+    gap: $spacing-sm;
+  }
+
+  @include desktop {
+    padding: $spacing-xl;
+    gap: $spacing-sm;
+  }
+}
+
+.headerLine1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-sm;
+  width: 100%;
+  flex-wrap: wrap;
+
+  @include tablet {
+    flex-wrap: nowrap;
+    gap: $spacing-md;
+  }
+
+  @include desktop {
+    gap: $spacing-md;
+  }
+}
+
+.headerLine2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-xs;
+  width: 100%;
+  flex-wrap: nowrap;
+
+  @include tablet {
+    gap: $spacing-md;
+    flex-wrap: nowrap;
+  }
+
+  @include desktop {
+    gap: $spacing-md;
+    justify-content: flex-start;
+  }
+}
+
+.headerLine3 {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-size: $font-xs;
+  width: 100%;
+  flex-wrap: wrap;
+
+  @include tablet {
+    font-size: $font-base;
+    gap: $spacing-md;
+    flex-wrap: nowrap;
+  }
+}
+
+.productInfoWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: $spacing-xs;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: nowrap;
+
+  @include tablet {
+    gap: $spacing-sm;
+  }
+}
+
+.itemCount {
+  font-size: $font-xs;
+  color: $text-tertiary;
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: none;
+
+  [dir="rtl"] & {}
+
+  @include tablet {
+    font-size: $font-base;
+    display: inline;
+  }
+}
+
+.labelSmall {
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: $text-tertiary;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  @include tablet {
+    font-size: $font-xs;
+    letter-spacing: 0.5px;
+  }
+}
+
+.orderNumberWrapper {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  flex-shrink: 0;
+}
+
+.statusWrapperDesktop {
+  display: none;
+  align-items: center;
+  gap: $spacing-xs;
+  flex-shrink: 0;
+
+  @include tablet {
+    display: flex;
+  }
+}
+
+.statusWrapperMobile {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  flex-shrink: 0;
+  width: 100%;
+  padding-left: 0;
+
+  @include tablet {
+    display: none;
+  }
+}
+
+.priceWrapper {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  flex-shrink: 0;
+  margin-left: auto;
+  text-align: right;
+}
+
+.orderHeaderContent {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  flex: 1;
+  min-width: 0;
+
+  [dir="rtl"] & {}
+}
+
+.orderHeaderMeta {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  align-items: flex-start;
+  font-size: $font-sm;
+  color: $text-tertiary;
+
+  [dir="rtl"] & {
+    align-items: flex-end;
+  }
+
+  @include tablet {
+    flex-direction: row;
+    align-items: center;
+    gap: $spacing-md;
+    justify-content: space-between;
+  }
+}
+
+.orderItemPreview {
+  color: $text-secondary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  font-size: $font-xs;
+  flex: 1;
+  min-width: 100px;
+
+  [dir="rtl"] & {}
+
+  @include tablet {
+    font-size: $font-sm;
+    min-width: 150px;
+  }
+
+  @include desktop {
+    font-size: $font-base;
+    min-width: 200px;
+  }
+}
+
+.orderItemPrice {
+  font-weight: 700;
+  color: $color-primary;
+  white-space: nowrap;
+  font-size: $font-xs;
+  flex-shrink: 0;
+
+  [dir="rtl"] & {}
+
+  @include tablet {
+    font-size: $font-sm;
+  }
+
+  @include desktop {
+    font-size: $font-base;
+  }
+}
+
+.paymentVerified {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  color: #27ae60;
+  font-size: $font-sm;
+  font-weight: 500;
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+  }
+
+  @include tablet {
+    font-size: $font-base;
+  }
+}
+
+.paymentPending {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  color: #f39c12;
+  font-size: $font-sm;
+  font-weight: 500;
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+  }
+
+  @include tablet {
+    font-size: $font-base;
+  }
+}
+
+.expandIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: $text-tertiary;
+  flex-shrink: 0;
+  transition: color $duration-base $ease-out;
+  font-size: 1rem;
+  margin-left: $spacing-xs;
+  align-self: center;
+
+  [dir="rtl"] & {
+    margin-left: 0;
+    margin-right: $spacing-xs;
+  }
+
+  @include tablet {
+    width: 32px;
+    height: 32px;
+    font-size: 1.25rem;
+  }
+
+  @include state-hover {
+    color: $color-primary;
+  }
+}
+
+.orderItemContent {
+  padding: $spacing-md;
+  border-top: 1px solid rgba($color-primary, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  animation: slideDown $duration-base $ease-out;
+
+  @include tablet {
+    padding: $spacing-lg;
+    gap: $spacing-lg;
+  }
+
+  @include desktop {
+    padding: $spacing-xl;
+    gap: $spacing-xl;
+  }
+}
+
+.orderItemCartContent {
+  padding: $spacing-md;
+  border-top: 1px solid rgba($color-primary, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+
+  @include tablet {
+    padding: $spacing-lg;
+    gap: $spacing-lg;
+  }
+
+  @include desktop {
+    padding: $spacing-xl;
+    gap: $spacing-xl;
+  }
+}
+
+.detailsSubtitle {
+  font-size: $font-sm;
+  font-weight: 600;
+  color: $text-secondary;
+  margin: $spacing-md 0 $spacing-sm 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  [dir="rtl"] & {
+    text-align: right;
+    width: 100%;
+  }
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  @include tablet {
+    font-size: $font-base;
+    margin: $spacing-lg 0 $spacing-md 0;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+
+  to {
+    opacity: 1;
+    max-height: 1000px;
+  }
+}
+
+.ordersList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.loadingText {
+  text-align: center;
+  padding: $spacing-xl;
+  color: $text-tertiary;
+  font-size: $font-base;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  @include tablet {
+    padding: $spacing-2xl;
+    font-size: $font-md;
+  }
+
+  @include desktop {
+    padding: $spacing-3xl;
+    font-size: $font-lg;
+  }
+}
+
+.emptyState {
+  text-align: center;
+  padding: $spacing-xl;
+  color: #666;
+  font-style: italic;
+}
+
+.accountInfoGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-md;
+
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .orderItem {
+    padding: $spacing-md;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-md;
+
+    @include max-mobile {
+      padding: $spacing-sm;
+      gap: $spacing-sm;
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  .orderProduct {
+    margin-bottom: 0;
+    font-weight: 600;
+    color: $text-tertiary;
+    font-size: $font-sm;
+    flex-shrink: 0;
+    white-space: nowrap;
+    min-width: 80px;
+    width: 80px;
+
+    @include max-mobile {
+      font-size: $font-xs;
+      min-width: 60px;
+      width: 60px;
+    }
+  }
+
+  .orderDate {
+    margin-bottom: 0;
+    margin-top: 0;
+    text-align: right;
+    flex: 1;
+
+    [dir="rtl"] & {
+      text-align: left;
+    }
+
+    @include max-mobile {
+      font-size: $font-xs;
+      text-align: right;
+
+      [dir="rtl"] & {
+        text-align: left;
+      }
+    }
+  }
+}
+
+.joinedItem {
+  @include tablet {
+    grid-column: 1 / -1;
+  }
+}
+
+.verifiedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: $radius-3xl;
+  background: rgba(39, 174, 96, 0.1);
+  color: $success;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: $spacing-sm;
+
+  svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+}
+
+.notVerifiedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-direction: row; // Keep normal order, don't reverse
+  justify-content: flex-start; // Align to right in RTL context
+  border-radius: $radius-3xl;
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: $spacing-sm;
+
+  svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+}
+
+.verifyLink {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: $radius-3xl;
+  background: $primary;
+  color: $text-light;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: $spacing-sm;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.profileInput {
+  width: 100%;
+  padding: 0.75rem 1rem; // Increased from $spacing-sm $spacing-md for better touch targets
+  border: 1px solid #ddd;
+  border-radius: $radius-lg;
+  font-size: $font-base; // Increased from $font-sm for better mobile readability
+  color: $text-dark;
+  background: $text-light;
+  transition: border-color 0.2s;
+
+  @include tablet {
+    padding: 0.85rem 1.2rem;
+    font-size: $font-md;
+  }
+
+  @include desktop {
+    padding: 1rem 1.5rem;
+    font-size: $font-lg;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba(54, 114, 96, 0.1);
+  }
+
+  &::placeholder {
+    color: #999;
+  }
+}
+
+.profileActions {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-md;
+}
+
+.profileActionBtn {
+  flex: 1;
+}
+
+.editProfileButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  width: 100%;
+  padding: $spacing-md $spacing-lg;
+  background: $color-primary;
+  border: none;
+  border-radius: $radius-lg;
+  color: white;
+  font-weight: 600;
+  font-size: $font-base;
+  cursor: pointer;
+  transition: all $duration-base $ease-out;
+  box-shadow: 0 2px 8px rgba($color-primary, 0.2);
+
+  svg {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  &:hover {
+    background: $color-primary-hover;
+    box-shadow: 0 4px 12px rgba($color-primary, 0.3);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @include max-mobile {
+    padding: $spacing-sm $spacing-md;
+    font-size: $font-sm;
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+}
+
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-modal;
+  padding: $spacing-md;
+}
+
+.modalOverlay--fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  min-width: 100vw;
+  min-height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: $z-modal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.modalContent {
+  background: $text-light;
+  border-radius: $radius-xl;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: $shadow-xl;
+}
+
+.modalHeader {
+  @include flex-between;
+  padding: $spacing-lg;
+  border-bottom: 1px solid $tertiary;
+}
+
+.modalTitle {
+  font-size: $font-xl;
+  font-weight: 600;
+  color: $text-dark;
+  margin: 0;
+}
+
+.modalClose {
+  background: none;
+  border: none;
+  font-size: $font-xl;
+  color: $text-dark;
+  cursor: pointer;
+  padding: $spacing-xs;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.addressForm {
+  padding: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+
+  :global(textarea) {
+    resize: none !important;
+  }
+}
+
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.checkbox {
+  width: 1.2rem;
+  height: 1.2rem;
+  cursor: pointer;
+}
+
+.checkboxLabel {
+  font-size: $font-sm;
+  color: $text-dark;
+  cursor: pointer;
+}
+
+.modalActions {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1px solid $tertiary;
+}
+
+.modalActions button {
+  flex: 1;
+}
+
+.saveButton {
+  background: $primary !important;
+  color: $text-light !important;
+
+  &:hover {
+    background: darken($primary, 10%) !important;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.orderHeader {
+  @include flex-between;
+  margin-bottom: $spacing-md;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  align-items: flex-start;
+
+  @include max-mobile {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-xs;
+  }
+}
+
+.orderNumberWithStatus {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  flex: 1;
+  min-width: 0;
+
+  @include max-mobile {
+    flex-direction: row;
+    align-items: center;
+    gap: $spacing-sm;
+    justify-content: space-between;
+    width: 100%;
+
+    [dir="rtl"] & {
+      flex-direction: row-reverse;
+    }
+  }
+}
+
+.orderNumber {
+  font-weight: 600;
+  color: $primary;
+  font-size: $font-base;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  flex: 1;
+  min-width: 0; // Allow text truncation
+
+  svg {
+    flex-shrink: 0;
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  @include max-mobile {
+    font-size: $font-sm;
+    width: 100%;
+  }
+}
+
+.orderDate {
+  font-size: $font-sm;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+  margin-top: $spacing-xs;
+}
+
+.paymentScreenshotNotice {
+  margin-top: $spacing-md;
+  padding: $spacing-md;
+  background: rgba($primary, 0.05);
+  border: 1px solid rgba($primary, 0.2);
+  border-radius: $radius-md;
+  display: flex;
+  gap: $spacing-md;
+  align-items: flex-start;
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.paymentScreenshotIcon {
+  flex-shrink: 0;
+  color: $primary;
+  font-size: $font-lg;
+  margin-top: 0.1rem;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.paymentScreenshotContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.paymentScreenshotText {
+  margin: 0 0 $spacing-sm 0;
+  font-size: $font-sm;
+  color: $text-dark;
+  line-height: 1.5;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.paymentScreenshotLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  margin-top: $spacing-sm;
+
+  [dir="rtl"] & {
+    justify-content: flex-end;
+  }
+}
+
+.paymentScreenshotLink {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-xs $spacing-sm;
+  background: $primary;
+  color: $text-light;
+  text-decoration: none;
+  border-radius: $radius-md;
+  font-size: $font-sm;
+  font-weight: 500;
+  transition: all $transition-base;
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  &:hover {
+    background: darken($primary, 10%);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  svg {
+    font-size: $font-base;
+    flex-shrink: 0;
+  }
+
+  span {
+    white-space: nowrap;
+  }
+}
+
+.statusBadge {
+  padding: 0.35rem 0.9rem;
+  border-radius: $radius-3xl;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  @include max-mobile {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.75rem;
+    align-self: flex-start;
+  }
+}
+
+.statusDelivered {
+  background: rgba(39, 174, 96, 0.2);
+  color: $success;
+}
+
+.statusPending {
+  background: rgba(243, 156, 18, 0.2);
+  color: $warning;
+}
+
+.statusProcessing {
+  background: rgba(108, 156, 184, 0.2);
+  color: $secondary;
+}
+
+.statusCancelled {
+  background: rgba(231, 76, 60, 0.2);
+  color: $danger;
+}
+
+.orderProduct {
+  font-weight: 500;
+  margin-bottom: $spacing-sm;
+  color: $text-dark;
+  font-size: $font-base;
+  line-height: 1.5;
+
+  @include max-mobile {
+    font-size: $font-sm;
+    margin-bottom: $spacing-xs;
+  }
+}
+
+.orderProductInfo {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-sm;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  @include max-mobile {
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+}
+
+.orderProductRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  flex-wrap: nowrap;
+
+  // In RTL, keep normal order (label: value) but align text to right
+  [dir="rtl"] & {
+    flex-direction: row; // Keep normal order, don't reverse
+    justify-content: flex-start; // Align to right in RTL context
+  }
+
+  @include max-mobile {
+    flex-direction: row;
+    gap: $spacing-xs;
+    align-items: center;
+
+    // In RTL, keep normal order (label: value)
+    [dir="rtl"] & {
+      flex-direction: row; // Keep normal order, don't reverse
+    }
+  }
+}
+
+.orderProductLabel {
+  font-weight: 600;
+  color: #666;
+  font-size: $font-sm;
+  flex-shrink: 0;
+  white-space: nowrap;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: right;
+  }
+
+  @include max-mobile {
+    font-size: $font-xs;
+  }
+}
+
+.orderProductValue {
+  color: $text-dark;
+  font-size: $font-base;
+  word-break: break-word;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: right;
+  }
+
+  @include max-mobile {
+    font-size: $font-sm;
+  }
+}
+
+.orderPrice {
+  color: $primary;
+  font-weight: 700;
+  font-size: $font-lg;
+  margin-bottom: $spacing-xs;
+
+  @include max-mobile {
+    font-size: $font-base;
+  }
+}
+
+.orderPaymentStatus {
+  margin-bottom: $spacing-sm;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $spacing-xs;
+  justify-content: flex-start; // Default to left in LTR
+  width: 100%;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    flex-direction: column; // Keep normal order but stack vertically
+    width: 100%; // Take full width to allow alignment
+    justify-content: flex-end; // Align content to right in RTL
+    align-items: flex-end;
+    text-align: right;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+.orderPaymentStatus>div {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  align-items: flex-start;
+  width: 100%;
+
+  [dir="rtl"] & {
+    align-items: flex-end;
+    text-align: right;
+  }
+}
+
+.orderPaymentSuccessful {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  color: #27ae60;
+  font-size: $font-sm;
+  font-weight: 600;
+  width: fit-content; // Allow element to size to content
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    flex-direction: row; // Keep normal order, don't reverse
+    justify-content: flex-end;
+    text-align: right;
+    align-self: flex-end;
+  }
+
+  svg {
+    flex-shrink: 0;
+    color: #27ae60;
+  }
+}
+
+.orderPaymentPending {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  color: #e67e22;
+  font-size: $font-sm;
+  font-weight: 500;
+  width: fit-content; // Allow element to size to content
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    flex-direction: row; // Keep normal order, don't reverse
+    justify-content: flex-end;
+    text-align: right;
+    align-self: flex-end;
+    direction: rtl;
+    direction: rtl;
+  }
+}
+
+.orderShippingStatus {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-xs $spacing-sm;
+  background: rgba($primary, 0.1);
+  border-radius: $radius-md;
+  color: $primary;
+  font-size: $font-sm;
+  font-weight: 600;
+  margin-bottom: $spacing-sm;
+  width: fit-content;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    flex-direction: row-reverse;
+  }
+
+  svg {
+    flex-shrink: 0;
+    color: $primary;
+  }
+}
+
+.orderTrackingCode {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-xs $spacing-sm;
+  background: rgba($secondary, 0.1);
+  border-radius: $radius-md;
+  color: $secondary;
+  font-size: $font-sm;
+  margin-bottom: $spacing-sm;
+  width: fit-content;
+
+  // In RTL, keep normal order (label: value) but align to right side of card
+  [dir="rtl"] & {
+    flex-direction: row; // Keep normal order, don't reverse
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    align-self: flex-end; // Align container to right side of card
+    margin-left: auto; // Push to right
+    margin-right: 0;
+  }
+}
+
+.orderTrackingLabel {
+  font-weight: 600;
+  color: $secondary;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.orderTrackingValue {
+  font-weight: 700;
+  color: $secondary;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.05em;
+
+  [dir="rtl"] & {
+    font-family: 'Courier New', monospace; // Keep monospace for tracking code
+  }
+}
+
+// Messages Section Styles
+.messagesList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.messageItem {
+  padding: $spacing-md;
+  background: $text-light;
+  border: 1px solid $tertiary;
+  border-radius: $radius-lg;
+  transition: box-shadow $transition-base;
+
+  &:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  &.unreadMessage {
+    border-left: 3px solid $primary;
+    background: rgba($primary, 0.02);
+  }
+}
+
+.messageHeader {
+  @include flex-between;
+  margin-bottom: $spacing-sm;
+  flex-wrap: wrap;
+  gap: $spacing-xs;
+}
+
+.messageSubject {
+  font-size: $font-base;
+  font-weight: 600;
+  color: $text-dark;
+  margin: 0;
+  flex: 1;
+}
+
+.unreadBadge {
+  padding: 0.25rem 0.75rem;
+  background: rgba($primary, 0.1);
+  color: $primary;
+  border-radius: $radius-3xl;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.messageContent {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.messageSection,
+.replySection {
+  padding: $spacing-sm;
+  background: $tertiary;
+  border-radius: $radius-md;
+}
+
+.messageLabel {
+  font-size: $font-sm;
+  font-weight: 600;
+  color: $primary;
+  margin-bottom: $spacing-xs;
+}
+
+.messageText,
+.replyText {
+  font-size: $font-sm;
+  color: $text-dark;
+  line-height: 1.6;
+  margin-bottom: $spacing-xs;
+  white-space: pre-wrap;
+}
+
+.replyText {
+  background: rgba($primary, 0.05);
+  padding: $spacing-sm;
+  border-radius: $radius-sm;
+  border-left: 3px solid $primary;
+}
+
+.markReadButton {
+  margin-top: $spacing-xs;
+  padding: $spacing-xs $spacing-sm;
+  background: $primary;
+  color: $text-light;
+  border: none;
+  border-radius: $radius-md;
+  font-size: $font-sm;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-base;
+
+  &:hover {
+    background: darken($primary, 10%);
+  }
+
+  @include max-mobile {
+    width: 100%;
+    padding: $spacing-sm;
+  }
+}
+
+.pendingReply {
+  padding: $spacing-sm;
+  background: rgba($warning, 0.1);
+  color: $warning;
+  border-radius: $radius-md;
+  font-size: $font-sm;
+  font-style: italic;
+  text-align: center;
+}
+
+.progressBar {
+  width: 100%;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  margin-top: 0.8rem;
+}
+
+.progressFill {
+  height: 100%;
+  background: $success;
+  transition: width $transition-base;
+}
+
+.profileCompleteness {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.completenessNotes {
+  margin-top: $spacing-sm;
+  padding: $spacing-md;
+  background: rgba(243, 156, 18, 0.1);
+  border-radius: $radius-lg;
+  border-left: 3px solid $warning;
+}
+
+.notesComplete {
+  color: $success;
+  font-weight: 600;
+  font-size: $font-sm;
+  text-align: center;
+}
+
+.notesLoading {
+  color: #666;
+  font-size: $font-sm;
+  text-align: center;
+}
+
+.notesError {
+  color: $danger;
+  font-size: $font-sm;
+  text-align: center;
+}
+
+.exclusiveLinksContainer {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  align-items: center;
+  padding: $spacing-md;
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.05) 0%, rgba(155, 89, 182, 0.05) 100%);
+  border-radius: $radius-lg;
+  border: 1px solid rgba(52, 152, 219, 0.1);
+}
+
+.exclusiveLinksDescription {
+  font-size: $font-base;
+  color: $text-dark;
+  text-align: center;
+  margin: 0;
+  line-height: 1.5;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.exclusiveLinksBtn {
+  padding: $spacing-sm $spacing-lg;
+  background: $primary;
+  color: $text-light;
+  border: none;
+  border-radius: $radius-md;
+  font-size: $font-base;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-base;
+  min-width: 150px;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  &:hover {
+    background: darken($primary, 10%);
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @include max-tablet {
+    width: 100%;
+  }
+}
+
+.exclusiveLinksList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  width: 100%;
+}
+
+.exclusiveLinksItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-sm $spacing-md;
+  background: rgba($primary, 0.05);
+  border: 1px solid rgba($primary, 0.15);
+  border-radius: $radius-md;
+  text-decoration: none;
+  color: $text-dark;
+  transition: all $transition-base;
+  cursor: pointer;
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+  }
+
+  &:hover {
+    background: rgba($primary, 0.1);
+    border-color: $primary;
+    transform: translateX(2px);
+  }
+
+  [dir="rtl"] &:hover {
+    transform: translateX(-2px);
+  }
+
+  &:active {
+    transform: translateX(0);
+  }
+}
+
+.exclusiveLinksIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: $radius-sm;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.exclusiveLinksName {
+  flex: 1;
+  font-weight: 600;
+  font-size: $font-base;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.exclusiveLinksArrow {
+  width: 1.2rem;
+  height: 1.2rem;
+  color: $primary;
+  flex-shrink: 0;
+  transition: transform $transition-base;
+
+  .exclusiveLinksItem:hover & {
+    transform: translateX(2px);
+  }
+
+  [dir="rtl"] .exclusiveLinksItem:hover & {
+    transform: translateX(-2px);
+  }
+}
+
+.wishlistGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-md;
+
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include desktop-small {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include desktop {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.wishlistItem {
+  background: $tertiary;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  transition: transform $transition-base, box-shadow $transition-base;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+}
+
+.wishlistItemImage {
+  display: block;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: $text-light;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform $transition-base;
+  }
+
+  &:hover img {
+    transform: scale(1.05);
+  }
+}
+
+.wishlistItemInfo {
+  padding: $spacing-md;
+}
+
+.wishlistItemName {
+  display: block;
+  font-size: $font-base;
+  font-weight: 600;
+  color: $text-dark;
+  margin-bottom: $spacing-xs;
+  text-decoration: none;
+  transition: color $transition-base;
+
+  &:hover {
+    color: $primary;
+  }
+}
+
+.wishlistItemPrice {
+  font-size: $font-lg;
+  font-weight: 700;
+  color: $primary;
+  margin-bottom: $spacing-sm;
+}
+
+.wishlistItemActions {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.removeBtn {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-xs $spacing-sm;
+  background: rgba(231, 76, 60, 0.1);
+  color: $danger;
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  border-radius: $radius-md;
+  font-size: $font-sm;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-base;
+
+  // Apply Sahel font for Farsi/RTL
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  &:hover {
+    background: rgba(231, 76, 60, 0.2);
+    border-color: $danger;
+  }
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.emptyStateButton {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
+  padding: $spacing-sm $spacing-lg;
+  background: $primary;
+  color: $text-light;
+  border: none;
+  border-radius: $radius-lg;
+  font-size: $font-base;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-base;
+
+  &:hover {
+    background: darken($primary, 10%);
+    transform: translateY(-2px);
+  }
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
+.notesTitle {
+  font-weight: 600;
+  font-size: $font-sm;
+  color: $text-dark;
+  margin-bottom: $spacing-sm;
+}
+
+.notesList {
+  margin: 0;
+  padding-left: $spacing-lg;
+  list-style-type: disc;
+  color: $text-dark;
+  font-size: $font-sm;
+  line-height: 1.8;
+
+  li {
+    margin-bottom: $spacing-xs;
+  }
+}
+
+.emailWarning {
+  margin-top: $spacing-sm;
+  padding: $spacing-md;
+  background: rgba(231, 76, 60, 0.1);
+  border-radius: $radius-lg;
+  border-left: 3px solid $danger;
+  font-size: $font-sm;
+  color: $text-dark;
+  line-height: 1.6;
+
+  strong {
+    color: $danger;
+  }
+}
+
+.completenessInfo {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-sm;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.completenessPercentage {
+  font-size: $font-3xl;
+  font-weight: 700;
+  color: $primary;
+}
+
+.completenessLabel {
+  font-size: $font-sm;
+  color: #666;
+}
+
+.completenessBtn {
+  padding: 0.7rem $spacing-lg;
+  border: none;
+  border-radius: $radius-2xl;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-base;
+  background: #81c784;
+  color: #ffffff;
+  width: 100%;
+  margin-top: $spacing-sm;
+  box-shadow: 0 2px 8px rgba(129, 199, 132, 0.3);
+
+  @include max-tablet {
+    padding: 0.9rem $spacing-lg;
+    font-size: 1rem;
+    box-shadow: 0 4px 12px rgba(129, 199, 132, 0.35);
+  }
+
+  // Apply Sahel font for Farsi/RTL
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  &:hover {
+    background: #66bb6a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(129, 199, 132, 0.4);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.transactionPositive {
+  color: $success;
+  font-weight: 600;
+}
+
+.transactionNegative {
+  color: $danger;
+  font-weight: 600;
+}
+
+.fullWidth {
+  width: 100%;
+  margin-top: $spacing-md;
+}
+
+.walletBalance {
+  text-align: center;
+  padding: $spacing-xl $spacing-md;
+  @include gradient-primary;
+  border-radius: $radius-xl;
+  color: $text-light;
+  margin-bottom: $spacing-md;
+}
+
+.balanceLabel {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin-bottom: $spacing-sm;
+}
+
+.balanceAmount {
+  font-size: $font-5xl;
+  font-weight: 700;
+  margin-bottom: $spacing-md;
+}
+
+.walletActions {
+  display: flex;
+  gap: $spacing-md;
+  justify-content: center;
+}
+
+.btn {
+  padding: 0.7rem $spacing-lg;
+  border: none;
+  border-radius: $radius-2xl;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.btnPrimary {
+  @include button-primary;
+  transition: all $transition-base;
+
+  &:hover {
+    background: darken($color-primary, 10%);
+    color: white;
+    box-shadow: 0 4px 12px rgba($color-primary, 0.3);
+  }
+
+  &:active {
+    background: darken($color-primary, 15%);
+  }
+}
+
+.btnOutline {
+  @include button-outline;
+  color: $danger;
+  border-color: $danger;
+  transition: all $transition-base;
+
+  &:hover {
+    background: rgba($danger, 0.08);
+    border-color: darken($danger, 10%);
+    color: darken($danger, 10%);
+  }
+
+  &:active {
+    background: rgba($danger, 0.15);
+  }
+}
+
+.addressCard {
+  padding: $spacing-md;
+  background: $tertiary !important; // Force solid background to cover red button
+  border-radius: $radius-lg;
+  margin-bottom: $spacing-md;
+  position: relative;
+  z-index: 2; // Ensure it's above the swipe action buttons
+  overflow: hidden; // Prevent any background from showing through
+  isolation: isolate; // Create new stacking context to ensure background covers everything
+  width: 100%; // Ensure full width coverage
+  box-sizing: border-box; // Include padding in width calculation
+  display: block; // Ensure it's a block element
+}
+
+.addressCard--default {
+  background: white !important;
+  border: 2px solid $color-success;
+}
+
+.addressHeader {
+  margin-bottom: $spacing-sm;
+}
+
+.addressType {
+  font-weight: 600;
+  color: $primary;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+
+  span:first-child {
+    display: flex;
+    align-items: center;
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+}
+
+.defaultBadge {
+  background: $primary;
+  color: $text-light;
+  padding: 0.2rem 0.6rem;
+  border-radius: $radius-3xl;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.addressText {
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+.addressDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-top: $spacing-xs;
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.addressActions {
+  display: flex;
+  gap: $spacing-sm;
+  margin-top: 0.8rem;
+  align-items: center;
+}
+
+.addressEditBtn {
+  border: 2px solid $color-success !important;
+  color: $color-success !important;
+}
+
+.btnSmall {
+  padding: 0.5rem 1rem;
+  font-size: $font-sm;
+  border-radius: $radius-sm;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  line-height: 1.4;
+  min-height: 2rem;
+  white-space: nowrap;
+  vertical-align: middle;
+  box-sizing: border-box;
+
+  svg {
+    width: 0.9em;
+    height: 0.9em;
+    flex-shrink: 0;
+    display: block;
+    margin: 0;
+  }
+}
+
+.notificationItem {
+  padding: $spacing-md;
+  background: $tertiary;
+  border-radius: $radius-lg;
+  margin-bottom: $spacing-md;
+  position: relative;
+  padding-left: 3rem;
+}
+
+.notificationIcon {
+  position: absolute;
+  left: $spacing-md;
+  top: $spacing-md;
+  @include flex-center;
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: $secondary;
+  }
+}
+
+.notificationText {
+  font-size: 0.9rem;
+  margin-bottom: $spacing-sm;
+}
+
+.notificationTime {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.notificationUnread {
+  background: rgba(108, 156, 184, 0.1);
+  border-left: 3px solid $secondary;
+}
+
+.bottomNav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $text-light;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: $z-sticky;
+}
+
+.bottomNavContainer {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none; // Firefox
+  -ms-overflow-style: none; // IE and Edge
+
+  &::-webkit-scrollbar {
+    display: none; // Chrome, Safari, Opera
+  }
+}
+
+.navItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  color: #999;
+  text-decoration: none;
+  font-size: 0.7rem;
+  transition: color $transition-base;
+  flex-shrink: 0;
+  text-align: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: $spacing-xs $spacing-sm;
+  min-width: 70px;
+
+  // Apply Sahel font for Farsi text in bottom nav
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  &.active {
+    color: $primary;
+  }
+}
+
+.navItemIcon {
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+.logoutItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  color: $danger;
+  text-decoration: none;
+  font-size: 0.7rem;
+  transition: color $transition-base;
+  flex-shrink: 0;
+  text-align: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: $spacing-xs $spacing-sm;
+  min-width: 70px;
+  margin-left: auto;
+
+  // Apply Sahel font for Farsi text in bottom nav
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  &:hover {
+    color: darken($danger, 10%);
+  }
+}
+
+[dir="rtl"] .logoutItem {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.section {
+  display: none;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity $duration-base $ease-out, transform $duration-base $ease-out;
+
+  &.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+    @include animate(slideInUp, $duration-base);
+    margin-bottom: 75px; // Restored bottom margin for active dashboard section
+  }
+
+  // All sections should follow the same styling as the dashboard container
+  // No special width calculations needed - container handles centering
+}
+
+.emptyState {
+  text-align: center;
+  padding: $spacing-2xl $spacing-md;
+  color: #999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+
+  @include tablet {
+    min-height: 400px;
+    padding: $spacing-3xl $spacing-lg;
+  }
+
+  @include desktop {
+    min-height: 450px;
+    padding: $spacing-4xl $spacing-xl;
+  }
+}
+
+.emptyIcon {
+  font-size: $font-5xl;
+  margin-bottom: $spacing-lg;
+  opacity: 0.3;
+  color: $text-tertiary;
+
+  @include tablet {
+    font-size: $font-6xl;
+    margin-bottom: $spacing-xl;
+  }
+
+  @include desktop {
+    font-size: $font-7xl;
+  }
+
+  svg {
+    width: 1em;
+    height: 1em;
+  }
+}
+
+.emptyTitle {
+  font-size: $font-xl;
+  font-weight: $font-weight-semibold;
+  color: $text-secondary;
+  margin-bottom: $spacing-md;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  @include tablet {
+    font-size: $font-2xl;
+    margin-bottom: $spacing-lg;
+  }
+
+  @include desktop {
+    font-size: $font-3xl;
+  }
+}
+
+.emptyDescription {
+  font-size: $font-base;
+  color: $text-tertiary;
+  line-height: $line-height-relaxed;
+  max-width: 500px;
+  margin: 0 auto $spacing-lg;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  @include tablet {
+    font-size: $font-md;
+    margin-bottom: $spacing-xl;
+  }
+
+  @include desktop {
+    font-size: $font-lg;
+    max-width: 600px;
+  }
+}
+
+.emptyStateButton {
+  @include button-base;
+  @include focus-visible;
+  padding: $spacing-md $spacing-xl;
+  background: $color-primary;
+  color: $text-light;
+  font-size: $font-base;
+  font-weight: $font-weight-semibold;
+  margin-top: $spacing-md;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  @include state-hover {
+    background: $color-primary-hover;
+    transform: translateY(-2px);
+    @include shadow-colored($color-primary, 0.2);
+  }
+
+  @include state-active {
+    background: $color-primary-active;
+    transform: translateY(0);
+  }
+
+  @include tablet {
+    padding: $spacing-md $spacing-2xl;
+    font-size: $font-md;
+  }
+
+  @include desktop {
+    padding: $spacing-lg $spacing-2xl;
+  }
+}
+
+// Error State Styles
+.errorState {
+  text-align: center;
+  padding: $spacing-2xl $spacing-md;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+
+  @include tablet {
+    min-height: 400px;
+    padding: $spacing-3xl $spacing-lg;
+  }
+
+  @include desktop {
+    min-height: 450px;
+    padding: $spacing-4xl $spacing-xl;
+  }
+}
+
+.errorIcon {
+  font-size: $font-5xl;
+  margin-bottom: $spacing-lg;
+  color: $color-danger;
+  opacity: 0.8;
+
+  @include tablet {
+    font-size: $font-6xl;
+    margin-bottom: $spacing-xl;
+  }
+
+  @include desktop {
+    font-size: $font-7xl;
+  }
+
+  svg {
+    width: 1em;
+    height: 1em;
+  }
+}
+
+.errorTitle {
+  font-size: $font-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-danger;
+  margin-bottom: $spacing-md;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  @include tablet {
+    font-size: $font-2xl;
+    margin-bottom: $spacing-lg;
+  }
+
+  @include desktop {
+    font-size: $font-3xl;
+  }
+}
+
+.errorMessage {
+  font-size: $font-base;
+  color: $text-secondary;
+  line-height: $line-height-relaxed;
+  max-width: 500px;
+  margin: 0 auto $spacing-lg;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  @include tablet {
+    font-size: $font-md;
+    margin-bottom: $spacing-xl;
+  }
+
+  @include desktop {
+    font-size: $font-lg;
+    max-width: 600px;
+  }
+}
+
+.errorRetryButton {
+  @include button-base;
+  @include focus-visible;
+  padding: $spacing-md $spacing-xl;
+  background: $color-danger;
+  color: $text-light;
+  font-size: $font-base;
+  font-weight: $font-weight-semibold;
+  margin-top: $spacing-md;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  @include state-hover {
+    background: $color-danger-hover;
+    transform: translateY(-2px);
+    @include shadow-colored($color-danger, 0.2);
+  }
+
+  @include state-active {
+    background: $color-danger-active;
+    transform: translateY(0);
+  }
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+    transition: transform $duration-base $ease-out;
+  }
+
+  &:hover svg {
+    transform: rotate(180deg);
+  }
+
+  @include tablet {
+    padding: $spacing-md $spacing-2xl;
+    font-size: $font-md;
+  }
+
+  @include desktop {
+    padding: $spacing-lg $spacing-2xl;
+  }
+}
+
+// Recent Activities
+.recentActivities {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.activitiesList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.activityItem {
+  padding: $spacing-md;
+  background: rgba($primary, 0.05);
+  border-radius: $radius-md;
+  font-size: $font-sm;
+  color: $text-dark;
+  line-height: 1.5;
+}
+
+.loadMoreButton {
+  padding: $spacing-sm $spacing-md;
+  background: transparent;
+  border: 2px solid $primary;
+  color: $primary;
+  border-radius: $radius-lg;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-base;
+  margin-top: $spacing-sm;
+
+  // Apply Sahel font for Farsi/RTL
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  &:hover:not(:disabled) {
+    background: $primary;
+    color: $text-light;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.emptyIcon {
+  font-size: $font-3xl;
+  margin-bottom: $spacing-md;
+  opacity: 0.5;
+}
+
+@include mobile-large {
+  .dashboardContainer {
+    padding: $spacing-md;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
+  }
+}
+
+@include tablet {
+  .bottomNav {
+    display: none;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr); // 2 columns on tablet
+  }
+
+  .quickActions {
+    grid-template-columns: repeat(2, 1fr); // 2 columns on tablet
+    grid-template-rows: repeat(2, 1fr); // 2 rows on tablet
+  }
+
+}
+
+@include desktop-small {
+  .dashboardContainer {
+    padding: $spacing-xl;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: $spacing-lg;
+    width: fit-content;
+    max-width: calc(100% - #{$spacing-xl * 2});
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .statCard {
+    aspect-ratio: 1;
+    min-width: 0;
+    max-width: 180px;
+    width: 100%;
+  }
+
+  .quickActions {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: $spacing-lg;
+    width: 100%;
+    max-width: 100%;
+    // Match statsGrid width by using the same container constraint
+    max-width: calc(4 * 180px + 3 * #{$spacing-lg});
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .dashboardCard {
+    padding: $spacing-xl;
+    width: 100%;
+    max-width: 100%;
+    // Match statsGrid width
+    max-width: calc(4 * 180px + 3 * #{$spacing-lg});
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@include desktop {
+  .statsGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: $spacing-xl;
+    width: 100%;
+    max-width: calc(4 * 200px + 3 * #{$spacing-xl});
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .statCard {
+    max-width: none;
+    aspect-ratio: 1;
+  }
+
+  .quickActions {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: $spacing-xl;
+    width: 100%;
+    max-width: calc(4 * 200px + 3 * #{$spacing-xl});
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .actionBtn {
+    aspect-ratio: 1; // Make quick action boxes square (1:1 ratio)
+    width: 100%;
+    height: 100%;
+    min-height: 0; // Allow grid to control sizing
+  }
+
+  .completenessInfo {
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
+  }
+
+  .completenessBtn {
+    width: auto;
+    display: inline-block;
+    padding: 0.7rem $spacing-xl;
+    margin-left: auto;
+    margin-right: auto;
+    // Override button-primary mixin to make it look more like a button
+    background: $primary !important;
+    color: $text-light !important;
+    border: 2px solid $primary !important;
+
+    // Make it look more like a button with hover effects
+    &:hover {
+      background: darken($primary, 10%) !important;
+      border-color: darken($primary, 10%) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .dashboardCard {
+    max-width: calc(4 * 200px + 3 * #{$spacing-xl});
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .contentGrid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: $spacing-xl;
+    max-width: calc(4 * 200px + 3 * #{$spacing-xl});
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+// Rewards Section Styles
+.rewardsContent {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.rewardsSummary {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.rewardsPointsDisplay {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  border: 2px dashed #a5d6a7; // Light green dashed border
+  border-radius: $radius-lg;
+  background: rgba(165, 214, 167, 0.05); // Very light green background
+  justify-content: center;
+  width: fit-content;
+  margin: 0 auto;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.rewardsPointsValue {
+  font-size: $font-3xl;
+  font-weight: 700;
+  color: $primary;
+  line-height: 1;
+}
+
+.rewardsPointsLabel {
+  font-size: $font-lg;
+  font-weight: 600;
+  color: $text-dark;
+  line-height: 1;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.rewardsConversion {
+  margin-top: $spacing-lg;
+}
+
+.rewardsThresholdsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  table-layout: fixed; // Fixed layout for consistent column widths
+
+  thead {
+    tr {
+      border-bottom: 2px solid #e0e0e0;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #f0f0f0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+
+  // Apply Sahel font for Farsi/RTL
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.tableHeaderCell {
+  padding: 0.75rem;
+  text-align: start;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #666;
+  vertical-align: middle;
+
+  // RTL support
+  [dir="rtl"] & {
+    text-align: right;
+  }
+
+  // First column (Points Required)
+  &:first-child {
+    width: 35%;
+  }
+
+  // Second column (Discount)
+  &:nth-child(2) {
+    width: 25%;
+  }
+
+  // Third column (Action)
+  &.tableHeaderCellAction {
+    width: 40%;
+    text-align: center;
+
+    [dir="rtl"] & {
+      text-align: center;
+    }
+  }
+}
+
+.tableRow {
+  // Row styles
+}
+
+.tableCell {
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  text-align: start;
+  vertical-align: middle;
+
+  // RTL support
+  [dir="rtl"] & {
+    text-align: right;
+  }
+
+  // First column (Points Required)
+  &:first-child {
+    width: 35%;
+  }
+
+  // Second column (Discount)
+  &.tableCellDiscount {
+    width: 25%;
+    font-weight: 600;
+    color: #27ae60;
+  }
+
+  // Third column (Action)
+  &.tableCellAction {
+    width: 40%;
+    text-align: center;
+
+    [dir="rtl"] & {
+      text-align: center;
+    }
+  }
+}
+
+.tableCellInactive {
+  font-size: 0.875rem;
+  color: #999;
+  display: block;
+  text-align: center;
+}
+
+.rewardsConversionTitle {
+  font-size: $font-lg;
+  font-weight: 600;
+  color: $text-dark;
+  margin-bottom: $spacing-sm;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.rewardsConversionDescription {
+  font-size: $font-sm;
+  color: #666;
+  margin-bottom: $spacing-md;
+  line-height: 1.6;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.rewardsConversionInfo {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.rewardsConversionStatus {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-size: $font-sm;
+  color: $text-dark;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.rewardsInfo {
+  margin-top: $spacing-lg;
+}
+
+// Coupons Section Styles
+.couponsList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  margin-bottom: 75px; // Added for extra space below Discount Codes section
+}
+
+.couponCard {
+  background: $text-light;
+  border: 1px solid rgba($color-primary, 0.15);
+  border-radius: $radius-xl;
+  padding: $spacing-md;
+  position: relative;
+  overflow: hidden;
+  @include elevation(1);
+  @include gpu-accelerated;
+  transition: all $duration-base $ease-out;
+
+  // Subtle gradient overlay
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, $color-primary 0%, $color-secondary 100%);
+    opacity: 0.6;
+    transition: opacity $duration-base $ease-out;
+  }
+
+  @include state-hover {
+    @include elevation(3);
+    transform: translateY(-4px);
+    border-color: rgba($color-primary, 0.3);
+
+    &::after {
+      opacity: 1;
+    }
+  }
+
+  @include tablet {
+    padding: $spacing-lg;
+    border-radius: $radius-2xl;
+  }
+
+  @include desktop {
+    padding: $spacing-xl;
+  }
+}
+
+.couponHeader {
+  margin-bottom: $spacing-md;
+}
+
+.couponCodeRow {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  @include tablet {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.couponCode {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  flex: 1;
+}
+
+.couponCodeText {
+  font-size: $font-lg;
+  font-weight: 700;
+  color: $primary;
+  letter-spacing: 0.05em;
+  font-family: 'Courier New', monospace;
+  flex: 1;
+  word-break: break-all;
+  background: #fff9e6; // Light yellow background
+  border: 2px dashed #ff9800; // Dashed orange border
+  border-radius: $radius-md;
+  padding: $spacing-sm $spacing-md;
+  display: inline-block;
+
+  @include max-mobile {
+    font-size: $font-base;
+    padding: $spacing-xs $spacing-sm;
+  }
+}
+
+.copyButton {
+  background: none;
+  border: none;
+  color: $text-dark;
+  cursor: pointer;
+  padding: $spacing-xs;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-md;
+  transition: all $transition-base;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: $primary;
+  }
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
+.couponTypeBadge {
+  padding: 0.25rem 0.75rem;
+  border-radius: $radius-3xl;
+  font-size: $font-xs;
+  font-weight: 600;
+  white-space: nowrap;
+  align-self: flex-start;
+
+  @include max-mobile {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+  }
+}
+
+.couponBody {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.couponDiscount {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-xs;
+}
+
+.couponDiscountIcon {
+  color: $primary;
+  font-size: $font-xl;
+
+  @include max-mobile {
+    font-size: $font-lg;
+  }
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+
+    @include max-mobile {
+      width: 1.2rem;
+      height: 1.2rem;
+    }
+  }
+}
+
+.couponDiscountValue {
+  font-size: $font-xl;
+  font-weight: 700;
+  color: $primary;
+
+  @include max-mobile {
+    font-size: $font-lg;
+  }
+}
+
+.couponDescription {
+  color: $text-dark;
+  font-size: $font-sm;
+  line-height: 1.5;
+  margin-top: $spacing-xs;
+
+  @include max-mobile {
+    font-size: 0.85rem;
+  }
+}
+
+.couponDetails {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  margin-top: $spacing-sm;
+  padding-top: $spacing-sm;
+  border-top: 1px solid $tertiary;
+}
+
+.couponDetail {
+  display: flex;
+  align-items: center;
+  font-size: $font-sm;
+  color: $text-dark;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+
+  @include max-mobile {
+    font-size: 0.8rem;
+  }
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+}
+
+.couponDetailLabel {
+  font-weight: 500;
+  margin-right: 0.25rem;
+}
+
+.couponDetailValue {
+  color: $text-dark;
+  font-weight: 600;
+}
+
+// Order Status Timeline Styles
+.timelineContainer {
+  margin-top: $spacing-lg;
+  padding: $spacing-lg;
+  background: rgba($color-primary, 0.02);
+  border-radius: $radius-xl;
+  border: 1px solid rgba($color-primary, 0.1);
+}
+
+.timelineTitle {
+  font-size: $font-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+  margin-bottom: $spacing-lg;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.timelineLoading {
+  text-align: center;
+  padding: $spacing-lg;
+  color: $text-tertiary;
+  font-size: $font-base;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.timeline {
+  position: relative;
+  padding-left: calc(#{$spacing-xl} + 1.25rem); // Icon width (2.5rem) / 2
+
+  [dir="rtl"] & {
+    padding-left: 0;
+    padding-right: calc(#{$spacing-xl} + 1.25rem);
+  }
+}
+
+.timelineItem {
+  position: relative;
+  margin-bottom: $spacing-xl;
+  display: flex;
+  gap: $spacing-md;
+  padding-left: 0; // Remove any default padding
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.timelineMarker {
+  position: absolute;
+  left: calc(-#{$spacing-xl} - 1.25rem); // Align with icon center
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 2.5rem; // Icon width for proper alignment
+
+  [dir="rtl"] & {
+    left: auto;
+    right: calc(-#{$spacing-xl} - 1.25rem);
+  }
+}
+
+.timelineIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: $text-light;
+  border: 2px solid currentColor;
+  font-size: $font-lg;
+  position: relative;
+  z-index: 2;
+  transition: all $duration-base $ease-out;
+  @include gpu-accelerated;
+  opacity: 0.4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.timelineIconActive {
+  background: currentColor;
+  opacity: 1;
+  @include elevation(2);
+  transform: scale(1.1);
+  animation: pulse 2s ease-in-out infinite;
+
+  svg {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+    stroke: #ffffff !important;
+    fill: #ffffff !important;
+    stroke-width: 2 !important;
+  }
+
+  svg path {
+    stroke: #ffffff !important;
+    fill: #ffffff !important;
+  }
+}
+
+.timelineIconCompleted {
+  background: currentColor;
+  opacity: 1;
+  @include elevation(1);
+  width: 2.5rem;
+  height: 2.5rem;
+
+  svg {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+    stroke: #ffffff !important;
+    fill: #ffffff !important;
+    stroke-width: 2 !important;
+  }
+
+  svg path {
+    stroke: #ffffff !important;
+    fill: #ffffff !important;
+  }
+}
+
+.timelineLine {
+  position: absolute;
+  top: 2.5rem; // Icon height
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: calc(100% + $spacing-xl - 0.25rem); // Account for gaps
+  background: linear-gradient(180deg, rgba($color-primary, 0.4) 0%, rgba($color-primary, 0.1) 100%);
+  z-index: 1;
+
+  [dir="rtl"] & {
+    transform: translateX(50%);
+  }
+}
+
+.timelineItem:last-child .timelineLine {
+  display: none;
+}
+
+.timelineContent {
+  flex: 1;
+  padding-top: 0.25rem;
+}
+
+.timelineStatus {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-xs;
+}
+
+.timelineStatusLabel {
+  font-size: $font-base;
+  font-weight: $font-weight-semibold;
+  color: $text-dark;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.timelineCurrentBadge {
+  padding: 0.15rem $spacing-sm;
+  background: rgba($color-success, 0.15);
+  color: $color-success;
+  border-radius: $radius-full;
+  font-size: $font-xs;
+  font-weight: $font-weight-semibold;
+  white-space: nowrap;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.timelineMeta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-xs;
+  flex-wrap: wrap;
+}
+
+.timelineDate {
+  font-size: $font-sm;
+  color: $text-tertiary;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.timelineActor {
+  font-size: $font-sm;
+  color: $text-tertiary;
+  font-style: italic;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.timelineNotes {
+  font-size: $font-sm;
+  color: $text-dark;
+  line-height: 1.5;
+  padding: $spacing-sm;
+  background: rgba($color-primary, 0.05);
+  border-radius: $radius-md;
+  border-right: 3px solid $color-primary;
+  margin-top: $spacing-xs;
+
+  [dir="rtl"] & {
+    border-right: none;
+    border-left: 3px solid $color-primary;
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba($color-primary, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px rgba($color-primary, 0);
+  }
+}
+
+// Pull to Refresh Indicator
+.pullToRefreshIndicator {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  padding: $spacing-sm $spacing-lg;
+  background: $color-primary;
+  color: $text-light;
+  border-radius: 0 0 $radius-lg $radius-lg;
+  font-size: $font-sm;
+  font-weight: $font-weight-semibold;
+  @include elevation(3);
+  transition: transform $duration-base $ease-out;
+  pointer-events: none;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  &.hidden {
+    transform: translateX(-50%) translateY(-100%);
+  }
+}
+
+// Enhanced button press animation
+@keyframes buttonPress {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(0.95);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.buttonPress {
+  animation: buttonPress 0.2s $ease-out;
+}
+
+// Card swipe animation
+@keyframes swipeOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.swipeOut {
+  animation: swipeOut 0.3s $ease-out forwards;
+}
+
+[dir="rtl"] .swipeOut {
+  animation: swipeOut 0.3s $ease-out forwards;
+
+  @keyframes swipeOut {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    to {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+  }
+}
+
+// Delivery Confirmation Modal
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s $ease-out;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+.modalContent {
+  background: $text-light;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-lg;
+  max-width: 90%;
+  width: 100%;
+  max-width: 400px;
+  animation: slideUp 0.3s $ease-out;
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @include tablet {
+    max-width: 500px;
+  }
+}
+
+.modalHeader {
+  padding: $spacing-lg;
+  border-bottom: 1px solid rgba($color-primary, 0.1);
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: $font-lg;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.modalBody {
+  padding: $spacing-lg;
+  color: $text-secondary;
+  font-size: $font-base;
+  line-height: 1.6;
+
+  p {
+    margin: 0;
+  }
+}
+
+.modalFooter {
+  padding: $spacing-lg;
+  border-top: 1px solid rgba($color-primary, 0.1);
+  display: flex;
+  gap: $spacing-md;
+  justify-content: flex-end;
+}
+
+.modalButtonCancel {
+  padding: $spacing-sm $spacing-lg;
+  background: transparent;
+  border: 1px solid rgba($color-primary, 0.2);
+  border-radius: $radius-md;
+  color: $text-secondary;
+  cursor: pointer;
+  font-size: $font-sm;
+  font-weight: 500;
+  transition: all $duration-base $ease-out;
+
+  &:hover:not(:disabled) {
+    border-color: rgba($color-primary, 0.4);
+    background: rgba($color-primary, 0.05);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.modalButtonConfirm {
+  padding: $spacing-sm $spacing-lg;
+  background: $color-success;
+  border: none;
+  border-radius: $radius-md;
+  color: white;
+  cursor: pointer;
+  font-size: $font-sm;
+  font-weight: 500;
+  transition: all $duration-base $ease-out;
+
+  &:hover:not(:disabled) {
+    background: $color-success-hover;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Order Completed Status
+.orderCompletedStatus {
+  padding: $spacing-md;
+  background: rgba($color-success, 0.08);
+  border-radius: $radius-lg;
+  border-left: 4px solid $color-success;
+
+  [dir="rtl"] & {
+    border-left: none;
+    border-right: 4px solid $color-success;
+  }
+}
+
+.orderCompletedBadge {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  color: $color-success;
+  font-weight: 500;
+  font-size: $font-sm;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Order Item Styling for Completed Orders
+.orderItem {
+  &.orderItemCompleted {
+    background: #f8f8f8;
+    border-color: rgba($color-success, 0.2);
+
+    .orderItemHeader {
+      &:hover {
+        background: rgba($color-success, 0.02);
+      }
+    }
+  }
+}
+
+// Timeline Confirmation Styles
+.timelineConfirmationPrompt {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  background: rgba($color-primary, 0.05);
+  border-radius: $radius-lg;
+  border: 1px solid rgba($color-primary, 0.2);
+  margin-top: $spacing-md;
+
+  p {
+    margin: 0;
+    color: $text-secondary;
+    flex: 1;
+    font-size: $font-sm;
+  }
+}
+
+.timelineConfirmationButton {
+  padding: $spacing-xs $spacing-md;
+  background: $color-primary;
+  border: none;
+  border-radius: $radius-md;
+  color: white;
+  cursor: pointer;
+  font-size: $font-xs;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all $duration-base $ease-out;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}
+
+.timelineDeliveryConfirmed {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  background: rgba($color-success, 0.08);
+  border-radius: $radius-lg;
+  border: 1px solid rgba($color-success, 0.2);
+  color: $color-success;
+  margin-top: $spacing-md;
+  font-weight: 500;
+  font-size: $font-sm;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    justify-content: center;
+  }
+
+  svg {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+  }
+}

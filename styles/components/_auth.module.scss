@@ -1,0 +1,121 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.authContainer {
+  min-height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $tertiary;
+  padding: $spacing-xl $spacing-md;
+  margin: 0;
+  flex: 1;
+  width: 100%;
+
+  // Ensure background extends fully to footer - remove any gaps
+  @include max-tablet {
+    padding-top: calc(#{$navbar-height} + #{$spacing-md}); // Account for fixed navbar
+    min-height: calc(100vh - 150px);
+    padding-bottom: calc($spacing-xl + 60px); // Account for bottom bar
+  }
+}
+
+.authCard {
+  background: white;
+  padding: $spacing-xl;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-md;
+  max-width: 400px;
+  width: 100%;
+}
+
+.title {
+  font-size: $font-4xl;
+  margin-bottom: $spacing-lg;
+  color: $primary;
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup {
+  margin-bottom: $spacing-md;
+}
+
+.label {
+  display: block;
+  margin-bottom: $spacing-sm;
+  font-weight: 600;
+  color: $text-dark;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid $tertiary;
+  border-radius: $radius-md;
+  font-size: $font-base;
+}
+
+.error {
+  color: $danger;
+  font-size: $font-sm;
+  margin-top: 0.25rem;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 0.75rem;
+  background: $primary;
+  color: white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: $font-base;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-base;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+.divider {
+  margin-top: $spacing-lg;
+  text-align: center;
+}
+
+.dividerText {
+  margin-bottom: $spacing-sm;
+  color: #666;
+}
+
+.oauthButtons {
+  display: flex;
+  gap: $spacing-sm;
+  justify-content: center;
+}
+
+.oauthButton {
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid $tertiary;
+  border-radius: $radius-md;
+  background: white;
+  cursor: pointer;
+}
+
+.link {
+  margin-top: $spacing-lg;
+  text-align: center;
+  color: #666;
+}
+
+.linkText {
+  color: $primary;
+  font-weight: 600;
+  text-decoration: none;
+}

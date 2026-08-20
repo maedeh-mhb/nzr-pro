@@ -1,0 +1,84 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.skeleton {
+    background: linear-gradient(90deg,
+            #f0f0f0 0%,
+            #e0e0e0 50%,
+            #f0f0f0 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: $radius-md;
+}
+
+.productCard {
+    width: 100%;
+    background: #ffffff;
+    border-radius: $radius-card;
+    overflow: hidden;
+    @include elevation(2);
+}
+
+.productImage {
+    width: 100%;
+    height: $image-height-small;
+    background: linear-gradient(90deg,
+            #e0e0e0 0%,
+            #f0f0f0 50%,
+            #e0e0e0 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.productContent {
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.title {
+    height: 1.2rem;
+    width: 80%;
+    @extend .skeleton;
+}
+
+.description {
+    height: 1rem;
+    width: 100%;
+    @extend .skeleton;
+}
+
+.descriptionShort {
+    height: 1rem;
+    width: 60%;
+    @extend .skeleton;
+}
+
+.price {
+    height: 1.5rem;
+    width: 40%;
+    margin-top: auto;
+    @extend .skeleton;
+}
+
+.button {
+    height: 2.5rem;
+    width: 100%;
+    @extend .skeleton;
+    border-radius: $radius-button;
+}
+
+.textLine {
+    height: 1rem;
+    width: 100%;
+    @extend .skeleton;
+
+    &.short {
+        width: 60%;
+    }
+
+    &.medium {
+        width: 80%;
+    }
+}

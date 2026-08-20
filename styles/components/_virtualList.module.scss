@@ -1,0 +1,19 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.virtualListContainer {
+  width: 100%;
+  height: 100%;
+}
+
+.virtualRow {
+  display: flex;
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  border-bottom: 1px solid $border-primary;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+

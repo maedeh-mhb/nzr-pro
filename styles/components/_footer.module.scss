@@ -1,0 +1,233 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.footer {
+  background: $primary;
+  color: $text-light;
+  padding: $spacing-xl 5%;
+
+  // On mobile: ensure footer sits directly above bottom bar with no gap
+  // and all content (including social icons) is visible
+  @include max-tablet {
+    padding-top: $spacing-xl;
+    padding-left: 5%;
+    padding-right: 5%;
+    padding-bottom: $mobile-content-padding-bottom;
+    margin-bottom: 0;
+  }
+}
+
+.container {
+  max-width: $max-width-xl;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column; // Mobile first - single column
+  align-items: center;
+  gap: $spacing-xl;
+}
+
+.links {
+  display: flex;
+  flex-direction: column; // Mobile first - single column
+  align-items: center;
+  gap: $spacing-md;
+  list-style: none;
+}
+
+.link {
+  color: $text-light;
+  text-decoration: none;
+  // Ensure sufficient contrast for text against primary background
+  opacity: 1;
+  transition: opacity $transition-base, text-shadow $transition-base;
+  font-size: 0.95rem;
+
+  &:hover {
+    opacity: 1;
+    color: $text-light !important;
+    text-decoration: none !important;
+    text-shadow: 0 2px 8px rgba(255, 255, 255, 0.5);
+  }
+}
+
+.social {
+  display: flex;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.socialIcon {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 3rem;
+  min-height: 3rem;
+  padding: 0.7rem;
+  border-radius: $radius-circle;
+  background: rgba(255, 255, 255, 0.18);
+  text-decoration: none;
+  color: $text-light;
+  transition: all $transition-base;
+
+  &:hover {
+    background: $text-light;
+    transform: translateY(-3px);
+  }
+
+  svg {
+    width: 1.4rem;
+    height: 1.4rem;
+    color: $text-light;
+    display: block;
+  }
+
+  &:hover svg {
+    color: $primary;
+  }
+}
+
+.socialSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.linksSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-lg;
+}
+
+.trustSeal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  order: 2;
+
+  img {
+    height: 80px;
+    width: auto;
+    transition: transform $transition-base;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+}
+
+.brandText {
+  margin: 0;
+  color: $text-light;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.footerText {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xxs;
+  max-width: 36rem;
+}
+
+.warningText {
+  margin: 0;
+  color: $text-light;
+  opacity: 0.92;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.mobileOnly {
+  display: none;
+}
+
+.desktopOnly {
+  display: block;
+}
+
+// Mobile first - single column by default
+// Tablet and above - horizontal layout
+@include tablet {
+  .container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .links {
+    flex-direction: row;
+    gap: $spacing-xl;
+  }
+
+  .linksSection {
+    align-items: flex-start;
+    order: 1;
+  }
+
+  .trustSeal {
+    order: 2;
+    margin: 0 $spacing-xl;
+  }
+
+  .socialSection {
+    order: 3;
+  }
+
+  .warningText {
+    text-align: left;
+  }
+
+  .mobileOnly {
+    display: none;
+  }
+
+  .desktopOnly {
+    display: block;
+  }
+}
+
+@include max-tablet {
+  .links {
+    font-size: $font-sm;
+    gap: $spacing-md;
+  }
+
+  .linksSection {
+    order: 1;
+  }
+
+  .socialSection {
+    order: 2;
+  }
+
+  .trustSeal {
+    order: 3;
+    margin-top: $spacing-md;
+  }
+
+  .warningText {
+    text-align: center;
+  }
+
+  .mobileOnly {
+    display: block;
+  }
+
+  .desktopOnly {
+    display: none;
+  }
+}
+
+@include max-mobile {
+  .links {
+    font-size: $font-sm;
+    gap: $spacing-md;
+  }
+}

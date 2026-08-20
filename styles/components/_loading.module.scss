@@ -1,0 +1,232 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+// Loading Spinner
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(54, 114, 96, 0.2);
+  border-radius: 50%;
+  border-top-color: $color-primary;
+  animation: spin 0.6s linear infinite;
+  
+  &.small {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+  }
+  
+  &.large {
+    width: 32px;
+    height: 32px;
+    border-width: 3px;
+  }
+  
+  &.white {
+    border-color: rgba(255, 255, 255, 0.3);
+    border-top-color: $text-light;
+  }
+}
+
+// Loading Overlay
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  @include flex-center;
+  z-index: $z-modal;
+  backdrop-filter: blur(2px);
+}
+
+.loadingContent {
+  background: $text-light;
+  padding: $spacing-xl;
+  border-radius: $radius-lg;
+  @include elevation(4);
+  @include flex-center;
+  flex-direction: column;
+  gap: $spacing-md;
+  min-width: 200px;
+}
+
+.loadingText {
+  color: $text-primary;
+  font-size: $font-base;
+  font-weight: $font-weight-medium;
+  
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+// Skeleton Loader
+.skeleton {
+  @include loading-skeleton;
+  display: block;
+  
+  &.circle {
+    border-radius: $radius-circle;
+  }
+  
+  &.text {
+    height: 1em;
+    width: 100%;
+  }
+  
+  &.title {
+    height: 1.5em;
+    width: 60%;
+    margin-bottom: $spacing-sm;
+  }
+  
+  &.paragraph {
+    height: 1em;
+    width: 100%;
+    margin-bottom: $spacing-xs;
+    
+    &:last-child {
+      width: 80%;
+      margin-bottom: 0;
+    }
+  }
+  
+  &.image {
+    width: 100%;
+    height: 200px;
+    border-radius: $radius-md;
+  }
+  
+  &.button {
+    height: 40px;
+    width: 120px;
+    border-radius: $radius-full;
+  }
+  
+  &.card {
+    padding: $spacing-lg;
+    border-radius: $radius-xl;
+    @include elevation(1);
+  }
+}
+
+// Skeleton Card
+.skeletonCard {
+  @include card;
+  
+  .skeletonTitle {
+    @extend .skeleton;
+    @extend .title;
+  }
+  
+  .skeletonText {
+    @extend .skeleton;
+    @extend .paragraph;
+  }
+  
+  .skeletonImage {
+    @extend .skeleton;
+    @extend .image;
+  }
+}
+
+// Pulse Loading
+.pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+// Button Loading State
+.buttonLoading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 0.6s linear infinite;
+  }
+  
+  &.primary::after {
+    border-color: $color-primary;
+    border-top-color: transparent;
+  }
+  
+  &.save::after {
+    border-color: $text-light;
+    border-top-color: transparent;
+  }
+  
+  &.danger::after {
+    border-color: $text-light;
+    border-top-color: transparent;
+  }
+}
+
+// Progress Bar
+.progressBar {
+  width: 100%;
+  height: 4px;
+  background: $tertiary;
+  border-radius: $radius-full;
+  overflow: hidden;
+  position: relative;
+}
+
+.progressFill {
+  height: 100%;
+  background: $color-primary;
+  border-radius: $radius-full;
+  transition: width $duration-base $ease-out;
+  
+  &.animated {
+    background: linear-gradient(
+      90deg,
+      $color-primary 0%,
+      lighten($color-primary, 10%) 50%,
+      $color-primary 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+}
+
+// Dots Loading
+.dotsLoading {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  
+  span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: $color-primary;
+    animation: pulse 1.4s ease-in-out infinite both;
+    
+    &:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+    
+    &:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+    
+    &:nth-child(3) {
+      animation-delay: 0;
+    }
+  }
+}
+

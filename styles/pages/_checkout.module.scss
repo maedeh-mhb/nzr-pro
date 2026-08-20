@@ -1,0 +1,1445 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.checkoutContainer {
+  min-height: calc(100vh - 200px);
+  padding: $spacing-xl $spacing-md;
+  max-width: $max-width-lg;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+
+  // On mobile: add padding-top to account for fixed navbar
+  @include max-tablet {
+    padding-top: calc(#{$navbar-height} + #{$spacing-xl});
+    padding-left: $spacing-sm;
+    padding-right: $spacing-sm;
+  }
+
+  // Enhanced spacing for tablets - reduced padding for better space utilization
+  @include tablet {
+    padding: $spacing-xl $spacing-md;
+    max-width: $max-width-lg;
+  }
+
+  // Desktop-small: slightly more padding
+  @include desktop-small {
+    padding: $spacing-xl $spacing-lg;
+  }
+
+  // Desktop: better max-width and spacing
+  @include desktop {
+    max-width: $max-width-xl;
+    padding: $spacing-2xl $spacing-xl;
+    margin: 0 auto;
+  }
+}
+
+.checkoutContent {
+  background: $text-light;
+  border-radius: $radius-modal;
+  box-shadow: $shadow-md;
+  padding: $spacing-xl;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+
+  @include max-tablet {
+    padding: $spacing-md;
+  }
+
+  @include tablet {
+    padding: $spacing-lg; // Reduced from $spacing-2xl for better space utilization
+  }
+
+  @include desktop-small {
+    padding: $spacing-xl;
+  }
+}
+
+.title {
+  font-size: $font-4xl;
+  color: $primary;
+  margin-bottom: $spacing-xl;
+  text-align: center;
+
+  @include max-mobile {
+    font-size: $font-3xl;
+  }
+
+  // Enhanced sizing for tablets - slightly reduced
+  @include tablet {
+    font-size: $font-4xl; // Reduced from $font-5xl for better fit
+    margin-bottom: $spacing-xl;
+  }
+
+  // Enhanced sizing for desktop-small
+  @include desktop-small {
+    font-size: $font-5xl;
+    margin-bottom: $spacing-2xl;
+  }
+
+  // Enhanced sizing for desktops
+  @include desktop {
+    font-size: $font-6xl;
+  }
+}
+
+// Google Sign In Wrapper
+// Google Sign In Wrapper
+.googleSignInWrapper {
+  width: auto;
+  max-width: 320px;
+  margin: 0 auto;
+  display: flex;
+}
+
+.googleCta {
+  margin-top: $spacing-xl;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xxs;
+  text-align: center;
+}
+
+.googleCtaLabel {
+  color: $text-muted;
+  font-weight: 600;
+  font-size: $font-md;
+}
+
+// Create Account Section
+.createAccountSection {
+  margin-top: $spacing-lg;
+  padding: $spacing-md;
+  background: #0F7173;
+  color: #fff;
+  border-radius: $radius-md;
+  border: 1px solid $border-color;
+}
+
+.createAccountSection .checkboxText {
+  color: #fff !important;
+}
+
+.createAccountNote {
+  margin-top: $spacing-sm;
+  font-size: $font-sm;
+  color: #fef3c7;
+  font-style: italic;
+  font-weight: 600;
+  padding-left: 32px;
+  line-height: 1.6;
+
+  [dir="rtl"] & {
+    padding-left: 0;
+    padding-right: 32px;
+  }
+}
+
+// Discount Code Card
+.discountCodeCard {
+  background: $surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+  padding: $spacing-lg;
+  margin-top: 4rem;
+  margin-bottom: $spacing-lg;
+
+  @include max-tablet {
+    margin-top: $spacing-md;
+    padding: $spacing-md;
+  }
+}
+
+.discountTitle {
+  font-size: $font-lg;
+  font-weight: 600;
+  color: $primary;
+  margin-bottom: $spacing-md;
+}
+
+.discountInputGroup {
+
+  // Ensure input and button have equal height
+  > :global(.input) {
+    height: 48px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    box-sizing: border-box;
+  }
+
+  >button {
+    height: 48px;
+    box-sizing: border-box;
+  }
+
+  display: flex;
+  gap: $spacing-sm;
+  align-items: flex-start;
+
+  @include max-mobile {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+// Checkout Actions
+.checkoutActions {
+  margin-top: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+
+  .submitButton {
+    width: 100%;
+    font-size: $font-lg;
+    padding: $spacing-md $spacing-xl;
+    font-weight: 700;
+  }
+
+  button,
+  a {
+    width: 100%;
+    text-align: center;
+  }
+
+  @include max-tablet {
+    position: sticky;
+    bottom: 0;
+    background: $surface;
+    padding: $spacing-md;
+    margin: 0 (-$spacing-md);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+  }
+}
+
+// Checkout Options (Sign In vs Guest)
+.checkoutOptions {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+}
+
+.optionRow {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  align-items: center;
+
+  @include tablet {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    gap: $spacing-xl;
+  }
+}
+
+.optionDivider {
+  display: none;
+}
+
+.dividerLineVertical {
+  display: none;
+}
+
+.optionCard {
+  flex: 1;
+  padding: $spacing-lg;
+  border: 2px solid $tertiary;
+  border-radius: $radius-lg;
+  text-align: center;
+  max-width: 340px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-md;
+
+  @include tablet {
+    max-width: 360px;
+  }
+
+  h2 {
+    font-size: $font-2xl;
+    color: $primary;
+    margin-bottom: $spacing-md;
+
+    // Apply Sahel font for Farsi/RTL
+    [dir="rtl"] & {
+      font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+  }
+
+  p {
+
+    // Apply Sahel font for Farsi/RTL
+    [dir="rtl"] & {
+      font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+  }
+
+  p {
+    color: #666;
+    margin-bottom: 0;
+    font-size: $font-sm;
+  }
+}
+
+.signInButton,
+.guestButton {
+  @include button-base;
+  background: $primary;
+  color: $text-light;
+  height: 52px;
+  padding: 0 $spacing-lg;
+  border-radius: $radius-lg;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+  margin-top: auto;
+
+  &:hover {
+    background: darken($primary, 5%);
+  }
+
+  // Apply Sahel font for Farsi/RTL
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.guestButton {
+  background: $secondary;
+
+  &:hover {
+    background: darken($secondary, 5%);
+  }
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin: $spacing-md 0;
+  color: #999;
+  font-weight: 600;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: $tertiary;
+  }
+
+  @include tablet {
+    flex-direction: column;
+    margin: 0;
+
+    &::before,
+    &::after {
+      width: 100%;
+      height: 1px;
+    }
+  }
+}
+
+// Checkout Form
+.checkoutForm {
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  overflow-x: hidden;
+
+  @include tablet {
+    max-width: 100%;
+  }
+}
+
+// Two-column layout for tablet and desktop
+.checkoutLayout {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+
+  @include tablet {
+    flex-direction: row;
+    align-items: stretch; // Stretch both panels to same height
+    gap: $spacing-md; // Reduced gap for better space utilization on tablets
+  }
+
+  @include desktop-small {
+    gap: $spacing-lg; // Slightly larger gap on desktop-small
+  }
+
+  @include desktop {
+    align-items: flex-start; // Align both panels at the top
+    gap: $spacing-xl; // Full gap on desktop
+  }
+}
+
+.leftPanel {
+  flex: 1;
+  width: 100%;
+  max-width: 100%;
+  background: #f5f5f5; // Light grey
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  box-shadow: $shadow-sm;
+  box-sizing: border-box;
+  overflow-x: hidden;
+
+  @include max-tablet {
+    padding: $spacing-md;
+  }
+
+  @include tablet {
+    flex: 1;
+    min-width: 0; // Allow shrinking below content size
+    padding: $spacing-md; // Reduced padding for better space utilization
+  }
+
+  @include desktop-small {
+    padding: $spacing-lg;
+  }
+
+  @include desktop {
+    padding: $spacing-xl;
+    padding-top: $spacing-xl; // Ensure consistent top padding
+  }
+}
+
+.rightPanel {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+
+  @include tablet {
+    width: 320px; // Reduced from 400px for better space on tablets
+    flex-shrink: 0; // Prevent shrinking
+    position: sticky;
+    top: 20px; // Reduced offset to align better with content
+    align-self: flex-start;
+    padding-top: 0; // No padding - will align via summaryCard
+  }
+
+  @include desktop-small {
+    width: 360px; // Slightly larger on desktop-small
+    top: 20px;
+  }
+
+  @include desktop {
+    width: 450px; // Full width on desktop
+    padding-top: 0; // No padding - will align via summaryCard
+    align-self: flex-start; // Align at the top
+    top: 20px;
+  }
+}
+
+.summaryCard {
+  background: #e8f5e9; // Light green
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-sm;
+  margin-top: 0; // Ensure no top margin
+
+  @include tablet {
+    padding: $spacing-md; // Reduced padding to match leftPanel
+    padding-top: $spacing-md; // Match leftPanel top padding
+    margin-top: 0; // Ensure no top margin
+  }
+
+  @include desktop-small {
+    padding: $spacing-lg;
+    padding-top: $spacing-lg; // Match leftPanel top padding
+  }
+
+  @include desktop {
+    padding: $spacing-xl;
+    padding-top: $spacing-xl; // Match leftPanel top padding exactly
+    margin-top: 0; // Ensure no top margin
+  }
+}
+
+.summaryTitle {
+  font-size: $font-xl;
+  color: $primary;
+  margin-bottom: $spacing-lg;
+  font-weight: 600;
+  text-align: left;
+  margin-top: 0; // Ensure no top margin
+
+  @include max-mobile {
+    font-size: $font-lg;
+    text-align: center;
+  }
+
+  @include tablet {
+    margin-top: 0;
+  }
+
+  @include desktop {
+    margin-top: 0;
+  }
+}
+
+.priceSummaryBox {
+  background: $text-light;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-sm;
+  border: 1px solid rgba($text-dark, 0.1);
+}
+
+.priceBreakdown {
+  margin-top: $spacing-lg;
+  padding-top: $spacing-lg;
+  border-top: 1px solid rgba($text-dark, 0.1);
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+  font-size: $font-sm;
+  color: $text-dark;
+
+  @include tablet {
+    font-size: $font-sm;
+    margin-bottom: $spacing-xs;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.discountSection {
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  @include tablet {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: $spacing-md;
+  }
+
+  @include desktop {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: $spacing-md;
+  }
+
+  >div {
+    flex: 1;
+
+    // Global override for formGroup
+    :global {
+      div[class*="formGroup"] {
+        margin-bottom: 0 !important;
+        margin-top: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        margin: 0 !important;
+
+        label,
+        [class*="label"] {
+          margin-bottom: $spacing-xs;
+        }
+      }
+
+      input {
+        width: 100%;
+        padding: 0.625rem $spacing-md !important;
+        height: 2.875rem !important;
+        box-sizing: border-box !important;
+        line-height: 1.5 !important;
+        border: 1px solid $border-primary !important;
+        font-size: $font-base !important;
+        display: flex;
+        align-items: center;
+
+        &::placeholder {
+          font-size: $font-sm !important;
+          line-height: 1.5 !important;
+        }
+      }
+    }
+  }
+}
+
+.applyButton {
+  white-space: nowrap;
+  min-width: 100px;
+  padding: 0.625rem $spacing-lg;
+  background: $primary;
+  color: $text-light;
+  border: 1px solid transparent; // Transparent border to match input's border-box sizing
+  border-radius: $radius-md;
+  font-weight: 600;
+  font-size: $font-base;
+  line-height: 1.5;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  height: 2.875rem; // Fixed height to match input field exactly
+  margin-top: 0;
+  margin-bottom: 4px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  @include desktop {
+    min-width: 120px;
+    padding: 0.625rem $spacing-xl;
+    font-size: $font-base;
+    height: 2.875rem; // Keep same height
+  }
+
+  &:hover:not(:disabled) {
+    background: darken($primary, 5%);
+    box-shadow: 0 2px 8px rgba($primary, 0.3);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: $tertiary;
+    color: rgba($text-dark, 0.5);
+  }
+}
+
+.invoiceSection {
+  .checkboxText {
+    color: #000;
+  }
+
+  margin: $spacing-md 0;
+  padding: $spacing-md $spacing-lg;
+  background: #fffef0; // Very light yellow
+  border-radius: $radius-lg;
+  border: 1px solid rgba($primary, 0.1);
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-md;
+  cursor: pointer;
+  font-size: $font-sm;
+  color: $text-dark;
+  position: relative;
+
+  .customCheckbox {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+
+    &:checked+.checkboxCustom {
+      background: $primary;
+      border-color: $primary;
+
+      &::after {
+        opacity: 1;
+      }
+    }
+  }
+
+  .checkboxCustom {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    border: 2px solid rgba($text-dark, 0.3);
+    border-radius: $radius-sm;
+    background: $text-light;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    order: 2; // Push to the end
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 2px;
+      width: 5px;
+      height: 10px;
+      border: solid $text-light;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    &:hover {
+      border-color: $primary;
+    }
+  }
+
+  .checkboxText {
+    flex: 1;
+    user-select: none;
+    order: 1; // Text comes first
+    color: #000;
+
+    @include max-tablet {
+      font-size: 0.875rem; // Slightly smaller on mobile
+    }
+  }
+}
+
+.actionButtons {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
+}
+
+// Hide order summary in left panel on tablet/desktop
+.sectionMobile {
+  @include tablet {
+    display: none;
+  }
+}
+
+.requirementsWarning {
+  margin-bottom: $spacing-lg;
+  margin-top: 0; // Ensure no top margin
+  padding: $spacing-lg;
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  border-radius: $radius-lg;
+
+  @include tablet {
+    margin-top: 0; // Ensure no top margin on large viewports
+  }
+
+  @include desktop {
+    margin-top: 0; // Ensure no top margin on large viewports
+  }
+
+  color: #856404;
+}
+
+.warningTitle {
+  font-size: $font-sm;
+  font-weight: 600;
+  margin-bottom: $spacing-sm;
+  color: #856404;
+}
+
+.requirementsList {
+  margin: 0;
+  padding-left: $spacing-lg;
+  list-style: disc;
+
+  li {
+    margin-bottom: $spacing-xs;
+    font-size: $font-sm;
+  }
+}
+
+.completeProfileButton {
+  display: inline-block;
+  margin-top: $spacing-md;
+  padding: $spacing-xs $spacing-md;
+  background: #856404;
+  color: #fff3cd;
+  border: 1px solid #856404;
+  border-radius: $radius-md;
+  font-size: $font-sm;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: darken(#856404, 8%);
+    color: #fff;
+    text-decoration: none;
+  }
+}
+
+.missingIndicator {
+  color: $danger;
+  font-weight: 700;
+  font-size: $font-lg;
+}
+
+.userInfoSection {
+  margin-bottom: $spacing-xl;
+  padding: $spacing-lg;
+  background: rgba($primary, 0.03);
+  border-radius: $radius-lg;
+  border: 1px solid rgba($primary, 0.1);
+}
+
+.userInfoTitle {
+  font-size: $font-md;
+  color: $primary;
+  margin-bottom: $spacing-md;
+  font-weight: 600;
+}
+
+.userInfoGrid {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.userInfoRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  font-size: $font-sm;
+  min-width: 0; // Allow flex items to shrink
+  flex-wrap: wrap;
+
+  @include max-tablet {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-xs;
+  }
+}
+
+.userInfoLabel {
+  font-weight: 600;
+  color: $text-dark;
+  min-width: 80px;
+}
+
+.userInfoValue {
+  color: $text-dark;
+  flex: 1;
+  min-width: 0; // Allow text to wrap
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.unverifiedPhone {
+  color: $danger !important;
+  font-weight: 500;
+}
+
+.verificationBadge {
+  font-size: $font-sm;
+  color: $danger;
+  font-weight: 500;
+}
+
+.verifyPhoneButton {
+  margin-top: $spacing-xs;
+  padding: $spacing-xs $spacing-sm;
+  background: $primary;
+  color: $text-light;
+  border: none;
+  border-radius: $radius-md;
+  font-size: $font-xs;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: darken($primary, 5%);
+  }
+}
+
+.phoneVerificationWrapper {
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1px solid rgba($primary, 0.1);
+}
+
+.section {
+  margin-bottom: $spacing-2xl;
+  padding-bottom: $spacing-xl;
+  border-bottom: 1px solid $tertiary;
+
+  &:first-of-type {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
+.sectionTitle {
+  font-size: $font-xl;
+  color: $primary;
+  margin-bottom: $spacing-lg;
+  margin-top: 0;
+
+  @include max-mobile {
+    font-size: $font-lg;
+  }
+}
+
+// Address Cards
+.addressCards {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.addressCardWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.addressCardWrapperSelected {
+  // This class helps style the tab when card is selected
+}
+
+.addressCard {
+  background: $text-light;
+  border: 2px solid $tertiary;
+  border-radius: $radius-lg;
+  padding: $spacing-md $spacing-lg;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: $primary;
+    box-shadow: $shadow-sm;
+  }
+}
+
+.addressCardSelected {
+  border-color: $primary;
+  background: rgba($primary, 0.05);
+  box-shadow: $shadow-md;
+}
+
+.addressCardContent {
+  display: flex;
+  align-items: center;
+}
+
+.addressText {
+  margin: 0;
+  font-size: $font-sm;
+  color: $text-dark;
+  line-height: 1.5;
+
+  @include max-mobile {
+    font-size: $font-sm;
+  }
+}
+
+.editAddressTab {
+  align-self: flex-start;
+  font-size: $font-sm;
+  color: $primary;
+  text-decoration: none;
+  font-weight: 500;
+  padding: $spacing-xs $spacing-md;
+  margin-top: -2px; // Connect seamlessly to card border
+  margin-left: $spacing-lg; // Align with card padding (LTR)
+  background: $text-light;
+  border: 2px solid $tertiary;
+  border-top: none;
+  border-bottom-left-radius: $radius-md;
+  border-bottom-right-radius: $radius-md;
+  transition: all 0.2s ease;
+  display: inline-block;
+
+  // RTL (Farsi) styling - align to right side
+  [dir="rtl"] & {
+    margin-left: 0;
+    margin-right: $spacing-lg; // Align with card padding (RTL)
+  }
+
+  &:hover {
+    color: darken($primary, 10%);
+    text-decoration: none;
+    background: rgba($primary, 0.08);
+    border-color: $primary;
+  }
+}
+
+// Style tab to match card when card is selected
+.addressCardWrapperSelected .editAddressTab {
+  border-color: $primary;
+  background: rgba($primary, 0.05);
+
+  &:hover {
+    background: rgba($primary, 0.1);
+    border-color: darken($primary, 5%);
+  }
+}
+
+// When card is hovered, also enhance tab
+.addressCardWrapper:hover .editAddressTab {
+  border-color: $primary;
+}
+
+.shipToAnotherText {
+  margin-top: $spacing-md;
+  margin-bottom: $spacing-lg;
+  font-size: $font-sm;
+  color: $text-dark;
+  text-align: left;
+  font-style: normal;
+
+  @include max-mobile {
+    font-size: $font-sm;
+  }
+}
+
+.addNewAddressLink {
+  color: $primary;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: darken($primary, 10%);
+    text-decoration: none;
+  }
+}
+
+// Payment Method Cards
+.paymentMethodCards {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.paymentMethodCard {
+  background: $text-light;
+  border: 2px solid $tertiary;
+  border-radius: $radius-lg;
+  padding: $spacing-md $spacing-lg;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: $primary;
+    box-shadow: $shadow-sm;
+  }
+}
+
+.paymentMethodCardSelected {
+  border-color: $primary;
+  background: rgba($primary, 0.05);
+  box-shadow: $shadow-md;
+}
+
+.paymentMethodCardContent {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; // Gap between icon and text
+
+  [dir="rtl"] & {
+    gap: 0.75rem; // Ensure gap in RTL (Farsi) as well
+  }
+}
+
+.paymentMethodText {
+  margin: 0;
+  font-size: $font-sm;
+  color: $text-dark;
+  line-height: 1.5;
+  font-weight: 500;
+
+  @include max-mobile {
+    font-size: $font-sm;
+  }
+}
+
+.shippingMethodNote {
+  margin-top: $spacing-sm;
+  margin-bottom: 0;
+  font-size: $font-sm;
+  line-height: 1.6;
+  color: $text-dark;
+  opacity: 0.85;
+
+  @include max-mobile {
+    font-size: $font-sm;
+  }
+}
+
+// New Address Form
+.newAddressForm {
+  margin-top: $spacing-lg;
+  padding: $spacing-lg;
+  background: rgba($primary, 0.03);
+  border-radius: $radius-lg;
+  border: 1px solid rgba($primary, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+
+  @include max-mobile {
+    padding: $spacing-md;
+    gap: $spacing-sm;
+  }
+}
+
+.newAddressTitle {
+  font-size: $font-lg;
+  color: $primary;
+  margin-bottom: $spacing-sm;
+  font-weight: 600;
+
+  @include max-mobile {
+    font-size: $font-md;
+  }
+}
+
+.newAddressActions {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-sm;
+
+  @include max-mobile {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  :global(button) {
+    flex: 1;
+
+    @include max-mobile {
+      width: 100%;
+    }
+  }
+}
+
+// Style Save Address button with primary color background
+.saveAddressButton {
+  background: $primary !important;
+  color: $text-light !important;
+  border: none !important;
+
+  &:hover {
+    background: darken($primary, 5%) !important;
+    color: $text-light !important;
+    box-shadow: 0 2px 8px rgba($primary, 0.3);
+  }
+
+  &:active {
+    background: darken($primary, 8%) !important;
+    box-shadow: 0 1px 4px rgba($primary, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Style Cancel Address button with better colors
+.cancelAddressButton {
+  background: transparent !important;
+  color: $text-dark !important;
+  border: 2px solid rgba($text-dark, 0.2) !important;
+
+  &:hover {
+    background: rgba($text-dark, 0.05) !important;
+    border-color: rgba($text-dark, 0.3) !important;
+    color: $text-dark !important;
+  }
+
+  &:active {
+    background: rgba($text-dark, 0.1) !important;
+    border-color: rgba($text-dark, 0.4) !important;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Order Summary
+.orderItems {
+  margin-bottom: $spacing-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+
+  @include tablet {
+    margin-bottom: $spacing-lg;
+  }
+}
+
+.orderItemCard {
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: $text-light;
+  border-radius: $radius-lg;
+  border: 1px solid rgba($text-dark, 0.1);
+  box-shadow: $shadow-sm;
+
+  @include tablet {
+    padding: $spacing-lg;
+  }
+}
+
+.itemThumbnail {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: $radius-md;
+  overflow: hidden;
+  background: $tertiary;
+
+  @include tablet {
+    width: 80px;
+    height: 80px;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.itemDetails {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.itemCategoryNamePrice {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: $spacing-sm;
+  min-width: 0; // Allow flex items to shrink
+
+  @include max-tablet {
+    flex-wrap: wrap;
+  }
+}
+
+.itemCategoryName {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: $spacing-xs;
+  flex: 1;
+}
+
+.itemCategory {
+  color: #666;
+  font-size: $font-xs;
+  font-weight: 500;
+
+  @include tablet {
+    font-size: $font-xs;
+  }
+}
+
+.itemName {
+  font-weight: 600;
+  color: $text-dark;
+  font-size: $font-sm;
+
+  @include tablet {
+    font-size: $font-base;
+  }
+}
+
+.itemSinglePrice {
+  color: #666;
+  font-size: $font-xs;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  @include tablet {
+    font-size: $font-sm;
+  }
+}
+
+.itemQuantityTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.itemQuantity {
+  color: $text-dark;
+  font-size: $font-sm;
+  font-weight: 500;
+
+  @include tablet {
+    font-size: $font-base;
+  }
+}
+
+.itemTotalPrice {
+  font-weight: 600;
+  color: $primary;
+  font-size: $font-base;
+
+  @include tablet {
+    font-size: $font-lg;
+  }
+}
+
+// Legacy styles for mobile order items (keep for backward compatibility)
+.orderItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm;
+  background: $tertiary;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-xs;
+
+  @include tablet {
+    padding: $spacing-md;
+    margin-bottom: $spacing-sm;
+  }
+}
+
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+
+  @include tablet {
+    flex-direction: row;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+}
+
+.itemPrice {
+  font-weight: 600;
+  color: $primary;
+  font-size: $font-base;
+
+  @include tablet {
+    font-size: $font-sm;
+  }
+}
+
+.orderTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $spacing-md; // Add gap between label and price
+  padding: $spacing-lg;
+  background: linear-gradient(135deg, rgba($primary, 0.05) 0%, rgba($primary, 0.02) 100%);
+  border-radius: $radius-lg;
+  margin-top: $spacing-sm;
+  border: 1px solid rgba($primary, 0.1);
+
+  @include max-tablet {
+    flex-wrap: nowrap; // Prevent wrapping on mobile
+    gap: $spacing-sm; // Smaller gap on mobile
+  }
+}
+
+.totalLabel {
+  font-size: $font-xl;
+  font-weight: 600;
+  color: $text-dark;
+
+  @include tablet {
+    font-size: $font-lg;
+  }
+}
+
+.totalPrice {
+  font-size: $font-3xl;
+  font-weight: 700;
+  color: $primary;
+  white-space: nowrap; // Prevent price from wrapping to multiple lines
+  flex-shrink: 0; // Prevent shrinking
+
+  @include max-tablet {
+    font-size: $font-2xl; // Smaller on mobile
+    white-space: nowrap; // Ensure no wrapping on mobile
+  }
+
+  @include tablet {
+    font-size: $font-2xl;
+  }
+}
+
+.submitButton {
+  width: 100%;
+  padding: $spacing-lg;
+  font-size: $font-lg;
+  font-weight: 600;
+  background: $primary;
+  color: $text-light;
+  border: none;
+  border-radius: $radius-lg;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba($primary, 0.2);
+
+  &:hover {
+    background: darken($primary, 5%);
+    box-shadow: 0 4px 12px rgba($primary, 0.3);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+// Missing Requirements Warning (under Place Order button)
+.missingRequirementsWarning {
+  margin-top: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: $radius-md;
+  text-align: center;
+
+  .missingRequirementsText {
+    font-size: $font-sm;
+    color: #856404;
+    display: block;
+
+    strong {
+      font-weight: 700;
+    }
+  }
+}

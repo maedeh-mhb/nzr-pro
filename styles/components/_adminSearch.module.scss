@@ -1,0 +1,40 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.searchBar {
+  position: relative;
+  margin-bottom: $spacing-md;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.8rem 1rem 0.8rem 3rem;
+  border: 2px solid $tertiary;
+  border-radius: $radius-full;
+  font-size: $font-base;
+  transition: border-color $transition-base;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+}
+
+.searchIcon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: $font-lg;
+  color: #999;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+

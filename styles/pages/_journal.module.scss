@@ -1,0 +1,190 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.pageHeader {
+  @include gradient-primary;
+  color: $text-light;
+  padding: $spacing-3xl 5%;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  // Add padding-top on mobile to account for fixed navbar
+  @include max-tablet {
+    padding-top: calc(#{$navbar-height} + #{$spacing-3xl});
+  }
+
+  h1 {
+    font-size: $font-4xl;
+    font-weight: 700;
+    margin-bottom: $spacing-sm;
+    color: $text-light;
+  }
+
+  p {
+    opacity: 0.9;
+    font-size: $font-base;
+    margin-bottom: $spacing-xl;
+    color: $text-light;
+  }
+
+  @include tablet {
+    padding: $spacing-4xl 5%;
+
+    h1 {
+      font-size: $font-6xl;
+    }
+
+    p {
+      font-size: $font-lg;
+    }
+  }
+
+  // Apply Sahel font in RTL mode
+  [dir="rtl"] & {
+
+    h1,
+    p {
+      font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+  }
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+
+  // Large viewports - use more width
+  @include desktop {
+    max-width: 1400px;
+    padding: 2rem 2rem;
+  }
+}
+
+.categorySelection {
+  margin-bottom: $spacing-xl;
+  max-width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+
+  @include tablet {
+    justify-content: flex-start;
+    gap: $spacing-sm;
+  }
+}
+
+.categoryLabel {
+  font-weight: 600;
+  color: $text-dark;
+  font-size: $font-base;
+  white-space: nowrap;
+  margin: 0;
+
+  // Apply Sahel font for Farsi/RTL
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.mobileCategorySelect {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  max-width: 300px;
+
+  @include tablet {
+    display: none;
+  }
+
+  // RTL support for Farsi - right align text in dropdown
+  [dir="rtl"] & {
+    :global(.selectButton) {
+      text-align: right;
+
+      :global(.selectValue) {
+        text-align: right;
+      }
+    }
+
+    :global(.dropdown) {
+      :global(.option) {
+        text-align: right;
+      }
+    }
+  }
+}
+
+.desktopCategoryChips {
+  display: none;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+  align-items: center;
+
+  @include tablet {
+    display: flex;
+  }
+}
+
+.categoryChip {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: $radius-md;
+  font-size: $font-sm;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all $duration-base $ease-out;
+  white-space: nowrap;
+  background: rgba(54, 114, 96, 0.15);
+  color: $text-dark;
+
+  // Apply Sahel font for Farsi/RTL
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  &:hover {
+    background: rgba(54, 114, 96, 0.25);
+    transform: translateY(-2px);
+    @include elevation(1);
+  }
+
+  &.active {
+    color: $text-light;
+    background: rgb(44, 62, 80);
+    @include elevation(2);
+
+    &:hover {
+      background: darken(rgb(44, 62, 80), 5%);
+    }
+  }
+}
+
+.journalGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-xl;
+  width: 100%;
+
+  // Large viewports - ensure cards fill container width
+  @include desktop {
+    grid-template-columns: 1fr;
+    gap: $spacing-2xl;
+  }
+}
+
+.loading,
+.error,
+.empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #7f8c8d;
+  font-size: 1.1rem;
+}
+
+.error {
+  color: $danger;
+}

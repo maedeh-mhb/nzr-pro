@@ -1,0 +1,357 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3); // Semi-transparent overlay
+  backdrop-filter: blur(4px); // Blur effect
+  -webkit-backdrop-filter: blur(4px); // Safari support
+  z-index: 198; // Below search panel (199) but above other content
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity $transition-base, visibility $transition-base;
+  pointer-events: none; // Disable pointer events when hidden
+
+  // Show backdrop when open
+  &.backdropOpen {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto; // Enable pointer events when visible
+  }
+}
+
+.searchPanel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  background: $bg-primary;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 199; // Just below navbar (200)
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: opacity $transition-base, transform $transition-base, visibility $transition-base;
+
+  &.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  // Mobile: compact modal initially, expands when results appear
+  @include max-tablet {
+    left: $spacing-md;
+    right: $spacing-md;
+    max-width: calc(100% - #{$spacing-md * 2});
+    border-radius: $radius-xl; // Increased border radius for more rounded appearance
+    box-shadow: $shadow-lg;
+    height: auto; // Auto height based on content
+    bottom: auto; // Remove bottom constraint
+    top: var(--navbar-height, 70px);
+    margin-top: $spacing-md;
+    transition: max-height $transition-base ease-out, transform $transition-base ease-out, opacity $transition-base ease-out, visibility $transition-base ease-out;
+
+    // Default compact state - just enough for search input
+    &:not(.hasResults) {
+      max-height: 95px; // Increased from 80px for better spacing
+    }
+
+    // Expanded state when results are present
+    &.hasResults {
+      max-height: calc(100vh - var(--navbar-height, 70px) - #{$spacing-lg * 2}); // Account for navbar and margins
+    }
+  }
+
+  // Tablet and Desktop: fixed width, centered, dropdown style below navbar
+  @include tablet {
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    top: var(--navbar-height, 70px);
+    transform: translateY(-10px);
+    width: 90%;
+    max-width: 600px;
+    max-height: calc(100vh - var(--navbar-height, 70px) - 20px);
+    border-radius: $radius-xl;
+    margin-top: $spacing-sm;
+    bottom: auto;
+
+    &.open {
+      transform: translateY(0);
+    }
+  }
+
+  @include desktop {
+    max-width: 700px;
+  }
+}
+
+.searchInputContainer {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md;
+  border-bottom: 1px solid $border-primary;
+  gap: $spacing-sm;
+  background: $bg-primary;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  flex-shrink: 0; // Prevent shrinking
+
+  // On mobile, hide border when no results (compact state)
+  @include max-tablet {
+    .searchPanel:not(.hasResults) & {
+      border-bottom: none; // No border when compact (no results)
+    }
+  }
+}
+
+.searchIcon {
+  color: $text-secondary;
+  font-size: $font-xl;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: $font-base;
+  color: $text-primary;
+  background: transparent;
+  font-family: inherit;
+
+  &.farsi {
+    font-family: 'Vazirmatn', 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  }
+
+  &.farsi::placeholder {
+    font-family: 'Vazirmatn', 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  }
+
+  &::placeholder {
+    color: $text-tertiary;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  @include tablet {
+    font-size: $font-lg;
+  }
+}
+
+.clearButton {
+  background: none;
+  border: none;
+  color: $text-secondary;
+  cursor: pointer;
+  padding: $spacing-xs;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-full;
+  transition: all $transition-base;
+  flex-shrink: 0;
+
+  &:hover {
+    background: $bg-secondary;
+    color: $text-primary;
+  }
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
+.resultsContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-sm;
+  min-height: 200px;
+
+  @include tablet {
+    padding: $spacing-md;
+    min-height: 300px;
+    max-height: 500px;
+  }
+}
+
+// Mobile-specific results container styling
+@include max-tablet {
+  .searchPanel:not(.hasResults) .resultsContainer {
+    display: none; // Hide when no results to keep modal compact
+  }
+
+  .searchPanel.hasResults .resultsContainer {
+    display: block; // Show when results appear
+    padding: $spacing-md;
+    min-height: 0; // Remove min-height
+    max-height: calc(100vh - var(--navbar-height, 70px) - 180px); // Account for input area
+    overflow-y: auto; // Allow scrolling when many results
+  }
+}
+
+.loadingState,
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-2xl;
+  color: $text-secondary;
+  gap: $spacing-md;
+
+  span {
+    font-size: $font-base;
+    color: $text-tertiary;
+  }
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  color: $text-tertiary;
+  opacity: 0.5;
+}
+
+.spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid $border-primary;
+  border-top-color: $primary;
+  border-radius: $radius-circle;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.resultsSection {
+  margin-bottom: $spacing-lg;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.sectionHeader {
+  margin-bottom: $spacing-sm;
+  padding-bottom: $spacing-xs;
+  border-bottom: 1px solid $border-primary;
+}
+
+.sectionTitle {
+  font-size: $font-sm;
+  font-weight: 600;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.resultsList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.resultItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all $transition-base;
+  background: transparent;
+
+  &:hover {
+    background: rgba(54, 114, 96, 0.05);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.resultImage {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: $radius-md;
+  flex-shrink: 0;
+  background: $bg-secondary;
+}
+
+.resultContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  min-width: 0; // Allow text truncation
+}
+
+.resultTitle {
+  font-size: $font-base;
+  font-weight: 600;
+  color: $text-primary;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.resultPrice {
+  font-size: $font-sm;
+  font-weight: 600;
+  color: $primary;
+}
+
+.resultExcerpt {
+  font-size: $font-sm;
+  color: $text-secondary;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.viewAllButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  padding: $spacing-md;
+  margin-top: $spacing-sm;
+  background: transparent;
+  border: 1px solid $border-primary;
+  border-radius: $radius-md;
+  color: $primary;
+  font-size: $font-sm;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-base;
+
+  &:hover {
+    background: $primary;
+    color: $text-light;
+    border-color: $primary;
+  }
+
+  .arrowIcon {
+    font-size: $font-base;
+  }
+}

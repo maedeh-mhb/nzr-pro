@@ -1,0 +1,66 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.statusIndicator {
+  display: inline-block;
+  border-radius: $radius-circle;
+  flex-shrink: 0;
+  
+  // Size variants
+  &.sm {
+    width: 6px;
+    height: 6px;
+  }
+  
+  &.md {
+    width: 8px;
+    height: 8px;
+  }
+  
+  &.lg {
+    width: 12px;
+    height: 12px;
+  }
+  
+  // Status colors
+  &.active {
+    background: $color-primary;
+  }
+  
+  &.pending {
+    background: $color-warning;
+  }
+  
+  &.inactive {
+    background: $text-tertiary;
+  }
+  
+  &.success {
+    background: $color-success;
+  }
+  
+  &.warning {
+    background: $color-warning;
+  }
+  
+  &.danger {
+    background: $color-danger;
+  }
+  
+  // Pulse animation
+  &.pulse {
+    animation: pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+

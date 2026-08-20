@@ -1,0 +1,30 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.tableSkeleton {
+  width: 100%;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: $spacing-md;
+  padding: $spacing-md;
+  border-bottom: 2px solid $border-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: $spacing-md;
+  padding: $spacing-md;
+  border-bottom: 1px solid $border-primary;
+}
+

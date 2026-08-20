@@ -1,0 +1,53 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.quickActionCard {
+  @include card;
+  text-align: center;
+  cursor: pointer;
+  transition: transform $transition-base, box-shadow $transition-base;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1.3 / 1;
+  min-height: auto;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: $shadow-lg;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.quickActionIcon {
+  font-size: clamp(1rem, 5vw, 2.25rem);
+  margin-bottom: $spacing-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: clamp(1.25rem, 5vw, 2.5rem);
+    height: clamp(1.25rem, 5vw, 2.5rem);
+    color: $primary;
+  }
+}
+
+.quickActionLabel {
+  font-weight: 600;
+  font-size: clamp(0.6rem, 2.5vw, 0.95rem);
+  color: $text-dark;
+}
+
+.quickActionCount {
+  font-size: clamp(0.8rem, 4vw, 1.25rem);
+  font-weight: 700;
+  color: $primary;
+  margin-top: $spacing-sm;
+}

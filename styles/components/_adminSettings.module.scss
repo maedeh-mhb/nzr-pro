@@ -1,0 +1,843 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.expandableHeader {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color $transition-base;
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 0 0;
+  margin: 0;
+
+  &:hover {
+    background: rgba(108, 156, 184, 0.05);
+  }
+
+  &:active {
+    background: rgba(108, 156, 184, 0.1);
+  }
+}
+
+.expandIcon {
+  color: $text-dark;
+  font-size: 1rem;
+  opacity: 0.6;
+  transition: transform $transition-base;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.expandableContent {
+  animation: slideDown $transition-base ease-out;
+  padding-top: $spacing-sm;
+  border-top: 1px solid $tertiary;
+  margin-top: $spacing-sm;
+  font-size: $font-sm; // Reduced font size for entire settings section
+
+  // Style buttons within expanded content for better visibility
+  button {
+    transition: all $transition-base;
+    font-size: $font-sm; // Smaller button text
+
+    &[type="submit"],
+    &[type="button"]:not([style*="background: none"]) {
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+      &:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        transform: translateY(-1px);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+
+  // Override form styles to use smaller fonts
+  :global(.formLabel),
+  :global(label) {
+    font-size: $font-sm !important;
+  }
+
+  :global(.formInput),
+  :global(.formSelect),
+  :global(.formTextarea),
+  :global(input:not([type="checkbox"]):not([type="radio"])),
+  :global(textarea),
+  :global(select) {
+    font-size: $font-sm !important;
+  }
+
+  // Override Input and Textarea component font sizes
+  :global([class*="input"]:not([type="checkbox"]):not([type="radio"])),
+  :global([class*="textarea"]) {
+    font-size: $font-sm !important;
+  }
+
+  // Override h4, h5, h6, p, span to use smaller font
+  h4,
+  h5,
+  h6,
+  p,
+  span:not(.toggleLabel) {
+    font-size: $font-sm;
+  }
+}
+
+.sectionTitle {
+  font-size: $font-sm; // Reduced from 1rem
+  font-weight: 600;
+  margin-bottom: $spacing-md;
+  color: $text-dark;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+// FAQ Section Styles
+.faqSection {
+  margin-top: $spacing-lg;
+  padding-top: $spacing-lg;
+  border-top: 1px solid $tertiary;
+}
+
+.faqToggle {
+  margin-bottom: $spacing-md;
+}
+
+.faqItemsContainer {
+  margin-bottom: $spacing-md;
+}
+
+.faqItem {
+  margin-bottom: $spacing-md;
+  padding: $spacing-md;
+  border: 1px solid rgba($tertiary, 0.5);
+  border-radius: $radius-md;
+  background: rgba($text-light, 0.5);
+  transition: all $transition-base;
+
+  &:hover {
+    border-color: rgba($primary, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.faqItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-sm;
+  border-bottom: 1px solid rgba($tertiary, 0.3);
+}
+
+.faqItemTitle {
+  font-size: $font-sm;
+  font-weight: 600;
+  color: $text-dark;
+  margin: 0;
+}
+
+.faqItemFields {
+  margin-bottom: $spacing-sm;
+}
+
+.faqAddButton {
+  margin-top: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.faqEmptyState {
+  padding: $spacing-md;
+  text-align: center;
+  color: rgba($text-dark, 0.6);
+  font-size: $font-sm;
+  margin-bottom: $spacing-md;
+  background: rgba($tertiary, 0.1);
+  border-radius: $radius-md;
+}
+
+// Toggle Switch Styles (similar to payment settings)
+.enableToggle {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  cursor: pointer;
+  font-size: $font-sm;
+
+  input[type="checkbox"] {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    appearance: none;
+    background: rgba($tertiary, 0.5);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all $transition-base;
+    margin: 0;
+
+    &:checked {
+      background: $primary;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: $text-light;
+      top: 3px;
+      left: 3px;
+      transition: transform $transition-base;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    &:checked::before {
+      transform: translateX(20px);
+    }
+  }
+}
+
+.toggleSlider {
+  display: none; // Hidden, using ::before on input instead
+}
+
+.toggleLabel {
+  font-size: $font-sm;
+  font-weight: 500;
+  color: $text-dark;
+  user-select: none;
+}
+
+// Mobile Products Card View
+.mobileProductsList {
+  display: block;
+
+  @include tablet {
+    display: none;
+  }
+}
+
+.mobileProductCard {
+  background: $text-light;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  margin-bottom: $spacing-md;
+  overflow: hidden;
+  transition: all $transition-base;
+}
+
+.mobileProductCardButton {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: $spacing-md;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobileProductCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: $spacing-sm;
+}
+
+.mobileProductCardName {
+  font-weight: 600;
+  font-size: $font-md;
+  color: $text-dark;
+  flex: 1;
+}
+
+.mobileProductCardCategory {
+  font-size: $font-sm;
+  color: #7f8c8d;
+  font-weight: 400;
+  margin-left: auto;
+  margin-right: $spacing-sm;
+}
+
+.mobileProductExpanded {
+  padding: 0 $spacing-md $spacing-md;
+  border-top: 1px solid $tertiary;
+  animation: slideDown 0.3s ease-out;
+}
+
+.mobileProductDetail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+  font-size: $font-sm;
+  color: $text-dark;
+  gap: $spacing-sm;
+}
+
+.mobileProductDetailLabel {
+  font-weight: 600;
+  color: $primary;
+}
+
+.mobileProductDetailValue {
+  color: $text-dark;
+  margin-left: auto;
+}
+
+.mobileProductActions {
+  display: flex;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1px solid $tertiary;
+}
+
+// Product image upload and preview
+.imageUploadSection {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.uploadOptions {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  @include tablet {
+    flex-direction: row;
+    gap: $spacing-md;
+  }
+}
+
+.uploadOption {
+  flex: 1;
+}
+
+.imagePreview {
+  position: relative;
+  margin-top: $spacing-sm;
+  border: 1px solid $tertiary;
+  border-radius: $radius-md;
+  overflow: hidden;
+  background: $bg-secondary;
+  max-width: 100%;
+  align-self: flex-start;
+}
+
+.imagePreview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: clamp(160px, 35vh, 320px);
+  object-fit: contain;
+  background: linear-gradient(180deg, rgba($primary, 0.05) 0%, rgba($secondary, 0.05) 100%);
+
+  @include tablet {
+    max-height: clamp(200px, 40vh, 380px);
+  }
+}
+
+.removeImageBtn {
+  position: absolute;
+  top: $spacing-sm;
+  right: $spacing-sm;
+  background: rgba($text-dark, 0.65);
+  color: $text-light;
+  border: none;
+  border-radius: $radius-circle;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all $duration-fast $ease-out;
+  @include elevation(2);
+
+  @include state-hover {
+    background: rgba($text-dark, 0.85);
+    transform: scale(1.05);
+  }
+
+  @include state-active {
+    transform: scale(0.96);
+  }
+}
+
+// Desktop Products Table View
+.desktopProductsTable {
+  display: none;
+
+  @include tablet {
+    display: block;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+
+  to {
+    opacity: 1;
+    max-height: 1000px;
+  }
+}
+
+// Site Settings Styles - Target all inputs, selects, and textareas within site settings form
+.expandableContent.siteSettingsForm {
+
+  // Match input heights to button heights - use :global for HTML elements
+  :global(input[type="text"]),
+  :global(input[type="email"]),
+  :global(input[type="number"]),
+  :global(input[type="url"]),
+  :global(input:not([type="checkbox"]):not([type="radio"])) {
+    padding-top: 0.7rem !important;
+    padding-bottom: 0.7rem !important;
+    padding-left: $spacing-lg !important;
+    padding-right: $spacing-lg !important;
+    height: auto !important;
+    min-height: auto !important;
+    line-height: 1.5 !important;
+
+    @include tablet {
+      padding-top: 0.7rem !important;
+      padding-bottom: 0.7rem !important;
+      padding-left: $spacing-lg !important;
+      padding-right: $spacing-lg !important;
+    }
+
+    @include desktop {
+      padding-top: 0.85rem !important;
+      padding-bottom: 0.85rem !important;
+      padding-left: $spacing-xl !important;
+      padding-right: $spacing-xl !important;
+    }
+  }
+
+  // Match select heights to button heights
+  :global(.selectButton) {
+    padding-top: 0.7rem !important;
+    padding-bottom: 0.7rem !important;
+    padding-left: $spacing-lg !important;
+    padding-right: $spacing-lg !important;
+
+    @include tablet {
+      padding-top: 0.7rem !important;
+      padding-bottom: 0.7rem !important;
+      padding-left: $spacing-lg !important;
+      padding-right: $spacing-lg !important;
+    }
+
+    @include desktop {
+      padding-top: 0.85rem !important;
+      padding-bottom: 0.85rem !important;
+      padding-left: $spacing-xl !important;
+      padding-right: $spacing-xl !important;
+    }
+  }
+
+  // Match textarea height to button height (2 rows) - target by name attribute for specificity
+  :global(textarea[name="siteDescription"]) {
+    padding: 0 !important;
+    font-size: $font-sm !important;
+    line-height: 1.5 !important;
+    min-height: calc(1.5em * 2) !important; // 2 rows of text with no padding
+    height: auto !important;
+
+    @include tablet {
+      padding: 0 !important;
+      min-height: calc(1.5em * 2) !important; // 2 rows of text with no padding
+    }
+
+    @include desktop {
+      padding: 0 !important;
+      min-height: calc(1.5em * 2) !important; // 2 rows of text with no padding
+    }
+  }
+}
+
+.siteSettingsFirstRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include desktop {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.siteSettingsSecondRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+
+  @include tablet {
+    grid-template-columns: 2fr 1fr;
+  }
+
+  @include desktop {
+    grid-template-columns: 3fr 1fr;
+  }
+}
+
+
+.siteSettingsMaintenanceMode {
+  @include tablet {
+    max-width: 300px;
+  }
+
+  @include desktop {
+    max-width: 250px;
+  }
+
+  // Match select height to button height
+  :global(.selectButton) {
+    padding: 0.7rem $spacing-lg !important;
+
+    @include tablet {
+      padding: 0.7rem $spacing-lg !important;
+    }
+
+    @include desktop {
+      padding: 0.85rem $spacing-xl !important;
+    }
+  }
+}
+
+// Social Links Styles - Compact
+.socialLinksList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.socialLinkItem {
+  background: $text-light;
+  border: 1px solid rgba($tertiary, 0.5);
+  border-radius: $radius-md;
+  padding: $spacing-sm;
+  transition: all $transition-base;
+  position: relative;
+
+  &:hover {
+    border-color: rgba($primary, 0.3);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+
+  // Compact form grids
+  :global(.formGrid) {
+    gap: $spacing-xs;
+    margin-bottom: $spacing-xs;
+  }
+
+  // Reduce input/textarea/select sizes within cards
+  :global(.formLabel),
+  :global(label) {
+    font-size: $font-xs !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  :global(input),
+  :global(textarea),
+  :global(select) {
+    padding: 0.4rem 0.5rem !important;
+    font-size: $font-sm !important;
+  }
+
+  // Remove button styling
+  >button[type="button"] {
+    margin-top: $spacing-xs;
+    padding: 0.4rem 0.75rem !important;
+    font-size: $font-sm !important;
+    transition: all $transition-base;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba($danger, 0.15);
+    }
+  }
+}
+
+// Icon preview container - compact
+.iconPreview {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  margin-top: $spacing-xs;
+  margin-bottom: $spacing-xs;
+  padding: $spacing-xs;
+  background: linear-gradient(135deg, rgba($primary, 0.05) 0%, rgba($secondary, 0.05) 100%);
+  border-radius: $radius-sm;
+  border: 1px solid rgba($primary, 0.1);
+
+  span {
+    font-size: $font-xs;
+    font-weight: 500;
+
+    &:first-child {
+      color: rgba($text-dark, 0.7);
+    }
+
+    &:last-child {
+      color: rgba($text-dark, 0.5);
+      font-family: 'Courier New', monospace;
+      font-size: $font-xs;
+    }
+  }
+
+  svg {
+    font-size: 1.25rem;
+    color: $primary;
+  }
+}
+
+.socialLinksActions {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  margin-top: $spacing-md;
+  padding-top: $spacing-sm;
+  border-top: 1px solid rgba($tertiary, 0.3);
+
+  button {
+    transition: all $transition-base;
+    font-weight: 600;
+    padding: $spacing-xs $spacing-sm;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+// Large viewport - still compact
+@include tablet {
+  .socialLinksList {
+    gap: $spacing-md;
+  }
+
+  .socialLinkItem {
+    padding: $spacing-md;
+
+    :global(.formGrid) {
+      gap: $spacing-sm;
+      margin-bottom: $spacing-sm;
+    }
+
+    .iconPreview {
+      padding: $spacing-sm;
+      margin-top: $spacing-sm;
+      margin-bottom: $spacing-sm;
+
+      svg {
+        font-size: 1.5rem;
+      }
+
+      span {
+        font-size: $font-sm;
+      }
+    }
+  }
+
+  .socialLinksActions {
+    flex-direction: row;
+    gap: $spacing-sm;
+
+    button {
+      flex: 1;
+      padding: $spacing-sm $spacing-md;
+    }
+  }
+}
+
+@include desktop {
+  .socialLinksList {
+    gap: $spacing-md;
+  }
+
+  .socialLinkItem {
+    padding: $spacing-md;
+    border-radius: $radius-md;
+
+    :global(.formGrid) {
+      gap: $spacing-sm;
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .iconPreview {
+      padding: $spacing-sm;
+      border-radius: $radius-sm;
+    }
+  }
+
+  .socialLinksActions {
+    padding-top: $spacing-md;
+    margin-top: $spacing-md;
+  }
+}
+
+// Admin Management & Permissions
+.adminSection {
+  &:not(:last-of-type) {
+    margin-bottom: $spacing-lg;
+  }
+}
+
+.permissionsSection {
+  margin-top: $spacing-md;
+}
+
+.permissionsTitle {
+  font-size: $font-sm;
+  font-weight: 600;
+  margin-bottom: $spacing-sm;
+  color: $text-dark;
+}
+
+.permissionsList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.permissionCategory {
+  border-radius: $radius-md;
+  background: $text-light;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba($tertiary, 0.4);
+  overflow: hidden;
+}
+
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  margin: -1px -1px 0; // align with card border
+  border-bottom: 1px solid rgba($tertiary, 0.6);
+  background: rgba($tertiary, 0.15);
+  font-size: $font-sm;
+  font-weight: 500;
+  color: $text-dark;
+}
+
+.categoryName {
+  flex: 1;
+}
+
+.categoryToggle {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: $font-xs;
+  font-weight: 500;
+  color: $primary;
+  cursor: pointer;
+
+  &:hover {
+    color: darken($primary, 8%);
+  }
+}
+
+.permissionItems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md $spacing-md;
+}
+
+.permissionItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-size: $font-xs;
+  padding: 0.25rem 0.5rem;
+  border-radius: $radius-sm;
+  background: $text-light;
+
+  input {
+    margin: 0;
+  }
+}
+
+// Desktop grid layout for permissions – 4 columns x 5 rows target
+@include desktop {
+  .permissionsList {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: minmax(0, 1fr);
+    gap: $spacing-sm;
+  }
+
+  .permissionCategory {
+    height: 100%;
+  }
+
+  .permissionItems {
+    display: block;
+  }
+
+  .permissionItem {
+    display: flex;
+    margin-bottom: 0.25rem;
+  }
+}
+
+.sectionDivider {
+  margin: $spacing-xl 0 $spacing-lg;
+  padding-bottom: $spacing-md;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sectionDividerTitle {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: $font-base;
+  font-weight: 600;
+  color: $text-dark;
+  margin: 0 0 $spacing-xs;
+
+  svg {
+    color: $primary;
+  }
+}
+
+.sectionDividerDescription {
+  font-size: $font-sm;
+  color: #6b7280;
+  margin: 0;
+}

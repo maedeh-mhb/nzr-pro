@@ -1,0 +1,89 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.statCard {
+  @include card;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: auto;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 1.3 / 1;
+
+  @media (max-width: 600px) {
+    aspect-ratio: unset;
+  }
+}
+
+.statHeader {
+  @include flex-between;
+  margin-bottom: $spacing-md;
+  width: 100%;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.statIcon {
+  font-size: clamp(0.875rem, 5vw, 2rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+
+  svg {
+    width: clamp(1rem, 5vw, 2rem);
+    height: clamp(1rem, 5vw, 2rem);
+    color: $primary;
+  }
+}
+
+.statTrend {
+  font-size: clamp(0.55rem, 2vw, 0.85rem);
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.statTrendPositive {
+  color: $success;
+}
+
+.statTrendNegative {
+  color: $danger;
+}
+
+.statValue {
+  font-weight: 700;
+  color: $primary;
+  margin-bottom: 0.3rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.2em;
+  line-height: 1.1;
+  /* Dynamic font size for long numbers */
+  font-size: clamp(0.875rem, 4vw, 1.75rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Responsive font-size for very large numbers */
+.statValue {
+  font-size: clamp(0.875rem, calc(1.75rem - (max(0px, (ch - 10)) * 0.12rem)), 1.75rem);
+}
+
+.statLabel {
+  color: #666;
+  font-size: clamp(0.6rem, 2.5vw, 0.9rem);
+}
+
+.skeleton {
+  @include loading-skeleton;
+  border-radius: $radius-sm;
+}

@@ -1,0 +1,67 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.dateRangeSelector {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.periodButtons {
+  display: flex;
+  gap: $spacing-xs;
+  flex-wrap: wrap;
+}
+
+.periodButton {
+  @include button-base;
+  padding: $spacing-xs $spacing-md;
+  background: $tertiary;
+  color: $text-dark;
+  font-size: $font-sm;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  transition: all $duration-base $ease-out;
+
+  &:hover {
+    background: darken($tertiary, 5%);
+  }
+
+  &.active {
+    background: $primary;
+    color: $text-light;
+  }
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.customDates {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.dateInput {
+  padding: $spacing-xs $spacing-sm;
+  border: 1px solid $border-primary;
+  border-radius: $radius-md;
+  font-size: $font-sm;
+  font-family: inherit;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    @include focus-visible;
+  }
+}
+
+.dateSeparator {
+  color: $text-secondary;
+  font-weight: 600;
+}
+

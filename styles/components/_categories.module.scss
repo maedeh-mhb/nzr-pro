@@ -1,0 +1,111 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.categories {
+  padding: $spacing-3xl 5%;
+  background: $text-light;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: $font-5xl;
+  margin-bottom: $spacing-2xl;
+  color: $primary;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-3xl;
+  max-width: $max-width-xl;
+  margin: 0 auto;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none !important;
+  color: inherit;
+  transition: transform $transition-base;
+
+  &:hover {
+    transform: translateY(-10px);
+    text-decoration: none !important;
+
+    .icon {
+      background: $secondary;
+      box-shadow: 0 15px 40px rgba(108, 156, 184, 0.4);
+      color: $text-light; // Change icon color to white on hover
+
+      svg {
+        color: $text-light; // Ensure SVG icons become white on hover
+      }
+    }
+    
+    .title {
+      text-decoration: none !important;
+    }
+  }
+}
+
+.icon {
+  width: 150px;
+  height: 150px;
+  background: $tertiary;
+  border-radius: $radius-circle;
+  @include flex-center;
+  color: $primary; // Changed from $text-light to $primary (green)
+  margin-bottom: $spacing-lg;
+  transition: all $transition-base;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  
+  svg {
+    width: 4rem;
+    height: 4rem;
+    color: $primary; // Ensure SVG icons use primary color
+  }
+}
+
+.title {
+  font-size: $font-xl;
+  color: $text-dark;
+  font-weight: 600;
+  text-decoration: none !important;
+}
+
+// Mobile first - single column by default
+// Tablet and above - multiple columns
+@include tablet {
+  .grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@include desktop-small {
+  .grid {
+    gap: $spacing-2xl;
+  }
+}
+
+@include max-tablet {
+  .grid {
+    gap: $spacing-xl;
+  }
+
+  .icon {
+    width: 120px;
+    height: 120px;
+    font-size: $font-6xl;
+  }
+}
+
+@include max-mobile {
+  .card {
+    padding: $spacing-lg;
+  }
+}
+

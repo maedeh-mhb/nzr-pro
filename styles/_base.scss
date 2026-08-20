@@ -1,0 +1,243 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #{$primary};
+  --secondary: #{$secondary};
+  --tertiary: #{$tertiary};
+  --text-dark: #{$text-dark};
+  --text-light: #{$text-light};
+  --success: #{$success};
+  --warning: #{$warning};
+  --danger: #{$danger};
+}
+
+html {
+  overflow-x: hidden; // Prevent horizontal scroll
+  overflow-y: scroll; // Always show scrollbar to prevent layout shift
+  scrollbar-gutter: stable; // Reserve space for scrollbar to prevent layout shift
+  height: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.7;
+  letter-spacing: $letter-spacing-normal;
+  color: $text-dark;
+  overflow-x: hidden; // Prevent horizontal scroll
+  overflow-y: auto; // Allow vertical scrolling for sticky to work
+  width: 100%;
+  max-width: 100vw; // Prevent overflow
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: $tertiary; // Set default background to grey to prevent white gaps
+  font-size: $font-base; // Base font size (mobile-first)
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  &.mobile-view {
+    padding-bottom: 0; // Footer will handle this
+  }
+
+  // On mobile: add padding-bottom for content (but footer handles its own)
+  @include max-tablet {
+    padding-bottom: 0; // Footer will handle spacing for bottom bar
+  }
+
+  // Enhanced font scaling for tablets
+  @include tablet {
+    font-size: $font-md; // Slightly larger on tablets
+  }
+
+  // Enhanced font scaling for desktops
+  @include desktop {
+    font-size: $font-lg; // Larger on desktops for better readability
+  }
+}
+
+// Apply Vazirmatn (Farsi) + Rubik fallback to all RTL content - override Inter font
+html[dir="rtl"] body {
+  font-family: 'Vazirmatn', 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+// Apply Rubik font to language buttons (they contain Farsi text "فا")
+// This ensures Farsi text in language toggles uses Rubik even in LTR mode
+.langBtn {
+  font-family: 'Vazirmatn', 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; // Use Vazirmatn for Farsi text
+}
+
+// Global style for .farsi class - applies to inputs and textareas in admin panel
+// This ensures Farsi text uses Vazirmatn font regardless of CSS module scoping
+input.farsi,
+textarea.farsi,
+input[class*="farsi"],
+textarea[class*="farsi"] {
+  font-family: 'Vazirmatn', 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+
+  &::placeholder {
+    font-family: 'Vazirmatn', 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  }
+}
+
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  flex: 1;
+  // Ensure sticky positioning works - don't set overflow on this container
+  overflow: visible;
+  position: relative; // Create positioning context
+  background: $tertiary; // Set background to grey to prevent white gaps
+
+  // Make footer stick to bottom
+  footer {
+    margin-top: auto;
+  }
+
+  // Make main content sections grow to fill space
+  // This ensures footer is pushed down when content is long
+  section,
+  main,
+  article {
+    flex-grow: 1;
+  }
+
+  // On mobile: adjust footer to sit above bottom bar
+  @include max-tablet {
+    footer {
+      margin-top: 0; // Remove auto margin on mobile
+      margin-bottom: 0; // Remove any margin
+      // padding-bottom is handled in footer component styles
+    }
+  }
+}
+
+// Remove bottom padding on tablet and above (when bottom nav is hidden)
+@include tablet {
+  body {
+    padding-bottom: 0;
+  }
+}
+
+// Global link styles with focus-visible
+a {
+  color: $color-primary;
+  text-decoration: none;
+  transition: color $duration-base $ease-out,
+    text-shadow $duration-base $ease-out;
+
+  @include focus-visible;
+
+  @include state-hover {
+    color: $color-primary-hover;
+    text-decoration: none;
+  }
+
+  @include state-active {
+    color: $color-primary-active;
+  }
+}
+
+// Heading styles with better typography
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: $font-weight-bold;
+  letter-spacing: $letter-spacing-heading;
+  line-height: 1.3;
+  margin-bottom: $spacing-md;
+  color: $text-dark;
+
+  // Better rendering
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+p {
+  margin-bottom: $spacing-md;
+  line-height: 1.7;
+}
+
+// Apply Vazirmatn font to all RTL content
+html[dir="rtl"] {
+  font-family: 'Vazirmatn', 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  body {
+    font-family: 'Vazirmatn', 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  // Force Rubik on all descendants to override component-level font overrides
+  * {
+    font-family: 'Vazirmatn', 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  }
+}
+
+// Apply Rubik when language is explicitly set to Persian/Farsi via lang attribute
+html[lang="fa"],
+body[lang="fa"],
+[lang="fa"],
+[lang|="fa"] {
+  font-family: 'Vazirmatn', 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+// Apply Rubik when using a .farsi utility class on any container
+.farsi {
+  font-family: 'Vazirmatn', 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+// Reduced Motion Support
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// High Contrast Mode Support
+@media (prefers-contrast: high) {
+  :root {
+    --border-width: 2px;
+    --shadow-opacity: 0.3;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    border-width: 2px;
+  }
+}
+
+// Global rich text content styles (for dangerouslySetInnerHTML content)
+[data-audio-player] {
+  margin: 1em 0;
+
+  audio {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 8px;
+  }
+}
+
+.editor-section-break {
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--primary), transparent);
+  margin: 2.5em 0;
+}

@@ -1,0 +1,276 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.topBar {
+  background: $primary;
+  padding: $spacing-md;
+  position: sticky;
+  top: 0;
+  z-index: $z-sticky;
+  box-shadow: $shadow-md;
+}
+
+.topBarContainer {
+  max-width: $max-width-xl;
+  margin: 0 auto;
+  @include flex-between;
+}
+
+.adminTitle {
+  color: $text-light;
+  font-size: $font-lg;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.topBarActions {
+  display: flex;
+  gap: $spacing-md;
+  align-items: center;
+}
+
+.topIconBtn {
+  background: none;
+  border: none;
+  color: $text-light;
+  font-size: $font-xl;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity $transition-base;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  svg {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
+}
+
+.alertBadge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: $danger;
+  color: $text-light;
+  border-radius: $radius-circle;
+  width: 18px;
+  height: 18px;
+  font-size: 0.7rem;
+  @include flex-center;
+}
+
+.langSwitcher {
+  display: flex;
+  gap: 0.2rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: $radius-3xl;
+  padding: 0.2rem;
+}
+
+.langBtn {
+  padding: 0.3rem 0.6rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: $radius-2xl;
+  font-weight: 600;
+  color: $text-light;
+  font-size: 0.8rem;
+  transition: all $transition-base;
+  font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; // Use Sahel for Farsi text
+
+  &.active {
+    background: $text-light;
+    color: $primary;
+  }
+}
+
+// Profile Dropdown
+.profileDropdown {
+  position: relative;
+}
+
+.profileButton {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: $radius-lg;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  transition: all $transition-base;
+  color: $text-light;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.profileAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: $radius-full;
+  background: $text-light;
+  color: $primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: $font-sm;
+  flex-shrink: 0;
+  font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.profileName {
+  font-size: $font-sm;
+  font-weight: 500;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  @include max-desktop-small {
+    display: none; // Hide name on smaller screens
+  }
+}
+
+.profileChevron {
+  width: 1rem;
+  height: 1rem;
+  transition: transform $transition-base;
+  flex-shrink: 0;
+}
+
+.profileDropdownMenu {
+  position: absolute;
+  top: calc(100% + $spacing-sm);
+  right: 0;
+  background: $text-light;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+  min-width: 240px;
+  z-index: $z-dropdown;
+  overflow: hidden;
+  animation: slideDown 0.2s ease-out;
+
+  [dir="rtl"] & {
+    right: auto;
+    left: 0;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profileDropdownHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: rgba($primary, 0.05);
+  border-bottom: 1px solid $tertiary;
+}
+
+.profileDropdownAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: $radius-full;
+  background: $primary;
+  color: $text-light;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: $font-base;
+  flex-shrink: 0;
+  font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.profileDropdownInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.profileDropdownName {
+  font-weight: 600;
+  font-size: $font-base;
+  color: $text-dark;
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.profileDropdownEmail {
+  font-size: $font-sm;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profileDropdownDivider {
+  height: 1px;
+  background: $tertiary;
+  margin: $spacing-xs 0;
+}
+
+.profileDropdownItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md;
+  color: $text-dark;
+  text-decoration: none;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background $transition-base;
+  font-size: $font-sm;
+  font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  [dir="rtl"] & {
+    text-align: right;
+    flex-direction: row-reverse;
+  }
+
+  &:hover {
+    background: rgba($primary, 0.05);
+  }
+
+  svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  &.profileDropdownItemDanger {
+    color: $danger;
+
+    &:hover {
+      background: rgba($danger, 0.1);
+    }
+  }
+}
+

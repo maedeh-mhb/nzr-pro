@@ -1,0 +1,88 @@
+"use client";
+
+import { useLanguage } from "@/lib/utils/language";
+import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { FiHome, FiPackage, FiShoppingBag, FiUser, FiMessageCircle, FiLogOut } from "react-icons/fi";
+import styles from "@/styles/components/_dashboard.module.scss";
+
+interface DashboardBottomNavProps {
+  activeSection: string;
+  setActiveSection: (section: string) => void;
+}
+
+export default function DashboardBottomNav({
+  activeSection,
+  setActiveSection,
+}: DashboardBottomNavProps) {
+  const { t } = useLanguage();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await signOut({ redirect: true, callbackUrl: "/" });
+    router.push("/login");
+    router.refresh();
+  };
+
+  return (
+    <div className={styles.bottomNav}>
+      <div className={styles.bottomNavContainer}>
+        <button
+          className={`${styles.navItem} ${activeSection === "home" ? styles.active : ""}`}
+          onClick={() => setActiveSection("home")}
+        >
+          <span className={styles.navItemIcon}>
+            <FiHome />
+          </span>
+          <span>{t("Home", "خانه")}</span>
+        </button>
+        <button
+          className={styles.navItem}
+          onClick={() => {
+            router.push("/products");
+            router.refresh();
+          }}
+        >
+          <span className={styles.navItemIcon}>
+            <FiShoppingBag />
+          </span>
+          <span>{t("Shop", "خرید")}</span>
+        </button>
+        <button
+          className={`${styles.navItem} ${activeSection === "orders" ? styles.active : ""}`}
+          onClick={() => setActiveSection("orders")}
+        >
+          <span className={styles.navItemIcon}>
+            <FiPackage />
+          </span>
+          <span>{t("Orders", "سفارشات")}</span>
+        </button>
+        <button
+          className={`${styles.navItem} ${activeSection === "profile" ? styles.active : ""}`}
+          onClick={() => setActiveSection("profile")}
+        >
+          <span className={styles.navItemIcon}>
+            <FiUser />
+          </span>
+          <span>{t("Profile", "پروفایل")}</span>
+        </button>
+        <button
+          className={`${styles.navItem} ${activeSection === "messages" ? styles.active : ""}`}
+          onClick={() => setActiveSection("messages")}
+        >
+          <span className={styles.navItemIcon}>
+            <FiMessageCircle />
+          </span>
+          <span>{t("Messages", "پیام‌ها")}</span>
+        </button>
+        <button className={styles.logoutItem} onClick={handleLogout}>
+          <span className={styles.navItemIcon}>
+            <FiLogOut />
+          </span>
+          <span>{t("Logout", "خروج")}</span>
+        </button>
+      </div>
+    </div>
+  );
+}

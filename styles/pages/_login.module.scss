@@ -1,0 +1,545 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.authContainer {
+  min-height: calc(100vh - 200px);
+  @include flex-center;
+  @include gradient-primary;
+  padding: $spacing-md;
+  flex: 1;
+  width: 100%;
+  margin: 0;
+
+  // On mobile: add padding-top to account for fixed navbar
+  @include max-tablet {
+    padding-top: calc(#{$navbar-height} + #{$spacing-md});
+    min-height: calc(100vh - 150px);
+    padding-bottom: calc($spacing-md + 60px); // Account for bottom bar
+  }
+
+  // On desktop and tablet: ensure it extends fully to footer with no gaps
+  @include tablet {
+    min-height: calc(100vh - 200px);
+  }
+
+  @include desktop {
+    min-height: calc(100vh - 200px);
+  }
+}
+
+.authCard {
+  width: 100%;
+  max-width: 400px;
+  background: $text-light;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-xl;
+  overflow: hidden;
+
+  @include tablet {
+    max-width: 500px;
+  }
+
+  @include desktop {
+    max-width: 480px;
+  }
+
+  // Apply Sahel font to loading text in Farsi/RTL
+  [dir="rtl"] & p {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+// Logo Section
+.authLogo {
+  @include gradient-primary;
+  padding: $spacing-lg;
+  text-align: center;
+
+  @include tablet {
+    padding: $spacing-xl;
+  }
+
+  @include desktop {
+    padding: $spacing-xl;
+  }
+}
+
+.logo {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  margin: 0 auto $spacing-sm;
+  background: transparent;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 40px rgba(255, 255, 255, 0.2));
+
+  @include max-mobile {
+    width: 50px;
+    height: 50px;
+    font-size: $font-3xl;
+  }
+
+  @include tablet {
+    width: 70px;
+    height: 70px;
+    font-size: $font-5xl;
+  }
+
+  @include desktop {
+    width: 70px;
+    height: 70px;
+    font-size: $font-5xl;
+  }
+}
+
+.authTitle {
+  color: $text-light;
+  font-size: $font-2xl;
+  font-weight: 700;
+  margin-bottom: $spacing-xs;
+
+  @include max-mobile {
+    font-size: $font-xl;
+  }
+
+  @include tablet {
+    font-size: $font-3xl;
+  }
+
+  @include desktop {
+    font-size: $font-3xl;
+  }
+}
+
+.authSubtitle {
+  color: $text-light;
+  opacity: 0.9;
+  font-size: $font-xs;
+
+  @include desktop {
+    font-size: $font-sm;
+  }
+}
+
+// Auth Content
+.authContent {
+  padding: $spacing-xl;
+
+  @include tablet {
+    padding: $spacing-2xl;
+  }
+
+  @include desktop {
+    padding: $spacing-3xl;
+  }
+}
+
+// Form
+.authForm {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}
+
+.formGroup {
+  margin-bottom: $spacing-md;
+}
+
+.label {
+  display: block;
+  margin-bottom: $spacing-sm;
+  font-weight: 600;
+  font-size: $font-base; // Increased from $font-sm for better mobile readability
+  color: $text-dark;
+
+  .optional {
+    color: #999;
+    font-weight: 400;
+    font-size: $font-sm; // Increased from $font-xs
+    margin-left: $spacing-sm;
+
+    [dir="rtl"] & {
+      margin-left: 0;
+      margin-right: $spacing-sm;
+    }
+  }
+
+  @include tablet {
+    font-size: $font-md;
+  }
+
+  @include desktop {
+    font-size: $font-lg;
+  }
+}
+
+.inputWrapper {
+  position: relative;
+
+  :global(input[type="password"]::-ms-reveal),
+  :global(input[type="password"]::-ms-clear) {
+    display: none;
+  }
+
+  :global(input[type="text"]),
+  :global(input[type="email"]),
+  :global(input[type="tel"]),
+  :global(input[type="password"]) {
+    width: 100%;
+    padding: 1rem 1.2rem; // Increased from 0.9rem 1rem for better touch targets
+    padding-right: 3.5rem; // Increased from 3rem for better icon spacing
+    border: 2px solid $tertiary;
+    border-radius: $radius-lg;
+    font-size: $font-md; // Increased from $font-base for better mobile readability
+    transition: border-color $transition-base;
+    font-family: inherit;
+
+    @include tablet {
+      padding: 1.1rem 1.3rem;
+      padding-right: 3.5rem;
+      font-size: $font-lg;
+    }
+
+    @include desktop {
+      padding: 1.2rem 1.5rem;
+      padding-right: 4rem; // Increased for better icon spacing
+      font-size: $font-lg;
+    }
+
+    // RTL: Add padding on left for icon
+    [dir="rtl"] & {
+      padding-right: 1rem;
+      padding-left: 3rem;
+
+      @include tablet {
+        padding-right: 1.2rem;
+        padding-left: 3.5rem;
+      }
+
+      @include desktop {
+        padding-right: 1.3rem;
+        padding-left: 3.5rem;
+      }
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+    }
+
+    &.inputError {
+      border-color: $danger;
+    }
+
+    &::placeholder {
+      color: #999;
+    }
+  }
+}
+
+.inputIcon {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: $font-xl;
+  color: #999;
+  pointer-events: none;
+
+  [dir="rtl"] & {
+    right: auto;
+    left: 1rem;
+  }
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: $font-xl;
+  color: #999;
+  @include flex-center;
+  padding: 0;
+
+  [dir="rtl"] & {
+    right: auto;
+    left: 1rem;
+  }
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
+.inputMatch {
+  background-color: #e8f5e9 !important;
+  border-color: $success !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+// Checkbox
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+
+  :global(input[type="checkbox"]) {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+
+  label {
+    font-size: $font-sm;
+    cursor: pointer;
+    margin: 0;
+    font-weight: 400;
+  }
+}
+
+// Forgot Password
+.forgotPassword {
+  text-align: right;
+  margin-bottom: $spacing-lg;
+
+  [dir="rtl"] & {
+    text-align: left;
+  }
+
+  a {
+    color: $primary;
+    text-decoration: none;
+    font-size: $font-sm;
+    font-weight: 600;
+    transition: color $transition-base;
+
+    &:hover {
+      color: darken($primary, 10%);
+    }
+  }
+}
+
+// Buttons
+.btnPrimary {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: $radius-lg;
+  font-weight: 600;
+  font-size: $font-base;
+  cursor: pointer;
+  transition: all $transition-base;
+  background: $primary;
+  color: $text-light;
+  margin-bottom: $spacing-md;
+
+  // Apply Sahel font for Farsi/RTL
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  @include desktop {
+    padding: 1.1rem;
+    font-size: $font-md;
+  }
+
+  &:hover {
+    background: darken($primary, 5%);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+.btnGoogle {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid $tertiary;
+  border-radius: $radius-lg;
+  font-weight: 600;
+  font-size: $font-base;
+  cursor: pointer;
+  transition: all $transition-base;
+  background: $text-light;
+  color: $text-dark;
+  @include flex-center;
+  gap: $spacing-sm;
+
+  @include desktop {
+    padding: 1.1rem;
+    font-size: $font-md;
+  }
+
+  // Apply Sahel font for Farsi/RTL
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  &:hover {
+    background: $tertiary;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.googleIcon {
+  width: 20px;
+  height: 20px;
+}
+
+// Divider
+.divider {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin: $spacing-lg 0;
+  color: $text-secondary;
+  font-size: $font-sm;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: $tertiary;
+  }
+}
+
+// Switch Auth
+.switchAuth {
+  text-align: center;
+  margin-top: $spacing-lg;
+  font-size: $font-sm;
+  color: #666;
+
+  @include desktop {
+    font-size: $font-base;
+  }
+
+  span {
+    margin-right: $spacing-xs;
+
+    [dir="rtl"] & {
+      margin-right: 0;
+      margin-left: $spacing-xs;
+    }
+  }
+
+  a {
+    color: $primary;
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: $spacing-xs;
+    transition: color $transition-base;
+
+    [dir="rtl"] & {
+      margin-left: 0;
+      margin-right: $spacing-xs;
+    }
+
+    &:hover {
+      color: $secondary;
+    }
+  }
+}
+
+.consentText {
+  margin-top: $spacing-md;
+  font-size: $font-xs;
+  color: #999;
+  text-align: center;
+  line-height: 1.6;
+
+  a {
+    color: $primary;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color $transition-base;
+
+    &:hover {
+      color: darken($primary, 10%);
+    }
+  }
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+// Error Messages
+.error {
+  color: $danger;
+  font-size: $font-xs;
+  margin-top: $spacing-xs;
+  display: block;
+}
+
+// Password Strength
+.passwordStrength {
+  margin-top: $spacing-sm;
+  font-size: $font-xs;
+
+  &[data-strength="weak"] .strengthText {
+    color: $danger;
+  }
+
+  &[data-strength="medium"] .strengthText {
+    color: $warning;
+  }
+
+  &[data-strength="strong"] .strengthText {
+    color: $success;
+  }
+}
+
+.strengthBar {
+  height: 4px;
+  background: $tertiary;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: $spacing-xs;
+}
+
+.strengthFill {
+  height: 100%;
+  width: 0;
+  transition: all $transition-base;
+}
+
+.strengthWeak {
+  background: $danger;
+  width: 33%;
+}
+
+.strengthMedium {
+  background: $warning;
+  width: 66%;
+}
+
+.strengthStrong {
+  background: $success;
+  width: 100%;
+}
+
+.strengthText {
+  display: block;
+  margin-top: $spacing-xs;
+}

@@ -1,0 +1,346 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: $bg-overlay;
+  z-index: $z-modal-backdrop;
+  @include animate(fadeIn, $duration-base);
+  backdrop-filter: blur(2px);
+
+  // Mobile: cover the full screen except the bottom bar
+  @include max-tablet {
+    bottom: 0;
+    z-index: 999;
+  }
+}
+
+.cartPanel {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 400px;
+  background: $text-light;
+  z-index: $z-modal;
+  display: flex;
+  flex-direction: column;
+  @include elevation(4);
+  transform: translateX(100%);
+  @include transition-optimized(transform, $duration-base);
+  @include gpu-accelerated;
+
+  // LTR: opens from right
+  [dir="ltr"] & {
+    right: 0;
+    transform: translateX(100%);
+    @include elevation(4);
+
+    &.open {
+      transform: translateX(0);
+      @include animate(slideInRight, $duration-base);
+    }
+  }
+
+  // RTL: opens from left
+  [dir="rtl"] & {
+    left: 0;
+    transform: translateX(-100%);
+    @include elevation(4);
+
+    &.open {
+      transform: translateX(0);
+      @include animate(slideInLeft, $duration-base);
+    }
+  }
+
+  // Mobile: full width, use the full available height above the bottom bar
+  @include max-tablet {
+    width: 100%;
+    max-width: 100%;
+    top: 0;
+    bottom: 0;
+    z-index: 1000;
+    pointer-events: auto;
+  }
+
+  // Desktop: fixed width, full height
+  @include tablet {
+    top: 0;
+    bottom: 0;
+    height: 100vh;
+  }
+}
+
+.header {
+  padding: $spacing-lg $spacing-xl;
+  border-bottom: 1px solid $tertiary;
+  flex-shrink: 0;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: $font-2xl;
+  font-weight: 700;
+  color: $text-dark;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.itemCount {
+  font-size: $font-base;
+  font-weight: 400;
+  color: #666;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: $text-dark;
+  font-size: $font-xl;
+  cursor: pointer;
+  padding: $spacing-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-md;
+  transition: all $transition-base;
+
+  &:hover {
+    background: $tertiary;
+  }
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-md;
+}
+
+.loading,
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: $spacing-2xl;
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  color: $tertiary;
+  margin-bottom: $spacing-lg;
+}
+
+.emptyText {
+  font-size: $font-lg;
+  color: #666;
+  margin-bottom: $spacing-xl;
+}
+
+.continueShopping {
+  padding: $spacing-md $spacing-xl;
+  background: $primary;
+  color: $text-light;
+  text-decoration: none;
+  border-radius: $radius-full;
+  font-weight: 600;
+  transition: all $transition-base;
+
+  &:hover {
+    background: darken($primary, 10%);
+    transform: translateY(-2px);
+  }
+}
+
+.selectionControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  margin-bottom: $spacing-md;
+  background: rgba($primary, 0.05);
+  border-radius: $radius-md;
+  gap: $spacing-sm;
+}
+
+.selectAllLabel {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  cursor: pointer;
+  font-size: $font-sm;
+  color: $text-dark;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.selectAllText {
+  white-space: nowrap;
+}
+
+.selectAllCheckbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: $primary;
+}
+
+.selectedCount {
+  font-size: $font-sm;
+  color: $primary;
+  font-weight: 600;
+}
+
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.footer {
+  padding: $spacing-lg $spacing-xl;
+  border-top: 1px solid $tertiary;
+  flex-shrink: 0;
+  background: $text-light;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+  padding-bottom: $spacing-lg;
+  border-bottom: 1px solid $tertiary;
+}
+
+.totalLabel {
+  font-size: $font-lg;
+  font-weight: 600;
+  color: $text-dark;
+}
+
+.totalPrice {
+  font-size: $font-2xl;
+  font-weight: 700;
+  color: $primary;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.checkoutButton,
+.continueButton {
+  padding: $spacing-md;
+  text-align: center;
+  text-decoration: none;
+  border-radius: $radius-full;
+  font-weight: 600;
+  transition: all $transition-base;
+}
+
+.checkoutButton {
+  background: $color-primary;
+  color: $text-light;
+
+  @include focus-visible;
+
+  @include state-hover {
+    background: $color-primary-hover;
+    color: $text-light;
+    transform: translateY(-2px);
+    @include shadow-colored($color-primary, 0.2);
+  }
+
+  @include state-active {
+    background: $color-primary-active;
+    color: $text-light;
+    transform: translateY(0);
+  }
+
+  @include state-disabled {
+    background: $tertiary;
+    color: $text-tertiary;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.continueButton {
+  background: transparent;
+  color: $color-primary;
+  border: 2px solid $color-primary;
+
+  @include focus-visible;
+
+  @include state-hover {
+    background: rgba($color-primary, 0.1);
+    color: $color-primary-hover;
+    border-color: $color-primary-hover;
+  }
+
+  @include state-active {
+    background: rgba($color-primary, 0.15);
+    color: $color-primary-active;
+    border-color: $color-primary-active;
+  }
+}
+
+// Animation keyframes are now in _mixins.scss
+
+@include max-tablet {
+  .footer {
+    padding: $spacing-md $spacing-lg;
+  }
+
+  .total {
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-md;
+  }
+
+  .totalLabel {
+    font-size: $font-base;
+  }
+
+  .totalPrice {
+    font-size: $font-lg;
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: row;
+    gap: $spacing-sm;
+  }
+
+  .checkoutButton,
+  .continueButton {
+    padding: $spacing-sm $spacing-md;
+    font-size: $font-sm;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+  }
+}

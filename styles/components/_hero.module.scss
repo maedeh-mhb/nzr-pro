@@ -1,0 +1,169 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.heroGrid {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.content {
+  max-width: $max-width-md;
+  position: relative;
+  z-index: $z-base;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  text-align: center;
+}
+
+.emptyCol {
+  width: 50%;
+  height: 100%;
+}
+
+.hero {
+  @include gradient-primary;
+  color: $text-light;
+  padding: $spacing-5xl 5%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  position: relative;
+  overflow: hidden;
+
+  // When background image is set, override gradient
+  &[data-has-bg-image="true"] {
+    background-image: var(--hero-bg-image);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    // Add overlay for better text readability
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 0;
+    }
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+    opacity: 0.3;
+    z-index: 0;
+  }
+}
+
+.content {
+  max-width: $max-width-md;
+  position: relative;
+  z-index: $z-base;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.title {
+  font-size: $font-7xl;
+  margin-bottom: $spacing-md;
+  font-weight: 700;
+  color: #fff;
+}
+
+.description {
+  font-size: $font-xl;
+  margin-bottom: $spacing-xl;
+  opacity: 0.95;
+}
+
+.button {
+  background: $text-light;
+  color: $primary;
+  padding: $spacing-md $spacing-2xl;
+  border: none;
+  border-radius: $radius-full;
+  font-size: $font-md;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform $transition-base, box-shadow $transition-base;
+  display: inline-block;
+  text-decoration: none;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-xl;
+  }
+}
+
+@include max-desktop {
+  .title {
+    font-size: $font-6xl;
+  }
+}
+
+@include max-tablet {
+  .title {
+    font-size: $font-5xl;
+  }
+
+  .description {
+    font-size: $font-md;
+  }
+}
+
+@include max-tablet {
+  .hero {
+    padding: $spacing-3xl 5%;
+    margin-top: 0; // Ensure no gap from navbar
+    padding-top: calc(#{$navbar-height} + #{$spacing-3xl}); // Navbar height + original padding
+  }
+
+  .title {
+    font-size: $font-4xl;
+  }
+
+  .description {
+    font-size: $font-base;
+  }
+}
+
+
+@include max-mobile {
+  .title {
+    font-size: 1.8rem;
+  }
+
+  .button {
+    padding: 0.8rem $spacing-xl;
+    font-size: $font-base;
+  }
+}
+
+.hero {
+  direction: ltr;
+}
+
+.content {
+  direction: ltr;
+  text-align: center;
+}

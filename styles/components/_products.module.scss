@@ -1,0 +1,139 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.products {
+  padding: $spacing-3xl 5%;
+  background: rgba(0, 0, 0, 0.02); // Subtle darker background
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: $font-5xl;
+  margin-bottom: $spacing-2xl;
+  color: $primary;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr; // Mobile first - single column
+  gap: $spacing-xl;
+  max-width: $max-width-xl;
+  margin: 0 auto;
+}
+
+.productsGrid {
+  display: grid;
+  grid-template-columns: 1fr; // Single column on mobile
+  gap: 1.5rem;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+
+  // On tablet and larger: 2 products per row (default)
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    max-width: 1200px; // Match products page container width
+    padding: 0 1rem; // Add padding to match products page
+  }
+
+  // On large viewports: keep 2 columns by default (products page uses its own grid)
+  @include desktop {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    max-width: 1200px;
+  }
+}
+
+// Featured products section - smart responsive layout
+.featuredProductsGrid {
+  max-width: 1400px;
+  margin: 0 auto;
+
+  // Mobile: 1 column
+  grid-template-columns: 1fr;
+
+  @include tablet {
+    // Fixed 2 columns on tablet
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    max-width: 1200px;
+  }
+
+  @include desktop {
+    // Fixed 2 columns on desktop to match product listing
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    max-width: 1200px;
+    grid-template-columns: repeat(3, minmax(340px, 1fr));
+    gap: 2rem;
+  }
+}
+
+.card {
+  background: $text-light;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  border: 1px solid $tertiary;
+  transition: transform $transition-base, box-shadow $transition-base;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: $shadow-lg;
+  }
+}
+
+.image {
+  width: 100%;
+  height: 220px;
+  background: $tertiary;
+  @include flex-center;
+
+  svg {
+    width: 4rem;
+    height: 4rem;
+    color: $text-dark;
+  }
+}
+
+.content {
+  padding: $spacing-lg;
+}
+
+.title {
+  font-size: $font-lg;
+  margin-bottom: $spacing-sm;
+  color: $text-dark;
+  font-weight: 600;
+}
+
+.price {
+  font-size: $font-2xl;
+  color: $primary;
+  font-weight: 700;
+  margin-top: $spacing-sm;
+}
+
+// Mobile first - single column by default
+// Tablet and above - multiple columns
+@include tablet {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@include desktop-small {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@include max-mobile {
+  .grid {
+    gap: $spacing-lg;
+  }
+}

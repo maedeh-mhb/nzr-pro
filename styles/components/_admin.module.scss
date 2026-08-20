@@ -1,0 +1,1815 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+// Orders Mobile Cards
+.ordersMobileCards {
+  display: none; // Hidden by default (desktop)
+
+  @include max-tablet {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+}
+
+.ordersMobileEmpty {
+  padding: $spacing-xl;
+  text-align: center;
+  color: #666;
+  font-size: $font-base;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.orderMobileCard {
+  background: linear-gradient(180deg, rgba($primary, 0.04) 0%, rgba($secondary, 0.04) 100%);
+  border: 1px solid rgba($primary, 0.12);
+  border-radius: $radius-xl;
+  overflow: hidden;
+  transition: box-shadow $transition-base, transform $transition-base, border-color $transition-base;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba($primary, 0.25);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.orderMobileCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md $spacing-lg;
+  cursor: pointer;
+  user-select: none;
+  gap: $spacing-md;
+  background: linear-gradient(135deg, rgba($primary, 0.9) 0%, rgba($secondary, 0.9) 100%);
+  color: $text-light;
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.orderMobileCardMain {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  min-width: 0;
+}
+
+.orderMobileCardCustomer {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-weight: 600;
+  font-size: $font-base;
+  color: $text-dark;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  svg {
+    flex-shrink: 0;
+    color: $primary;
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.orderMobileCardPayment {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-size: $font-sm;
+  color: rgba($text-light, 0.9);
+}
+
+.orderMobileCardPaymentLabel {
+  color: rgba($text-light, 0.82);
+  font-weight: 600;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.orderMobileCardPaymentValue {
+  color: $text-light;
+  font-weight: 700;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.orderMobileCardExpand {
+  flex-shrink: 0;
+  color: $text-light;
+  font-size: $font-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform $transition-base;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.orderMobileCardDetails {
+  padding: $spacing-lg;
+  border-top: none;
+  background: $text-light;
+  animation: slideDown 0.2s ease-out;
+  box-shadow: inset 0 1px 0 rgba($primary, 0.08);
+  border-bottom-left-radius: $radius-xl;
+  border-bottom-right-radius: $radius-xl;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+
+  to {
+    opacity: 1;
+    max-height: 1000px;
+  }
+}
+
+.orderMobileCardDetailRow {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-sm;
+  border-bottom: 1px dashed rgba($tertiary, 0.9);
+
+  &:last-of-type {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+.orderMobileCardDetailLabel {
+  font-size: $font-sm;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: $spacing-xs;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.orderMobileCardDetailValue {
+  font-size: $font-base;
+  color: $text-dark;
+  word-break: break-word;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.orderMobileCardItems {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.orderMobileCardItem {
+  font-size: $font-sm;
+  color: $text-dark;
+  padding: $spacing-sm;
+  background: rgba($primary, 0.06);
+  border-radius: $radius-md;
+  border: 1px solid rgba($primary, 0.12);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.orderMobileCardActions {
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1px solid rgba($tertiary, 0.7);
+  display: flex;
+  justify-content: flex-end;
+}
+
+// Desktop Table View
+.ordersDesktopTable {
+  display: block;
+
+  @include max-tablet {
+    display: none; // Hidden on mobile
+  }
+}
+
+// Order Details Modal Styles
+.orderDetailsContent {
+  max-height: 78vh;
+  overflow-y: auto;
+  padding: $spacing-lg;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: $radius-xl;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba($primary, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  @include max-tablet {
+    max-height: 70vh;
+    padding: $spacing-md;
+    gap: $spacing-md;
+  }
+}
+
+.orderDetailsHeader {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2rem;
+  padding: $spacing-lg;
+  margin-bottom: 0;
+  border-radius: $radius-lg;
+  background: linear-gradient(135deg, rgba($primary, 0.95) 0%, rgba($secondary, 0.9) 100%);
+  color: $text-light;
+  box-shadow: 0 8px 24px rgba($primary, 0.25);
+  justify-content: space-between;
+
+  &[dir="rtl"] {
+    justify-content: space-between;
+  }
+
+  .orderDetailsLabel {
+    color: rgba($text-light, 0.92);
+  }
+
+  .orderDetailsValue {
+    color: $text-light;
+    font-weight: 700;
+  }
+
+  // Keep status badge readable on gradient header
+  :global(.statusBadge),
+  :global(.statusBadge.statusActive),
+  :global(.statusBadge.statusPending),
+  :global(.statusBadge.statusInactive),
+  :global(.statusBadge.statusInfo),
+  :global(span[class*="_statusBadge__"]) {
+    background: $success !important;
+    color: #fff !important;
+    border: 1px solid rgba($success, 0.25);
+  }
+
+  @include max-tablet {
+    padding: $spacing-md;
+    gap: $spacing-xs;
+  }
+}
+
+.orderDetailsHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+  color: $text-light;
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+  }
+
+  @include max-tablet {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-sm;
+
+    [dir="rtl"] & {
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-end;
+    }
+  }
+}
+
+.orderDetailsSection {
+  margin: 0;
+  padding: $spacing-lg;
+  border-radius: $radius-lg;
+  background: #f8f9fa;
+  border: 1px solid rgba($tertiary, 0.9);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: $spacing-lg;
+  }
+
+  @include max-tablet {
+    padding: $spacing-md;
+  }
+}
+
+.orderDetailsSectionTitle {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: $font-lg;
+  font-weight: 700;
+  color: $primary;
+  margin-bottom: $spacing-md;
+  justify-content: flex-start;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    text-align: right;
+  }
+
+  svg {
+    color: $primary;
+    flex-shrink: 0;
+  }
+
+  @include max-tablet {
+    font-size: $font-base;
+    margin-bottom: $spacing-sm;
+    gap: $spacing-xs;
+  }
+}
+
+.orderDetailsInfo {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.orderDetailsInfoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+  padding: $spacing-sm 0;
+  border-bottom: 1px dashed rgba($tertiary, 0.7);
+  flex-direction: row;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+    justify-content: space-between;
+  }
+
+  @include max-tablet {
+    flex-direction: column;
+    gap: $spacing-xs;
+    align-items: flex-start;
+    padding: $spacing-xs 0;
+    border-bottom: 1px dashed rgba($tertiary, 0.6);
+
+    [dir="rtl"] & {
+      align-items: flex-end;
+    }
+  }
+}
+
+.shippingUpdateGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-sm;
+  align-items: start;
+  width: 100%;
+
+  @include desktop {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+  }
+
+  label {
+    width: 100%;
+  }
+
+  [dir="rtl"] & {
+    text-align: right;
+  }
+}
+
+.shippingDetailsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-lg;
+  width: 100%;
+
+  @include desktop {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  [dir="rtl"] & {
+    text-align: right;
+  }
+}
+
+.shippingDetailsCol {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.orderDetailsLabel {
+  font-weight: 600;
+  color: #6b7280;
+  min-width: 140px;
+  flex-shrink: 0;
+  font-size: $font-base;
+  text-align: left; // Default: left align
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: right; // RTL: right align
+    order: 2; // Ensure label appears on the right in RTL
+  }
+
+  @include max-tablet {
+    min-width: auto;
+    font-size: $font-sm;
+    width: 100%;
+    text-align: left; // Mobile: left align
+
+    [dir="rtl"] & {
+      text-align: right; // Mobile RTL: right align
+      order: 1; // Mobile: label first
+    }
+  }
+}
+
+.orderDetailsValue {
+  color: $text-dark;
+  flex: 1;
+  word-break: break-word;
+  font-size: $font-base;
+  text-align: left; // Default: left align
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: left; // RTL: value on left side, left-aligned
+    order: 1; // Ensure value appears on the left in RTL
+  }
+
+  @include max-tablet {
+    font-size: $font-sm;
+    width: 100%;
+    word-break: break-word;
+    line-height: 1.5;
+    text-align: left; // Mobile: left align
+
+    [dir="rtl"] & {
+      text-align: right; // Mobile RTL: right align
+      order: 2; // Mobile: value second
+    }
+  }
+}
+
+.orderDetailsValueWithAction {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  flex: 1;
+  flex-wrap: wrap;
+  flex-direction: row; // Default: status left, button right
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    flex-direction: row-reverse; // RTL: button left, status right
+    justify-content: flex-start;
+  }
+
+  @include max-tablet {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-sm;
+    width: 100%;
+
+    [dir="rtl"] & {
+      align-items: flex-end;
+    }
+  }
+}
+
+.orderDetailsActions {
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1px solid $tertiary;
+
+  @include max-tablet {
+    margin-top: $spacing-sm;
+    padding-top: $spacing-sm;
+
+    // Make buttons stack on mobile
+    >div {
+      flex-direction: column;
+      width: 100%;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.orderDetailsItems {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.orderDetailsItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  background: $text-light;
+  border-radius: $radius-lg;
+  gap: $spacing-md;
+  border: 1px solid rgba($tertiary, 0.9);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  transition: box-shadow $transition-base, transform $transition-base, border-color $transition-base;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba($primary, 0.2);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+  }
+
+  @include max-tablet {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-xs;
+    padding: $spacing-xs;
+
+    [dir="rtl"] & {
+      align-items: flex-end;
+    }
+  }
+}
+
+.orderDetailsItemInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  flex: 1;
+  min-width: 0;
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+  }
+}
+
+.orderDetailsItemName {
+  font-weight: 500;
+  color: $text-dark;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: $font-base;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  @include max-tablet {
+    font-size: $font-sm;
+    white-space: normal;
+    word-break: break-word;
+  }
+}
+
+.orderDetailsItemQuantity {
+  color: #666;
+  font-size: $font-sm;
+  flex-shrink: 0;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.orderDetailsItemPrice {
+  font-weight: 600;
+  color: $primary;
+  flex-shrink: 0;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.orderDetailsSummary {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  padding: $spacing-lg;
+  background: $text-light;
+  border-radius: $radius-lg;
+  border: 1px solid rgba($primary, 0.25);
+  box-shadow: 0 8px 24px rgba($primary, 0.08);
+
+  @include max-tablet {
+    padding: $spacing-md;
+    gap: $spacing-xs;
+  }
+}
+
+.orderDetailsSummaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: $text-dark;
+  font-size: $font-base;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    flex-direction: row-reverse;
+  }
+
+  @include max-tablet {
+    font-size: $font-sm;
+    flex-wrap: wrap;
+    gap: $spacing-xs;
+  }
+}
+
+.orderDetailsSummaryRowTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: $font-xl;
+  font-weight: 800;
+  color: $primary;
+  padding-top: $spacing-sm;
+  border-top: 2px solid $primary;
+  margin-top: $spacing-sm;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    flex-direction: row-reverse;
+  }
+
+  @include max-tablet {
+    font-size: $font-base;
+    flex-wrap: wrap;
+    gap: $spacing-xs;
+  }
+}
+
+.adminContainer {
+  max-width: $max-width-xl;
+  margin: 0 auto;
+  padding: $spacing-md;
+  width: 100%;
+  box-sizing: border-box;
+
+  // Add bottom padding on mobile to prevent content from being hidden by bottom nav
+  @include max-tablet {
+    padding-bottom: 100px; // Extra space for bottom navigation bar
+  }
+}
+
+// On tablet and above, add left padding for sidebar
+@include tablet {
+  .adminContainer {
+    margin-left: var(--admin-sidebar-width, 260px); // Dynamic sidebar width
+    padding: $spacing-lg;
+    max-width: calc(#{$max-width-xl} - var(--admin-sidebar-width, 260px)); // Account for sidebar width
+    width: calc(100% - var(--admin-sidebar-width, 260px)); // Account for sidebar width
+    transition: margin-left $transition-base, width $transition-base, max-width $transition-base;
+  }
+}
+
+[dir="rtl"] .adminContainer {
+  @include tablet {
+    margin-left: 0;
+    margin-right: var(--admin-sidebar-width, 260px);
+    max-width: calc(#{$max-width-xl} - var(--admin-sidebar-width, 260px)); // Account for sidebar width
+    width: calc(100% - var(--admin-sidebar-width, 260px)); // Account for sidebar width
+    transition: margin-right $transition-base, width $transition-base, max-width $transition-base;
+  }
+}
+
+// Mobile first - single column by default
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+  min-width: 0;
+}
+
+.quickActionsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+}
+
+.contentLayout {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+// Mobile card view (hidden on tablet+)
+.cardView {
+  display: block;
+}
+
+// Desktop/Tablet table view (hidden on mobile)
+.tableView {
+  display: none;
+}
+
+// Tablet and above - show table, hide cards
+@include tablet {
+  .cardView {
+    display: none;
+  }
+
+  .tableView {
+    display: block;
+  }
+}
+
+.section {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}
+
+// Tablet and above
+@include tablet {
+  .adminContainer {
+    padding: $spacing-lg;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  .quickActionsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@include desktop-small {
+  .adminContainer {
+    padding: $spacing-xl;
+    margin-left: var(--admin-sidebar-width, 260px);
+    margin-right: auto;
+    width: calc(100% - var(--admin-sidebar-width, 260px));
+    max-width: 1400px;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: $spacing-lg;
+    min-width: 0;
+
+    >* {
+      min-width: 0;
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+
+  .quickActionsGrid {
+    grid-template-columns: repeat(4, 1fr);
+
+    // Reduce labels too (desktop only)
+    .orderDetailsLabel {
+      font-size: $font-sm;
+    }
+
+    gap: $spacing-lg;
+    // Allow quick actions to shrink when viewport decreases
+    min-width: 0;
+
+    // Make quick action cards square
+    >* {
+      aspect-ratio: 1 / 1;
+    }
+  }
+
+  .contentLayout {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
+
+    // Make both cards same width as stats grid
+    >div {
+      width: 100%;
+    }
+  }
+}
+
+// RTL adjustments at desktop
+[dir="rtl"] {
+  @include desktop-small {
+    .adminContainer {
+      margin-right: var(--admin-sidebar-width, 260px);
+      margin-left: auto;
+      width: calc(100% - var(--admin-sidebar-width, 260px));
+      max-width: 1400px;
+    }
+  }
+}
+
+// Mobile Messages Card View
+.mobileMessagesList {
+  display: block;
+
+  @include tablet {
+    display: none;
+  }
+}
+
+.mobileMessageCard {
+  background: $text-light;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  margin-bottom: $spacing-md;
+  overflow: hidden;
+  transition: all $transition-base;
+}
+
+.mobileMessageCardButton {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: $spacing-md;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobileMessageCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  gap: $spacing-sm;
+}
+
+.mobileMessageCardInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.mobileMessageCardName {
+  font-weight: 600;
+  font-size: $font-md;
+  color: $text-dark;
+  display: flex;
+  align-items: center;
+}
+
+.mobileMessageCardSubject {
+  font-size: $font-sm;
+  color: #7f8c8d;
+  font-weight: 400;
+  margin-top: 0.125rem;
+}
+
+.mobileMessageUnreadBadge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: #fff3e0;
+  color: #e65100;
+  white-space: nowrap;
+}
+
+.mobileMessageExpanded {
+  padding: 0 $spacing-md $spacing-md;
+  border-top: 1px solid $tertiary;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+
+  to {
+    opacity: 1;
+    max-height: 1000px;
+  }
+}
+
+.mobileMessageDetail {
+  margin-bottom: $spacing-md;
+  font-size: $font-sm;
+  color: $text-dark;
+
+  strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: $primary;
+  }
+}
+
+.mobileMessageBody {
+  margin-top: 0.5rem;
+  padding: $spacing-md;
+  background: #f8f9fa;
+  border-radius: $radius-md;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: $font-sm;
+  line-height: 1.6;
+}
+
+.mobileMessageReplySection {
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1px solid $tertiary;
+}
+
+.mobileMessageReplyLabel {
+  display: block;
+  font-weight: 600;
+  font-size: $font-sm;
+  color: $text-dark;
+  margin-bottom: 0.5rem;
+}
+
+.mobileMessageReplyInput {
+  width: 100%;
+  padding: $spacing-sm;
+  border: 1px solid $tertiary;
+  border-radius: $radius-md;
+  font-size: $font-sm;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+}
+
+.mobileMessageReply {
+  margin-top: 0.5rem;
+  padding: $spacing-md;
+  background: #e8f5e9;
+  border-radius: $radius-md;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: $font-sm;
+  line-height: 1.6;
+  border-left: 3px solid $primary;
+}
+
+.mobileMessageReplyDate {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: #7f8c8d;
+}
+
+.mobileMessageActions {
+  display: flex;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1px solid $tertiary;
+}
+
+// Desktop Messages Table View
+.desktopMessagesTable {
+  display: none;
+
+  @include tablet {
+    display: block;
+  }
+}
+
+.messagesTableWrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.messagesTable {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px; // Minimum width to prevent excessive compression
+}
+
+.messagesTable thead tr {
+  border-bottom: 2px solid #e8e9ea;
+}
+
+.messagesTable th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: $font-sm;
+}
+
+.messagesTable td {
+  padding: 0.75rem;
+  font-size: $font-sm;
+}
+
+.tableColNumber {
+  width: 3rem;
+  text-align: center;
+}
+
+.tableColName {
+  min-width: 120px;
+}
+
+.tableColEmail {
+  min-width: 180px;
+}
+
+.tableColSubject {
+  min-width: 150px;
+}
+
+.tableColDate {
+  min-width: 140px;
+  color: #7f8c8d;
+  font-size: 0.85rem;
+}
+
+.tableColStatus {
+  min-width: 100px;
+}
+
+.tableColActions {
+  min-width: 140px;
+}
+
+.tableNameCell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tableRowUnread {
+  background-color: #f8f9fa;
+}
+
+.tableEmptyCell {
+  padding: 2rem;
+  text-align: center;
+  color: #7f8c8d;
+}
+
+.statusBadgeRead,
+.statusBadgeUnread {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.statusBadgeRead {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.statusBadgeUnread {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.tableActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+// Responsive adjustments for contact messages table (tablet and desktop only, NOT mobile)
+// Tablet (640px - 770px): Hide Email column, reduce padding and font sizes
+@include tablet {
+  @include max-desktop-small {
+    .messagesTable {
+      .tableColEmail {
+        display: none;
+      }
+
+      th,
+      td {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+      }
+
+      .tableColNumber {
+        width: 2.5rem;
+        padding: 0.5rem 0.25rem;
+      }
+
+      .tableColName {
+        min-width: 100px;
+      }
+
+      .tableColSubject {
+        min-width: 120px;
+      }
+
+      .tableColDate {
+        min-width: 110px;
+        font-size: 0.75rem;
+      }
+
+      .tableColStatus {
+        min-width: 80px;
+      }
+
+      .tableColActions {
+        min-width: 120px;
+      }
+
+      .statusBadgeRead,
+      .statusBadgeUnread {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.5rem;
+      }
+
+      .tableActions {
+        gap: 0.25rem;
+      }
+    }
+  }
+}
+
+// Small tablets (640px - 770px): Further reduce sizes for very small tablets
+@include tablet {
+  @include max-desktop-small {
+    @media (max-width: 720px) {
+      .messagesTable {
+
+        th,
+        td {
+          padding: 0.4rem;
+          font-size: 0.75rem;
+        }
+
+        .tableColNumber {
+          width: 2rem;
+          padding: 0.4rem 0.2rem;
+        }
+
+        .tableColName {
+          min-width: 90px;
+        }
+
+        .tableColSubject {
+          min-width: 100px;
+        }
+
+        .tableColDate {
+          min-width: 100px;
+          font-size: 0.7rem;
+        }
+
+        .tableColStatus {
+          min-width: 70px;
+        }
+
+        .tableColActions {
+          min-width: 100px;
+        }
+      }
+    }
+  }
+}
+
+// Reviews Section
+// Reviews Mobile Cards
+.reviewsMobileCards {
+  display: none; // Hidden by default (desktop)
+
+  @include max-tablet {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+}
+
+.reviewMobileCard {
+  background: $text-light;
+  border: 1px solid $tertiary;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  transition: box-shadow $transition-base;
+
+  &:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+}
+
+.reviewMobileCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  cursor: pointer;
+  user-select: none;
+  gap: $spacing-md;
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.reviewMobileCardMain {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  min-width: 0;
+}
+
+.reviewMobileCardStatus {
+  margin-top: $spacing-xs;
+
+  [dir="rtl"] & {
+    align-self: flex-end;
+  }
+}
+
+.reviewMobileCardSender {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-weight: 600;
+  font-size: $font-base;
+  color: $text-dark;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  svg {
+    flex-shrink: 0;
+    color: $primary;
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.reviewMobileCardProduct {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: $font-sm;
+  color: #666;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  svg {
+    flex-shrink: 0;
+    color: $primary;
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.reviewMobileCardExpand {
+  flex-shrink: 0;
+  color: $primary;
+  font-size: $font-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform $transition-base;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.reviewMobileCardDetails {
+  padding: 0 $spacing-md $spacing-md $spacing-md;
+  border-top: 1px solid $tertiary;
+  animation: slideDown 0.2s ease-out;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.reviewMobileCardDetailRow {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-md;
+
+  [dir="rtl"] & {
+    text-align: right;
+  }
+}
+
+.reviewMobileCardDetailRowFull {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-md;
+
+  [dir="rtl"] & {
+    text-align: right;
+  }
+}
+
+.reviewMobileCardDetailLabel {
+  font-weight: 600;
+  color: #666;
+  font-size: $font-sm;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.reviewMobileCardDetailValue {
+  color: $text-dark;
+  font-size: $font-base;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.reviewMobileCardText {
+  color: $text-dark;
+  font-size: $font-base;
+  line-height: 1.6;
+  margin: 0;
+  padding: $spacing-sm;
+  background: rgba($primary, 0.05);
+  border-radius: $radius-md;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: right;
+  }
+}
+
+.reviewMobileCardActions {
+  display: flex;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
+  flex-wrap: wrap;
+
+  button {
+    flex: 1;
+    min-width: 120px;
+  }
+}
+
+.reviewsList {
+  display: none; // Hidden by default (mobile)
+
+  @include tablet {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+    margin-top: $spacing-md;
+  }
+}
+
+.reviewCard {
+  background: $text-light;
+  border: 1px solid $tertiary;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  transition: box-shadow $transition-base;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.reviewCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md $spacing-lg;
+  cursor: pointer;
+  user-select: none;
+  gap: $spacing-md;
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+  }
+}
+
+.reviewCardMain {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  min-width: 0;
+  flex-wrap: wrap;
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+  }
+}
+
+.reviewCardSender {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-weight: 600;
+  font-size: $font-base;
+  color: $text-dark;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  svg {
+    flex-shrink: 0;
+    color: $primary;
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.reviewCardProduct {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: $font-sm;
+  color: #666;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  svg {
+    flex-shrink: 0;
+    color: $primary;
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.reviewCardStatus {
+  flex-shrink: 0;
+}
+
+.reviewCardExpand {
+  flex-shrink: 0;
+  color: $primary;
+  font-size: $font-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform $transition-base;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.reviewCardDetails {
+  padding: 0 $spacing-lg $spacing-lg $spacing-lg;
+  border-top: 1px solid $tertiary;
+  animation: slideDown 0.2s ease-out;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.reviewCardDetailRow {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+    text-align: right;
+  }
+}
+
+.reviewCardDetailRowFull {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-md;
+
+  [dir="rtl"] & {
+    text-align: right;
+  }
+}
+
+.reviewCardDetailLabel {
+  font-weight: 600;
+  color: #666;
+  font-size: $font-sm;
+  min-width: 120px;
+  flex-shrink: 0;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.reviewCardDetailValue {
+  color: $text-dark;
+  font-size: $font-base;
+  flex: 1;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.reviewCardText {
+  color: $text-dark;
+  font-size: $font-base;
+  line-height: 1.6;
+  margin: 0;
+  padding: $spacing-sm;
+  background: rgba($primary, 0.05);
+  border-radius: $radius-md;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: right;
+  }
+}
+
+.reviewCardActions {
+  display: flex;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-md;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+  }
+}
+
+.reviewInfo {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  flex: 1;
+  min-width: 0;
+}
+
+.reviewProduct {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-weight: 600;
+  color: $primary;
+  font-size: $font-base;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.reviewUser {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-size: $font-sm;
+  color: $text-dark;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  svg {
+    flex-shrink: 0;
+    color: #666;
+  }
+}
+
+.reviewEmail {
+  color: #666;
+  font-size: $font-xs;
+  margin-left: $spacing-xs;
+
+  [dir="rtl"] & {
+    margin-left: 0;
+    margin-right: $spacing-xs;
+  }
+}
+
+.reviewDate {
+  font-size: $font-xs;
+  color: #999;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.reviewText {
+  margin-bottom: $spacing-md;
+  padding: $spacing-md;
+  background: rgba($primary, 0.05);
+  border-radius: $radius-md;
+  line-height: 1.6;
+  color: $text-dark;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: right;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.reviewActions {
+  display: flex;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+  }
+}
+
+// Tracking Code Input
+.trackingCodeInput {
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    &::placeholder {
+      font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+  }
+}
+
+.tableActions button:first-child {
+  border: 2px solid #27ae60;
+  /* Green border */
+}
+
+.expandedUserSection {
+  margin-top: 1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--card-bg);
+}
+
+.userDetailsGrid {
+  margin-bottom: 1.5rem;
+}
+
+.userInfo {
+  h5 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  span {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    padding: 0.375rem 0.5rem;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+  }
+}
+
+@media (max-width: 768px) {
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .expandedUserSection {
+    padding: 1rem;
+  }
+}

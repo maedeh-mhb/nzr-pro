@@ -1,0 +1,225 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.formFields {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr; // Mobile first - single column
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.formGroup {
+  margin-bottom: $spacing-xs;
+}
+
+.formLabel {
+  display: block;
+  margin-bottom: $spacing-xs;
+  font-weight: 600;
+  font-size: $font-base; // Increased from 0.85rem for better mobile readability
+  color: $text-dark;
+}
+
+.formInput,
+.formSelect,
+.formTextarea {
+  width: 100%;
+  padding: 0.75rem; // Increased from 0.6rem for better touch targets
+  border: 2px solid $tertiary;
+  border-radius: $radius-md;
+  font-size: $font-base; // Increased from 0.9rem for better mobile readability
+  transition: border-color $transition-base;
+  font-family: inherit;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+}
+
+.formTextarea {
+  resize: none;
+  min-height: 80px;
+}
+
+.formError {
+  display: block;
+  color: $danger;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.formActions {
+  display: flex;
+  gap: $spacing-sm;
+  margin-top: $spacing-sm;
+  padding-top: $spacing-sm;
+  border-top: 1px solid $tertiary;
+  flex-shrink: 0;
+
+  // Make buttons more visible
+  button {
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all $transition-base;
+
+    &:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+// Mobile optimizations
+@include max-tablet {
+  .formLabel {
+    font-size: $font-base; // Increased from 0.8rem for better readability
+    margin-bottom: $spacing-sm; // Increased from 0.3rem
+  }
+
+  .formInput,
+  .formSelect,
+  .formTextarea {
+    padding: 0.75rem; // Increased from 0.5rem for better touch targets
+    font-size: $font-base; // Increased from 0.85rem for better readability
+  }
+
+  .formActions {
+    gap: $spacing-sm; // Increased from $spacing-xs
+    margin-top: $spacing-sm; // Increased from $spacing-xs
+    padding-top: $spacing-sm; // Increased from $spacing-xs
+  }
+}
+
+// Tablet and above
+@include tablet {
+  .formGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .formLabel {
+    font-size: $font-md; // Increased from 0.8rem
+    margin-bottom: $spacing-sm;
+  }
+
+  .formInput,
+  .formSelect,
+  .formTextarea {
+    padding: 0.85rem 1rem; // Increased from 0.5rem
+    font-size: $font-md; // Increased from 0.85rem
+  }
+}
+
+// Desktop - maintain readability while fitting more columns
+@include desktop {
+  .formGrid {
+    grid-template-columns: repeat(3, 1fr); // 3 columns on desktop
+  }
+
+  .formLabel {
+    font-size: $font-base; // Increased from 0.75rem
+    margin-bottom: $spacing-sm;
+  }
+
+  .formInput,
+  .formSelect,
+  .formTextarea {
+    padding: 0.75rem 1rem; // Increased from 0.45rem
+    font-size: $font-base; // Increased from 0.8rem
+  }
+}
+
+// Compact variant for dense forms (e.g., Create Journal Post)
+.formCompact {
+  .formLabel {
+    font-size: $font-sm;
+  }
+
+  .formInput,
+  .formSelect,
+  .formTextarea {
+    font-size: $font-sm;
+  }
+}
+
+.tabContainer {
+  width: 100%;
+}
+
+.tabHeader {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+}
+
+.tabButton {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+  }
+
+  &.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+    background: var(--primary-bg);
+  }
+}
+
+.tabContent {
+  min-height: 400px;
+}
+
+@media (max-width: 768px) {
+  .tabButton {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
+.largeFormContainer {
+  min-width: 600px;
+  
+  @media (max-width: 768px) {
+    min-width: auto;
+    width: 100%;
+  }
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}

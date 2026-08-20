@@ -1,0 +1,92 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.googleButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-md;
+    width: 100%;
+    padding: $spacing-md $spacing-lg;
+    border: 2px solid $border-color;
+    border-radius: $radius-md;
+    background: $surface;
+    color: $text-primary;
+    font-size: $font-md;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: $shadow-sm;
+
+    &:hover {
+        background: $background;
+        border-color: darken($border-color, 10%);
+        box-shadow: $shadow-md;
+        transform: translateY(-1px);
+    }
+
+    &:active {
+        transform: translateY(0);
+        box-shadow: $shadow-sm;
+    }
+
+    &:focus {
+        outline: 2px solid $primary;
+        outline-offset: 2px;
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+}
+
+.googleIcon {
+    font-size: $font-2xl;
+    flex-shrink: 0;
+}
+
+.googleText {
+    white-space: nowrap;
+}
+
+// Size Variants
+.small {
+    padding: $spacing-sm $spacing-md;
+    font-size: $font-sm;
+
+    .googleIcon {
+        font-size: $font-lg;
+    }
+}
+
+.medium {
+    padding: $spacing-md $spacing-lg;
+    font-size: $font-md;
+
+    .googleIcon {
+        font-size: $font-2xl;
+    }
+}
+
+.large {
+    padding: $spacing-lg $spacing-xl;
+    font-size: $font-lg;
+
+    .googleIcon {
+        font-size: $font-3xl;
+    }
+}
+
+// Mobile adjustments
+@include max-mobile {
+    .googleButton {
+        padding: $spacing-sm $spacing-md;
+        font-size: $font-sm;
+    }
+
+    .googleIcon {
+        font-size: $font-xl;
+    }
+}

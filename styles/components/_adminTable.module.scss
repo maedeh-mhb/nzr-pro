@@ -1,0 +1,309 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.dataTable {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+}
+
+.tableHeader,
+.tableCell {
+  padding: 0.75rem;
+  text-align: start;
+  border-bottom: 1px solid $tertiary;
+  font-size: 0.85rem; // Smaller font size
+}
+
+.tableHeader {
+  background: $tertiary;
+  font-weight: 600;
+  font-size: 0.85rem; // Smaller font size
+}
+
+.tableRow {
+  transition: background-color $transition-base;
+
+  &:hover {
+    background: rgba(108, 156, 184, 0.05);
+  }
+}
+
+.statusBadge {
+  padding: 0.3rem 0.8rem;
+  border-radius: $radius-2xl;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.statusActive {
+  background: rgba(39, 174, 96, 0.2);
+  color: $success;
+}
+
+.statusPending {
+  background: rgba(243, 156, 18, 0.2);
+  color: $warning;
+}
+
+.statusInactive {
+  background: rgba(231, 76, 60, 0.2);
+  color: $danger;
+}
+
+.statusInfo {
+  background: rgba($color-secondary-500, 0.2);
+  color: $color-secondary-800;
+}
+
+.statusBadgeInverted {
+  color: $text-light;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.tableActions {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+// Expanded row styles
+.expandedRow {
+  background: rgba(108, 156, 184, 0.03) !important;
+}
+
+.expandedCell {
+  padding: $spacing-lg !important;
+  background: rgba(108, 156, 184, 0.03);
+}
+
+.expandedContent {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.expandedSection {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.expandedTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: $primary;
+  margin-bottom: $spacing-sm;
+}
+
+.expandedGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-md;
+}
+
+.expandedItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-xs 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.expandedLabel {
+  font-weight: 600;
+  color: $text-dark;
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.expandedValue {
+  color: $text-dark;
+  font-size: 0.85rem;
+  text-align: end;
+}
+
+[dir="rtl"] .expandedValue {
+  text-align: start;
+}
+
+// Index cell styles
+.indexCell {
+  display: flex;
+  align-items: center;
+}
+
+.indexDesktop {
+  display: none;
+
+  @include tablet {
+    display: inline;
+  }
+}
+
+.indexMobile {
+  display: inline;
+
+  @include tablet {
+    display: none;
+  }
+}
+
+// Tablet and above - 2 columns for expanded grid
+@include tablet {
+  .expandedGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-lg; // Larger gap between columns for better readability
+  }
+}
+
+// Mobile card view for journal posts
+.mobileCards {
+  display: none; // Hidden on desktop/tablet
+
+  @include max-tablet {
+    display: block;
+  }
+}
+
+.desktopTable {
+  display: block;
+
+  @include max-tablet {
+    display: none; // Hidden on mobile
+  }
+}
+
+.postCard {
+  background: $text-light;
+  border: 1px solid $tertiary;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-md;
+  cursor: pointer;
+  transition: all $transition-base;
+
+  &:hover {
+    border-color: $primary;
+    box-shadow: $shadow-sm;
+  }
+
+  &.expanded {
+    border-color: $primary;
+    box-shadow: $shadow-md;
+  }
+}
+
+.postCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  gap: $spacing-md;
+}
+
+.postCardContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.postCardTitle {
+  font-size: $font-base;
+  font-weight: 600;
+  color: $text-dark;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.postCardDate {
+  font-size: $font-sm;
+  color: $text-dark;
+  opacity: 0.7;
+}
+
+.postCardChevron {
+  color: $primary;
+  font-size: $font-lg;
+  flex-shrink: 0;
+  transition: transform $transition-base;
+
+  .expanded & {
+    transform: rotate(180deg);
+  }
+}
+
+.postCardDetails {
+  padding: 0 $spacing-md $spacing-md;
+  border-top: 1px solid $tertiary;
+  margin-top: $spacing-xs;
+  padding-top: $spacing-md;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
+}
+
+.postCardDetailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+  &:last-of-type {
+    border-bottom: none;
+    margin-bottom: $spacing-md;
+  }
+}
+
+.postCardDetailLabel {
+  font-weight: 600;
+  color: $text-dark;
+  font-size: $font-sm;
+  opacity: 0.7;
+}
+
+.postCardDetailValue {
+  color: $text-dark;
+  font-size: $font-sm;
+  text-align: end;
+
+  [dir="rtl"] & {
+    text-align: start;
+  }
+}
+
+.postCardActions {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
+
+  :global(button) {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-xs;
+  }
+}

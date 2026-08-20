@@ -1,0 +1,18 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.selectorGroup {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  
+  @include tablet {
+    flex-direction: row;
+    gap: $spacing-lg;
+  }
+}
+
+.selectorItem {
+  flex: 1;
+}
+

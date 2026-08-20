@@ -1,0 +1,285 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.dropdown {
+  position: fixed;
+  top: 70px;
+  right: $spacing-md;
+  width: 90%;
+  max-width: 400px;
+  background: $text-light;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+  z-index: $z-modal;
+  display: flex;
+  flex-direction: column;
+  max-height: 500px;
+  overflow: hidden;
+
+  @include tablet {
+    right: $spacing-xl;
+  }
+
+  [dir="rtl"] & {
+    right: auto;
+    left: $spacing-md;
+
+    @include tablet {
+      left: $spacing-xl;
+      right: auto;
+    }
+  }
+}
+
+.header {
+  @include flex-between;
+  padding: $spacing-md;
+  border-bottom: 1px solid $tertiary;
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+  }
+}
+
+.title {
+  font-size: $font-lg;
+  font-weight: 600;
+  color: $text-dark;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.unreadCountBadge {
+  background: $danger;
+  color: $text-light;
+  border-radius: $radius-full;
+  padding: 0.15rem 0.5rem;
+  font-size: $font-xs;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: $text-dark;
+  cursor: pointer;
+  padding: $spacing-xs;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-md;
+  transition: background $transition-base;
+
+  &:hover {
+    background: $tertiary;
+  }
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
+.filters {
+  padding: $spacing-sm $spacing-md;
+  border-bottom: 1px solid $tertiary;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.filterButtons {
+  display: flex;
+  gap: $spacing-xs;
+  flex-wrap: wrap;
+}
+
+.filterButton {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid $tertiary;
+  background: $text-light;
+  color: $text-dark;
+  border-radius: $radius-md;
+  font-size: $font-sm;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all $transition-base;
+  font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  &:hover {
+    background: rgba($primary, 0.05);
+    border-color: $primary;
+  }
+
+  &.active {
+    background: $primary;
+    color: $text-light;
+    border-color: $primary;
+  }
+}
+
+.markAllReadButton {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  background: rgba($primary, 0.1);
+  color: $primary;
+  border-radius: $radius-md;
+  font-size: $font-sm;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all $transition-base;
+  font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  width: 100%;
+
+  &:hover {
+    background: rgba($primary, 0.2);
+  }
+}
+
+.groupHeader {
+  padding: $spacing-sm $spacing-md;
+  font-size: $font-sm;
+  font-weight: 600;
+  color: $text-dark;
+  background: rgba($primary, 0.05);
+  border-bottom: 1px solid $tertiary;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.groupCount {
+  color: #666;
+  font-weight: 400;
+  font-size: $font-xs;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-sm;
+}
+
+.loading,
+.empty {
+  padding: $spacing-xl;
+  text-align: center;
+  color: #666;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.item {
+  display: flex;
+  gap: $spacing-sm;
+  padding: $spacing-md;
+  background: $tertiary;
+  border-radius: $radius-md;
+  transition: background $transition-base;
+
+  &:hover {
+    background: rgba($primary, 0.05);
+  }
+
+  &.unread {
+    background: rgba($primary, 0.1);
+    border-left: 3px solid $primary;
+
+    [dir="rtl"] & {
+      border-left: none;
+      border-right: 3px solid $primary;
+    }
+  }
+
+  [dir="rtl"] & {
+    flex-direction: row-reverse;
+  }
+}
+
+.itemIcon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  color: $primary;
+  font-size: $font-lg;
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
+.itemContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.itemTitle {
+  font-size: $font-base;
+  font-weight: 600;
+  color: $text-dark;
+  margin: 0;
+}
+
+.itemMessage {
+  font-size: $font-sm;
+  color: #666;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.itemDate {
+  font-size: $font-xs;
+  color: #999;
+}
+
+.dismissButton {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: $spacing-xs;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-md;
+  transition: all $transition-base;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+
+  &:hover {
+    background: rgba($danger, 0.1);
+    color: $danger;
+  }
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+

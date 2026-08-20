@@ -1,0 +1,216 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + $spacing-sm);
+  right: 0;
+  background: $text-light;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+  min-width: 240px;
+  z-index: $z-dropdown;
+  overflow: hidden;
+  animation: slideDown 0.2s ease-out;
+  direction: ltr; // Default LTR
+  text-align: left;
+
+  &[dir="rtl"] {
+    right: auto;
+    left: 0;
+    direction: rtl;
+    text-align: right;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdownHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: rgba($primary, 0.05);
+  border-bottom: 1px solid $tertiary;
+
+  .dropdownMenu[dir="rtl"] & {
+    flex-direction: row-reverse;
+  }
+}
+
+.dropdownAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: $radius-full;
+  background: $primary;
+  color: $text-light;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: $font-lg;
+  flex-shrink: 0;
+  font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.dropdownInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.dropdownName {
+  font-size: $font-base;
+  font-weight: 600;
+  color: $text-dark;
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.dropdownEmail {
+  font-size: $font-sm;
+  color: $text-secondary;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdownDivider {
+  height: 1px;
+  background: $tertiary;
+  margin: $spacing-xs 0;
+}
+
+// English LTR version
+.dropdownItems {
+  direction: ltr;
+  text-align: left;
+}
+
+// Farsi RTL version
+.dropdownItemsRTL {
+  direction: rtl;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+// English LTR dropdown item
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  color: $text-dark;
+  text-decoration: none !important;
+  background: none;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color $transition-base;
+  font-size: $font-base;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  direction: ltr;
+  text-align: left;
+  flex-direction: row;
+
+  &:hover {
+    background: rgba($primary, 0.05);
+    text-decoration: none !important;
+  }
+  
+  &:hover span {
+    text-decoration: none !important;
+  }
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+    flex-shrink: 0;
+    color: $text-secondary;
+  }
+
+  &.dropdownItemDanger {
+    color: $danger;
+
+    &:hover {
+      background: rgba($danger, 0.05);
+      text-decoration: none !important;
+    }
+    
+    &:hover span {
+      text-decoration: none !important;
+    }
+
+    svg {
+      color: $danger;
+    }
+  }
+}
+
+// Farsi RTL dropdown item
+.dropdownItemRTL {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  color: $text-dark;
+  text-decoration: none !important;
+  background: none;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color $transition-base;
+  font-size: $font-base;
+  font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  direction: rtl;
+  text-align: right;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+
+  &:hover {
+    background: rgba($primary, 0.05);
+    text-decoration: none !important;
+  }
+  
+  &:hover span {
+    text-decoration: none !important;
+  }
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+    flex-shrink: 0;
+    color: $text-secondary;
+  }
+
+  &.dropdownItemDangerRTL {
+    color: $danger;
+
+    &:hover {
+      background: rgba($danger, 0.05);
+      text-decoration: none !important;
+    }
+    
+    &:hover span {
+      text-decoration: none !important;
+    }
+
+    svg {
+      color: $danger;
+    }
+  }
+}
+

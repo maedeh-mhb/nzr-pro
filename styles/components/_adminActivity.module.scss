@@ -1,0 +1,40 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.activityItem {
+  padding: $spacing-md;
+  background: $tertiary;
+  border-radius: $radius-lg;
+  margin-bottom: $spacing-md;
+  display: flex;
+  gap: $spacing-md;
+}
+
+.activityIcon {
+  font-size: $font-2xl;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 2rem;
+    height: 2rem;
+    color: $primary;
+  }
+}
+
+.activityContent {
+  flex: 1;
+}
+
+.activityText {
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+}
+
+.activityTime {
+  font-size: 0.8rem;
+  color: #999;
+}
+

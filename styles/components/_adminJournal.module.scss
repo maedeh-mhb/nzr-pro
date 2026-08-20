@@ -1,0 +1,54 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.categorySelection {
+  margin-bottom: $spacing-xl;
+}
+
+.categoryLabel {
+  font-weight: 600;
+  color: $text-dark;
+  font-size: $font-base;
+  margin-bottom: $spacing-md;
+}
+
+.mobileCategorySelect {
+  display: block;
+
+  @include tablet {
+    display: none;
+  }
+}
+
+.desktopCategoryChips {
+  display: none;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+
+  @include tablet {
+    display: flex;
+  }
+}
+
+.categoryChip {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: $radius-md;
+  font-size: $font-sm;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all $transition-base;
+  white-space: nowrap;
+  background: rgba(54, 114, 96, 0.15); // Light shade of primary
+  color: $text-dark;
+
+  &:hover {
+    background: rgba(54, 114, 96, 0.25);
+  }
+
+  &.active {
+    color: $text-light;
+    background: rgb(44, 62, 80);
+  }
+}
+

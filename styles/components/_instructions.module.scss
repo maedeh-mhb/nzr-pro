@@ -1,0 +1,400 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.pageHeader {
+  @include gradient-primary;
+  color: $text-light;
+  padding: 5rem 5%;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  @include max-tablet {
+    padding-top: calc(#{$navbar-height} + 5rem);
+  }
+
+  h1 {
+    font-size: $font-4xl;
+    font-weight: 700;
+    margin-bottom: $spacing-sm;
+    color: $text-light;
+  }
+
+  p {
+    opacity: 0.9;
+    font-size: $font-base;
+    margin-bottom: $spacing-xl;
+    color: $text-light;
+  }
+
+  @include tablet {
+    padding: 6.25rem 5%;
+    text-align: center;
+
+    h1 {
+      font-size: $font-6xl;
+    }
+
+    p {
+      font-size: $font-lg;
+    }
+  }
+
+  [dir="rtl"] & {
+    h1,
+    p {
+      font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+  }
+}
+
+.instructionsPage {
+  padding: $spacing-3xl 5%;
+  min-height: 60vh;
+  overflow-x: hidden;
+
+  @include max-tablet {
+    padding: $spacing-2xl 5%;
+  }
+
+  @include max-mobile {
+    padding: $spacing-xl 5%;
+    overflow-x: hidden;
+  }
+}
+
+.container {
+  max-width: $max-width-lg;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.emptyState {
+  text-align: center;
+  padding: $spacing-4xl;
+  color: #666;
+}
+
+// Cards Grid
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-xl;
+  padding-top: 4px;
+
+  @include max-tablet {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-lg;
+  }
+
+  @include max-mobile {
+    grid-template-columns: 1fr;
+    gap: $spacing-md;
+    width: 100%;
+    overflow: hidden;
+    padding-top: 0;
+  }
+}
+
+// Collapsed Card
+.card {
+  border-radius: $radius-lg;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: $shadow-md;
+  cursor: pointer;
+  transition: transform $duration-base, box-shadow $duration-base;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-lg;
+  }
+
+  @include max-mobile {
+    border-radius: $radius-md;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+.cardImage {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 250px;
+  object-fit: contain;
+  display: block;
+  background: #f0f0f0;
+}
+
+.cardTitleBar {
+  padding: $spacing-md $spacing-lg;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-sm;
+}
+
+.cardTitle {
+  font-size: $font-lg;
+  font-weight: 600;
+  color: $text-dark;
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.shareButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: $radius-full;
+  background: rgba($primary, 0.1);
+  color: $primary;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background $duration-base;
+
+  &:hover {
+    background: rgba($primary, 0.2);
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Expanded Card Overlay
+.cardExpandedOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-lg;
+  animation: fadeIn 0.2s ease;
+
+  @include max-mobile {
+    top: 70px;
+    bottom: 70px;
+    padding: $spacing-sm;
+  }
+}
+
+.cardExpanded {
+  background: #fff;
+  border-radius: $radius-lg;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: $shadow-xl;
+  animation: slideUp 0.3s ease;
+
+  @include max-mobile {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: $radius-md;
+  }
+}
+
+.cardExpandedHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
+}
+
+.cardExpandedTitle {
+  font-size: $font-xl;
+  font-weight: 600;
+  color: $text-dark;
+  margin: 0;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.cardExpandedActions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: $radius-full;
+  background: #f3f4f6;
+  color: #374151;
+  cursor: pointer;
+  transition: background $duration-base;
+
+  &:hover {
+    background: #e5e7eb;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.cardExpandedContent {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: $spacing-xl;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  @include max-mobile {
+    padding: $spacing-lg;
+  }
+
+  & :global(img) {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+    box-sizing: border-box;
+    border-radius: $radius-md;
+    margin: $spacing-md 0;
+  }
+
+  & :global(.editor-image) {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+    box-sizing: border-box;
+  }
+
+  & :global(> div) {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  & :global(h2) {
+    font-size: $font-2xl;
+    font-weight: 700;
+    margin-top: $spacing-xl;
+    margin-bottom: $spacing-md;
+    color: $text-dark;
+  }
+
+  & :global(h3) {
+    font-size: $font-xl;
+    font-weight: 600;
+    margin-top: $spacing-lg;
+    margin-bottom: $spacing-sm;
+    color: $text-dark;
+  }
+
+  & :global(p) {
+    margin-bottom: $spacing-md;
+    line-height: 1.8;
+    color: #444;
+  }
+
+  & :global(ul),
+  & :global(ol) {
+    padding-left: $spacing-xl;
+    margin-bottom: $spacing-md;
+  }
+
+  & :global(a) {
+    color: $primary;
+    text-decoration: underline;
+  }
+
+  & :global(blockquote) {
+    border-left: 4px solid $primary;
+    margin: $spacing-lg 0;
+    padding: $spacing-md $spacing-lg;
+    background: rgba($primary, 0.04);
+    border-radius: 0 $radius-sm $radius-sm 0;
+    font-style: italic;
+    color: #555;
+  }
+
+  & :global(hr) {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, $primary, transparent);
+    margin: $spacing-xl 0;
+  }
+
+  & :global(pre) {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    border-radius: $radius-sm;
+    padding: $spacing-md;
+    margin: $spacing-lg 0;
+    overflow-x: auto;
+    font-family: monospace;
+    font-size: 0.9em;
+  }
+
+  & :global(code) {
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: 3px;
+    padding: 0.15em 0.35em;
+    font-family: monospace;
+    font-size: 0.9em;
+    color: #e45649;
+  }
+
+  & :global(audio) {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    margin: $spacing-md 0;
+    border-radius: $radius-sm;
+  }
+
+  & :global([data-audio-player]) {
+    margin: $spacing-md 0;
+
+    audio {
+      width: 100%;
+      max-width: 400px;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
