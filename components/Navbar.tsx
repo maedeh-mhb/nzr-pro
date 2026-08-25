@@ -135,7 +135,7 @@ export default function Navbar() {
           </li>
           <li>
             <Link href="/how-to-use" className={styles.link} onClick={() => setMenuOpen(false)}>
-              {t("How to Use", "نحوه استفاده")}
+              {t("How to Use", "نحوه استفاده از محصولات")}
             </Link>
           </li>
           <li>

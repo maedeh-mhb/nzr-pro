@@ -80,7 +80,7 @@ export default function Footer() {
               <Link href="/" className={styles.link}>{t("Home", "صفحه اصلی")}</Link>
             </li>
             <li>
-              <Link href="/how-to-use" className={styles.link}>{t("How to Use", "نحوه استفاده")}</Link>
+              <Link href="/how-to-use" className={styles.link}>{t("How to Use", "نحوه استفاده از محصولات")}</Link>
             </li>
             <li>
               <Link href="/instructions" className={styles.link}>{t("Instructions", "آموزش")}</Link>
