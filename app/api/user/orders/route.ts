@@ -49,12 +49,17 @@ export async function GET(request: NextRequest) {
         const items = await db.query.orderItems.findMany({
           where: eq(orderItems.orderId, order.id),
         });
+        const subtotal = items.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
+        const shippingCost = order.shippingMethod === "courier"
+          ? 0
+          : Math.max(0, parseFloat(order.total) - subtotal + parseFloat(order.discountAmount || "0"));
 
         return {
           id: order.id,
           orderNumber: order.orderNumber,
           status: order.status,
           total: order.total,
+                    shippingCost,
           paymentMethod: order.paymentMethod,
           paymentVerified: order.paymentVerified,
           shippingMethod: order.shippingMethod,

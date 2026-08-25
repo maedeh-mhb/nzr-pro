@@ -37,6 +37,10 @@ export async function GET(
     const items = await db.query.orderItems.findMany({
       where: eq(orderItems.orderId, order.id),
     });
+    const subtotal = items.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
+    const shippingCost = order.shippingMethod === "courier"
+      ? 0
+      : Math.max(0, parseFloat(order.total) - subtotal + parseFloat(order.discountAmount || "0"));
 
     // Fetch guest order if exists
     const guestOrder = await db.query.guestOrders.findFirst({
@@ -102,6 +106,7 @@ export async function GET(
           : null,
         status: order.status,
         total: order.total,
+        shippingCost,
         paymentMethod: order.paymentMethod,
         paymentVerified: order.paymentVerified,
         shippingMethod: order.shippingMethod,
@@ -113,6 +118,7 @@ export async function GET(
           id: item.id,
           productId: item.productId,
           productName: item.productName,
+          productNameFa: item.productNameFa || null,
           quantity: item.quantity,
           price: item.price,
           fulfilledQuantity: item.fulfilledQuantity || 0,

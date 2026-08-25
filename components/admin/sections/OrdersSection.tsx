@@ -36,9 +36,11 @@ interface Order {
   } | null;
   status: string;
   total: string;
+  shippingCost: number;
   paymentMethod: string | null;
   items: Array<{
     productName: string;
+    productNameFa?: string | null;
     quantity: number;
     price: string;
   }>;
@@ -294,7 +296,7 @@ export default function OrdersSection() {
         const moreCount = items.length - 1;
         return (
           <div>
-            <div>{firstItem.productName} x{firstItem.quantity}</div>
+            <div>{language === "fa" && firstItem.productNameFa ? firstItem.productNameFa : firstItem.productName} x{firstItem.quantity}</div>
             {moreCount > 0 && (
               <div style={{ fontSize: "0.875rem", color: "#666" }}>
                 {t(`+${moreCount} more`, `+${moreCount} بیشتر`)}

@@ -63,7 +63,7 @@
     width: 100%;
     max-width: 100%;
     top: 0;
-    bottom: 0;
+    bottom: calc(58px + env(safe-area-inset-bottom, 0px));
     z-index: 1000;
     pointer-events: auto;
   }

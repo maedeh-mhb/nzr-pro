@@ -6,6 +6,7 @@ import { useLanguage } from "@/lib/utils/language";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BottomBar from "@/components/BottomBar";
+import MidPageBanner from "@/components/MidPageBanner";
 import ProductCard from "@/components/products/ProductCard";
 import Select, { SelectOption } from "@/components/ui/Select";
 import SkeletonLoader from "@/components/dashboard/SkeletonLoader";
@@ -213,13 +214,8 @@ export default function ProductsPage() {
   return (
     <>
       <Navbar />
-      <div className={styles.pageHeader}>
-        <h1>{t("Products", "محصولات")}</h1>
-        <p>{t("Discover our amazing collection of products", "مجموعه شگفت انگیز محصولات ما را کشف کنید")}</p>
-        <div className={styles.searchBar}>
-          <input type="text" placeholder={t("Search products...", "جستجوی محصولات...")} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-        </div>
-      </div>
+      <MidPageBanner />
+      
       <div className={styles.container}>
         <div className={styles.filters}>
           {activeFilterView === null && (

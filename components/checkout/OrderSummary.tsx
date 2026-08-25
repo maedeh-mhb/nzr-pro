@@ -6,6 +6,7 @@ import { formatPrice } from "@/lib/utils/formatPrice";
 import Image from "next/image";
 import { FiChevronDown, FiChevronUp, FiTag, FiTruck, FiPercent } from "react-icons/fi";
 import styles from "@/styles/components/_orderSummary.module.scss";
+import ShippingCostNotice from "@/components/checkout/ShippingCostNotice";
 
 interface OrderSummaryItem {
     productId: string;
@@ -148,6 +149,7 @@ export default function OrderSummary({
                                         : formatPrice(shippingCost, language, displayCurrency)}
                         </span>
                     </div>
+                    <ShippingCostNotice />
 
                     {/* Discount */}
                     {discountAmount > 0 && (

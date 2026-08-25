@@ -13,6 +13,9 @@ interface MidPageBannerSettings {
   buttonTextEn: string | null;
   buttonTextFa: string | null;
   buttonLink: string | null;
+  button2TextEn: string | null;
+  button2TextFa: string | null;
+  button2Link: string | null;
   backgroundImageUrl: string | null;
   isEnabled: boolean;
 }
@@ -56,6 +59,9 @@ export default function MidPageBanner() {
   const title = language === "fa" ? bannerSettings.titleFa : bannerSettings.titleEn;
   const description = language === "fa" ? bannerSettings.descriptionFa : bannerSettings.descriptionEn;
   const buttonText = language === "fa" ? bannerSettings.buttonTextFa : bannerSettings.buttonTextEn;
+  const button2Text = language === "fa"
+    ? bannerSettings.button2TextFa || bannerSettings.button2TextEn
+    : bannerSettings.button2TextEn || bannerSettings.button2TextFa;
 
   const sectionStyle: React.CSSProperties & { "--banner-bg-image"?: string } = {};
   if (bannerSettings.backgroundImageUrl) {
@@ -74,6 +80,11 @@ export default function MidPageBanner() {
         {buttonText && (
           <Link href={bannerSettings.buttonLink || "/instructions"} className={styles.button}>
             {buttonText}
+          </Link>
+        )}
+        {button2Text && (
+          <Link href={bannerSettings.button2Link || "/instructions"} className={styles.button}>
+            {button2Text}
           </Link>
         )}
       </div>

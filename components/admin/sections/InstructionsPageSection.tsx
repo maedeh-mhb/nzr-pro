@@ -16,16 +16,19 @@ import formStyles from "@/styles/components/_adminForm.module.scss";
 import styles from "@/styles/components/_adminSettings.module.scss";
 
 const pageSchema = yup.object({
-  pageTitleEn: yup.string().required("Page title (English) is required"),
-  pageTitleFa: yup.string().required("Page title (Farsi) is required"),
+  pageTitleEn: yup.string(),
+  pageTitleFa: yup.string(),
   pageIsEnabled: yup.boolean(),
-  bannerTitleEn: yup.string().required("Banner title (English) is required"),
-  bannerTitleFa: yup.string().required("Banner title (Farsi) is required"),
-  bannerDescriptionEn: yup.string().required("Banner description (English) is required"),
-  bannerDescriptionFa: yup.string().required("Banner description (Farsi) is required"),
-  bannerButtonTextEn: yup.string().required("Button text (English) is required"),
-  bannerButtonTextFa: yup.string().required("Button text (Farsi) is required"),
-  bannerButtonLink: yup.string().required("Button link is required"),
+  bannerTitleEn: yup.string(),
+  bannerTitleFa: yup.string(),
+  bannerDescriptionEn: yup.string(),
+  bannerDescriptionFa: yup.string(),
+  bannerButtonTextEn: yup.string(),
+  bannerButtonTextFa: yup.string(),
+  bannerButtonLink: yup.string(),
+  bannerButton2TextEn: yup.string(),
+  bannerButton2TextFa: yup.string(),
+  bannerButton2Link: yup.string(),
   bannerBackgroundImageUrl: yup.string(),
   bannerIsEnabled: yup.boolean(),
 });
@@ -75,7 +78,7 @@ export default function InstructionsPageSection() {
       bannerTitleEn: "", bannerTitleFa: "",
       bannerDescriptionEn: "", bannerDescriptionFa: "",
       bannerButtonTextEn: "", bannerButtonTextFa: "",
-      bannerButtonLink: "/instructions", bannerBackgroundImageUrl: "", bannerIsEnabled: true,
+      bannerButtonLink: "/instructions", bannerButton2TextEn: "", bannerButton2TextFa: "", bannerButton2Link: "", bannerBackgroundImageUrl: "", bannerIsEnabled: true,
     },
   });
 
@@ -120,6 +123,9 @@ export default function InstructionsPageSection() {
           bannerButtonTextEn: bannerData?.buttonTextEn || "",
           bannerButtonTextFa: bannerData?.buttonTextFa || "",
           bannerButtonLink: bannerData?.buttonLink || "/instructions",
+          bannerButton2TextEn: bannerData?.button2TextEn || "",
+          bannerButton2TextFa: bannerData?.button2TextFa || "",
+          bannerButton2Link: bannerData?.button2Link || "",
           bannerBackgroundImageUrl: bannerData?.backgroundImageUrl || "",
           bannerIsEnabled: bannerData?.isEnabled ?? true,
         });
@@ -151,6 +157,9 @@ export default function InstructionsPageSection() {
             buttonTextEn: data.bannerButtonTextEn,
             buttonTextFa: data.bannerButtonTextFa,
             buttonLink: data.bannerButtonLink,
+            button2TextEn: data.bannerButton2TextEn,
+            button2TextFa: data.bannerButton2TextFa,
+            button2Link: data.bannerButton2Link,
             backgroundImageUrl: data.bannerBackgroundImageUrl,
             isEnabled: data.bannerIsEnabled,
           }),
@@ -312,6 +321,14 @@ export default function InstructionsPageSection() {
                   <Input label={t("Button Text (Farsi)", "متن دکمه (فارسی)")} {...pageForm.register("bannerButtonTextFa")} error={pageForm.formState.errors.bannerButtonTextFa?.message} />
                 </div>
                 <Input label={t("Button Link", "لینک دکمه")} {...pageForm.register("bannerButtonLink")} error={pageForm.formState.errors.bannerButtonLink?.message} placeholder="/instructions" />
+
+                <div style={{ height: 12 }} />
+                <div style={{ fontWeight: 600, marginBottom: 8 }}>{t("Second Button (optional)", "دکمه دوم (اختیاری)")}</div>
+                <div className={formStyles.formGrid}>
+                  <Input label={t("Button 2 Text (English)", "متن دکمه 2 (انگلیسی)")} {...pageForm.register("bannerButton2TextEn")} error={pageForm.formState.errors.bannerButton2TextEn?.message} />
+                  <Input label={t("Button 2 Text (Farsi)", "متن دکمه 2 (فارسی)")} {...pageForm.register("bannerButton2TextFa")} error={pageForm.formState.errors.bannerButton2TextFa?.message} />
+                </div>
+                <Input label={t("Button 2 Link", "لینک دکمه 2")} {...pageForm.register("bannerButton2Link")} error={pageForm.formState.errors.bannerButton2Link?.message} placeholder="/instructions" />
                 <div className={formStyles.formGroup}>
                   <label className={formStyles.formLabel}>{t("Background Image", "تصویر پس‌زمینه")}</label>
                   <input ref={fileInputRef} type="file" accept="image/*" onChange={handleBannerImageUpload} style={{ display: "none" }} />

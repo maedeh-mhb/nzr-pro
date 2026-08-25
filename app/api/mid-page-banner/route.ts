@@ -30,6 +30,9 @@ export async function GET() {
           buttonTextEn: setting.buttonTextEn,
           buttonTextFa: setting.buttonTextFa,
           buttonLink: setting.buttonLink || "/instructions",
+          button2TextEn: setting.button2TextEn,
+          button2TextFa: setting.button2TextFa,
+          button2Link: setting.button2Link || "/instructions",
           backgroundImageUrl: setting.backgroundImageUrl,
           isEnabled: setting.isEnabled,
         };

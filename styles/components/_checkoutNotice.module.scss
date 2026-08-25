@@ -1,0 +1,19 @@
+@use '../variables' as *;
+
+.notice {
+  margin-top: $spacing-lg;
+  padding: $spacing-md $spacing-lg;
+  border: 1px solid rgba($primary, 0.18);
+  border-radius: $radius-md;
+  background: rgba($primary, 0.05);
+  color: $text-dark;
+  line-height: 1.7;
+
+  p {
+    margin: 0;
+  }
+
+  p + p {
+    margin-top: $spacing-xs;
+  }
+}

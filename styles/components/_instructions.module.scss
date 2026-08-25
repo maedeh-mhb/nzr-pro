@@ -54,11 +54,11 @@
   overflow-x: hidden;
 
   @include max-tablet {
-    padding: $spacing-2xl 5%;
+    padding: calc(#{$navbar-height-mobile} + #{$spacing-2xl}) 5% $spacing-2xl;
   }
 
   @include max-mobile {
-    padding: $spacing-xl 5%;
+    padding: calc(#{$navbar-height-mobile} + #{$spacing-xl}) 5% $spacing-xl;
     overflow-x: hidden;
   }
 }

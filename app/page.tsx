@@ -12,7 +12,6 @@ import heroStyles from "@/styles/components/_hero.module.scss";
 import categoryStyles from "@/styles/components/_categories.module.scss";
 import productStyles from "@/styles/components/_products.module.scss";
 import ProductCard from "@/components/products/ProductCard";
-import MidPageBanner from "@/components/MidPageBanner";
 
 interface HeroSettings {
   titleEn: string;
@@ -283,7 +282,7 @@ export default function HomePage() {
         )}
       </section>
 
-      <MidPageBanner />
+      
 
       {/* Featured Products Section */}
       <section className={`${productStyles.products} ${productStyles.featuredProductsSection}`}>

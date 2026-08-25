@@ -113,9 +113,6 @@ export default function InstructionsPage() {
     return (
       <>
         <Navbar />
-        <div className={styles.pageHeader}>
-          <h1>{t("Instructions", "آموزش")}</h1>
-        </div>
         <div className={styles.instructionsPage}>
           <div className={styles.container}>
             <div style={{ display: "flex", justifyContent: "center", padding: "4rem" }}>
@@ -140,9 +137,6 @@ export default function InstructionsPage() {
     return (
       <>
         <Navbar />
-        <div className={styles.pageHeader}>
-          <h1>{t("Instructions", "آموزش")}</h1>
-        </div>
         <div className={styles.instructionsPage}>
           <div className={styles.container}>
             <div className={styles.emptyState}>
@@ -156,15 +150,9 @@ export default function InstructionsPage() {
     );
   }
 
-  const pageTitle = language === "fa" ? pageSettings.titleFa : pageSettings.titleEn;
-
   return (
     <>
       <Navbar />
-      <div className={styles.pageHeader}>
-        <h1>{pageTitle || t("Instructions", "آموزش")}</h1>
-        <p>{t("Learn how to use our products and services", "نحوه استفاده از محصولات و خدمات ما را بیاموزید")}</p>
-      </div>
       <div className={styles.instructionsPage}>
         <div className={styles.container}>
           {cards.length === 0 ? (

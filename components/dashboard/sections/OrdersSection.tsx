@@ -28,6 +28,7 @@ interface Order {
   orderNumber: string;
   status: string;
   total: string;
+  shippingCost?: number;
   paymentMethod: string;
   paymentVerified: Date | string | null;
   shippingMethod: string | null;
@@ -91,10 +92,27 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
     const fetchOrders = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/api/user/orders");
-        if (response.ok) {
+        const orderLimit = 100;
+        let currentPage = 1;
+        let fetchedOrders: Order[] = [];
+        let hasNextPage = true;
+
+        while (hasNextPage) {
+          const response = await fetch(`/api/user/orders?page=${currentPage}&limit=${orderLimit}`);
+
+          if (!response.ok) {
+            console.error("Failed to fetch orders");
+            break;
+          }
+
           const data = await response.json();
-          let allOrders: Order[] = data.data || data.orders || [];
+          fetchedOrders = [...fetchedOrders, ...(data.data || data.orders || [])];
+          hasNextPage = data.pagination?.hasNext === true;
+          currentPage += 1;
+        }
+
+        if (fetchedOrders.length > 0 || !hasNextPage) {
+          let allOrders: Order[] = fetchedOrders;
 
           // Add cart items as a pending order if user is logged in and has cart items
           if (session?.user && cartItems.length > 0) {
@@ -124,8 +142,6 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
           }
 
           setOrders(allOrders);
-        } else {
-          console.error("Failed to fetch orders");
         }
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -310,12 +326,16 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
                             <div className={styles.orderProductInfo}>
                               <div className={styles.orderProductRow}>
                                 <span className={styles.orderProductLabel}>{t("Items", "آیتم‌ها")}: </span>
-                                <span className={styles.orderProductValue}>{itemCount === 1 ? displayName : `${displayName} ${t("and", "و")} ${itemCount - 1} ${t("more items", "آیتم دیگر")}`}</span>
+                                <span className={styles.orderProductValue}>{order.items.map((item) => `${language === "fa" && item.productNameFa ? item.productNameFa : item.productName} x${item.quantity}`).join("، ")}</span>
                               </div>
                               <div className={styles.orderProductRow}>
                                 <span className={styles.orderProductLabel}>{t("Total", "کل")}: </span>
                                 <span className={styles.orderProductValue}>{formatPrice(totalPrice, language, currency || "toman")}</span>
                               </div>
+                            </div>
+                            <div className={styles.orderProductRow}>
+                              <span className={styles.orderProductLabel}>{t("Shipping Cost", "هزینه ارسال")}: </span>
+                              <span className={styles.orderProductValue}>{formatPrice(order.shippingCost || 0, language, currency ?? "toman")}</span>
                             </div>
                             <a href="/checkout" className={styles.continueCheckoutBtn}>{t("Continue Checkout", "ادامه تسویه حساب")}</a>
                           </div>
@@ -426,7 +446,7 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
                             <div className={styles.orderProductInfo}>
                               <div className={styles.orderProductRow}>
                                 <span className={styles.orderProductLabel}>{t("Name", "نام")}: </span>
-                                <span className={styles.orderProductValue}>{itemCount === 1 ? displayName : `${displayName} ${t("and", "و")} ${itemCount - 1} ${t("more items", "آیتم دیگر")}`}</span>
+                                <span className={styles.orderProductValue}>{order.items.map((item) => `${language === "fa" && item.productNameFa ? item.productNameFa : item.productName} x${item.quantity}`).join("، ")}</span>
                               </div>
                               <div className={styles.orderProductRow}>
                                 <span className={styles.orderProductLabel}>{t("Price", "قیمت")}: </span>
@@ -436,6 +456,10 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
                                 <span className={styles.orderProductLabel}>{t("Date", "تاریخ")}: </span>
                                 <span className={styles.orderProductValue}>{formatDate(order.createdAt)}</span>
                               </div>
+                            </div>
+                            <div className={styles.orderProductRow}>
+                              <span className={styles.orderProductLabel}>{t("Shipping Cost", "هزینه ارسال")}: </span>
+                              <span className={styles.orderProductValue}>{formatPrice(order.shippingCost || 0, language, currency ?? "toman")}</span>
                             </div>
                             {order.trackingCode && (
                               <div className={styles.orderTrackingCode}>
@@ -568,7 +592,7 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
                             <div className={styles.orderProductInfo}>
                               <div className={styles.orderProductRow}>
                                 <span className={styles.orderProductLabel}>{t("Name", "نام")}: </span>
-                                <span className={styles.orderProductValue}>{itemCount === 1 ? displayName : `${displayName} ${t("and", "و")} ${itemCount - 1} ${t("more items", "آیتم دیگر")}`}</span>
+                                <span className={styles.orderProductValue}>{order.items.map((item) => `${language === "fa" && item.productNameFa ? item.productNameFa : item.productName} x${item.quantity}`).join("، ")}</span>
                               </div>
                               <div className={styles.orderProductRow}>
                                 <span className={styles.orderProductLabel}>{t("Price", "قیمت")}: </span>
@@ -578,6 +602,10 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
                                 <span className={styles.orderProductLabel}>{t("Date", "تاریخ")}: </span>
                                 <span className={styles.orderProductValue}>{formatDate(order.createdAt)}</span>
                               </div>
+                            </div>
+                            <div className={styles.orderProductRow}>
+                              <span className={styles.orderProductLabel}>{t("Shipping Cost", "هزینه ارسال")}: </span>
+                              <span className={styles.orderProductValue}>{formatPrice(order.shippingCost || 0, language, currency ?? "toman")}</span>
                             </div>
                             {order.trackingCode && (
                               <div className={styles.orderTrackingCode}>

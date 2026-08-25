@@ -29,9 +29,11 @@ export interface OrderWithDetails {
   } | null;
   status: string;
   total: number;
+  shippingCost: number;
   paymentMethod: string | null;
   items: Array<{
     productName: string;
+    productNameFa: string | null;
     quantity: number;
     price: number;
     sellerId?: string; // NEW: Seller ID
@@ -95,6 +97,7 @@ export async function fetchOrderDetails(ordersData: typeof orders.$inferSelect[]
 
           return {
             productName: item.productName,
+            productNameFa: item.productNameFa || null,
             quantity: item.quantity,
             price: parseFloat(item.price),
             sellerId: product?.sellerId || undefined,
@@ -106,6 +109,10 @@ export async function fetchOrderDetails(ordersData: typeof orders.$inferSelect[]
 
       const guestOrder = guestOrdersMap.get(order.id);
       const user = order.userId ? usersMap.get(order.userId) : null;
+      const subtotal = items.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
+      const shippingCost = order.shippingMethod === "courier"
+        ? 0
+        : Math.max(0, parseFloat(order.total) - subtotal + parseFloat(order.discountAmount || "0"));
 
       return {
         id: order.id,
@@ -137,6 +144,7 @@ export async function fetchOrderDetails(ordersData: typeof orders.$inferSelect[]
           : null,
         status: order.status,
         total: parseFloat(order.total),
+        shippingCost,
         paymentMethod: order.paymentMethod,
         items: itemsWithSellerInfo,
         createdAt: order.createdAt,

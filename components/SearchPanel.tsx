@@ -221,7 +221,7 @@ export default function SearchPanel({ isOpen, onClose, navbarHeight = 70 }: Sear
       <div
         ref={panelRef}
         className={`${styles.searchPanel} ${isOpen ? styles.open : ""} ${hasResults ? styles.hasResults : ""}`}
-        style={{ top: `${navbarHeight}px` }}
+        style={{ top: `${Math.max(0, navbarHeight - (isMobile ? 8 : 0))}px` }}
       >
         <div className={styles.searchInputContainer}>
           <FiSearch className={styles.searchIcon} />

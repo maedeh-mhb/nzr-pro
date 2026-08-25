@@ -17,6 +17,7 @@ interface OrderItem {
   id?: string;
   productId?: string;
   productName: string;
+  productNameFa?: string | null;
   quantity: number;
   price: string;
   fulfilledQuantity?: number;
@@ -48,6 +49,7 @@ interface OrderDetails {
   } | null;
   status: string;
   total: string;
+  shippingCost: number;
   paymentMethod: string | null;
   paymentVerified: Date | string | null;
   shippingMethod: string | null;
@@ -143,6 +145,7 @@ export default function OrderDetailsModal({
         id: item.id,
         productId: item.productId,
         productName: item.productName,
+        productNameFa: item.productNameFa,
         quantity: item.quantity,
         price: item.price,
       })));
@@ -754,6 +757,12 @@ export default function OrderDetailsModal({
                 </span>
               </div>
               <div className={styles.orderDetailsInfoRow}>
+                <span className={styles.orderDetailsLabel}>{t("Shipping Cost", "هزینه ارسال")}:</span>
+                <span className={styles.orderDetailsValue}>
+                  {formatPrice(order.shippingCost, language, currency || "toman")}
+                </span>
+              </div>
+              <div className={styles.orderDetailsInfoRow}>
                 <span className={styles.orderDetailsLabel}>{t("Shipping Status", "وضعیت ارسال")}:</span>
                 <span className={styles.orderDetailsValue}>
                   {getShippingStatusBadge(order.shippingStatus) || t("Not Started", "شروع نشده")}
@@ -908,6 +917,7 @@ export default function OrderDetailsModal({
                         id: item.id,
                         productId: item.productId,
                         productName: item.productName,
+                        productNameFa: item.productNameFa,
                         quantity: item.quantity,
                         price: item.price,
                       })));
@@ -941,7 +951,9 @@ export default function OrderDetailsModal({
                     }}
                   >
                     <div className={styles.orderDetailsItemInfo} style={{ marginBottom: "0.75rem" }}>
-                      <span className={styles.orderDetailsItemName}>{item.productName}</span>
+                      <span className={styles.orderDetailsItemName}>
+                        {language === "fa" && item.productNameFa ? item.productNameFa : item.productName}
+                      </span>
                       {isEditMode ? (
                         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
                           <label style={{ fontSize: "0.875rem", color: "#666", display: "flex", alignItems: "center", gap: "0.5rem" }}>

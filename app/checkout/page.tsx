@@ -22,6 +22,7 @@ import ProvinceCitySelector from "@/components/checkout/ProvinceCitySelector";
 import PhoneVerification from "@/components/phone/PhoneVerification";
 import CheckoutProgressBar, { CheckoutStep } from "@/components/checkout/CheckoutProgressBar";
 import OrderSummary from "@/components/checkout/OrderSummary";
+import CheckoutNotice from "@/components/checkout/CheckoutNotice";
 import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 import Link from "next/link";
 import { FiPackage, FiTruck } from "react-icons/fi";
@@ -1451,12 +1452,7 @@ export default function CheckoutPage() {
                             })()}
                           </div>
                         )}
-                        <p className={styles.shippingMethodNote}>
-                          {t(
-                            "After placing your order, it takes up to 10 working days to prepare the items and hand them over to the shipping company.",
-                            "پس از ثبت سفارش، تا ۱۰ روز کاری برای آماده‌سازی کالا و تحویل آن به شرکت حمل نیاز است."
-                          )}
-                        </p>
+                        <CheckoutNotice />
                       </div>
 
                     </div>
@@ -1805,12 +1801,7 @@ export default function CheckoutPage() {
                             })()}
                           </div>
                         )}
-                        <p className={styles.shippingMethodNote}>
-                          {t(
-                            "After placing your order, it takes up to 10 working days to prepare the items and hand them over to the shipping company.",
-                            "پس از ثبت سفارش، تا ۱۰ روز کاری برای آماده‌سازی کالا و تحویل آن به شرکت حمل نیاز است."
-                          )}
-                        </p>
+                        <CheckoutNotice />
                       </div>
 
                     </div>

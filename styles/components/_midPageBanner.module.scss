@@ -87,9 +87,15 @@
   }
 }
 
+/* stack multiple buttons vertically and add spacing */
+.button + .button {
+  margin-top: $spacing-md;
+}
+
 @include max-tablet {
   .banner {
     padding: $spacing-3xl 5%;
+    margin-top: $navbar-height-mobile; // account for fixed navbar on tablet/mobile
   }
 
   .title {
@@ -104,6 +110,7 @@
 @include max-mobile {
   .banner {
     padding: $spacing-2xl 5%;
+    margin-top: $navbar-height-mobile; // ensure banner is not hidden under mobile header
   }
 
   .title {

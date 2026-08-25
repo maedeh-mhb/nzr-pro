@@ -165,16 +165,6 @@ export default function HowToUsePage() {
     <>
       <Navbar />
 
-      <section className={styles.pageHeader}>
-        <h1>{t("How to Use", "نحوه استفاده")}</h1>
-        <p>
-          {t(
-            "Guides and tips to get the most out of our products",
-            "راهنما و نکات برای بهره‌برداری بهتر از محصولات ما"
-          )}
-        </p>
-      </section>
-
       <div className={styles.container}>
         <div className={styles.categorySelection}>
           <label className={styles.categoryLabel}>

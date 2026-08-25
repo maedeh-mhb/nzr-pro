@@ -52,6 +52,10 @@ export async function POST(request: NextRequest) {
       timezone,
       siteDescription,
       maintenanceMode,
+      checkoutNoticeEn,
+      checkoutNoticeFa,
+      shippingCostNoticeEn,
+      shippingCostNoticeFa,
     } = body;
 
     // Define all settings keys (removed contactEmail, phoneNumber, telegram, whatsapp, instagram)
@@ -62,6 +66,10 @@ export async function POST(request: NextRequest) {
       { key: "timezone", value: timezone || "utc" },
       { key: "siteDescription", value: siteDescription || "" },
       { key: "maintenanceMode", value: maintenanceMode || "off" },
+      { key: "checkoutNoticeEn", value: checkoutNoticeEn || "" },
+      { key: "checkoutNoticeFa", value: checkoutNoticeFa || "" },
+      { key: "shippingCostNoticeEn", value: shippingCostNoticeEn || "" },
+      { key: "shippingCostNoticeFa", value: shippingCostNoticeFa || "" },
     ];
 
     // Update or insert each setting

@@ -90,6 +90,10 @@ const siteSettingsSchema = yup.object({
   currency: yup.string().required("Currency is required"),
   timezone: yup.string().required("Timezone is required"),
   siteDescription: yup.string(),
+  checkoutNoticeEn: yup.string(),
+  checkoutNoticeFa: yup.string(),
+  shippingCostNoticeEn: yup.string(),
+  shippingCostNoticeFa: yup.string(),
   maintenanceMode: yup.string().required("Maintenance mode is required"),
 });
 
@@ -266,6 +270,10 @@ export default function SettingsSection() {
       currency: "toman",
       timezone: "utc",
       siteDescription: "",
+      checkoutNoticeEn: "",
+      checkoutNoticeFa: "",
+      shippingCostNoticeEn: "",
+      shippingCostNoticeFa: "",
       maintenanceMode: "off",
     },
   });
@@ -460,6 +468,10 @@ export default function SettingsSection() {
           currency: settingsData.currency || "toman",
           timezone: settingsData.timezone || "utc",
           siteDescription: settingsData.siteDescription || "",
+          checkoutNoticeEn: settingsData.checkoutNoticeEn || "",
+          checkoutNoticeFa: settingsData.checkoutNoticeFa || "",
+          shippingCostNoticeEn: settingsData.shippingCostNoticeEn || "",
+          shippingCostNoticeFa: settingsData.shippingCostNoticeFa || "",
           maintenanceMode: settingsData.maintenanceMode || "off",
         });
       }
@@ -1473,6 +1485,38 @@ export default function SettingsSection() {
                   error={siteSettingsErrors.maintenanceMode?.message}
                 />
               </div>
+            </div>
+            <div className={formStyles.formGrid}>
+              <Textarea
+                label={t("Checkout Notice (English)", "متن راهنمای پرداخت (انگلیسی)")}
+                rows={4}
+                placeholder={t("Text shown below shipping methods", "متنی که زیر روش‌های ارسال نمایش داده می‌شود")}
+                {...registerSiteSettings("checkoutNoticeEn")}
+                error={siteSettingsErrors.checkoutNoticeEn?.message}
+              />
+              <Textarea
+                label={t("Checkout Notice (Farsi)", "متن راهنمای پرداخت (فارسی)")}
+                rows={4}
+                placeholder={t("Text shown below shipping methods", "متنی که زیر روش‌های ارسال نمایش داده می‌شود")}
+                {...registerSiteSettings("checkoutNoticeFa")}
+                error={siteSettingsErrors.checkoutNoticeFa?.message}
+              />
+            </div>
+            <div className={formStyles.formGrid}>
+              <Textarea
+                label={t("Shipping Cost Notice (English)", "متن هزینه ارسال (انگلیسی)")}
+                rows={4}
+                placeholder={t("Text shown below the shipping cost", "متنی که زیر هزینه ارسال نمایش داده می‌شود")}
+                {...registerSiteSettings("shippingCostNoticeEn")}
+                error={siteSettingsErrors.shippingCostNoticeEn?.message}
+              />
+              <Textarea
+                label={t("Shipping Cost Notice (Farsi)", "متن هزینه ارسال (فارسی)")}
+                rows={4}
+                placeholder={t("Text shown below the shipping cost", "متنی که زیر هزینه ارسال نمایش داده می‌شود")}
+                {...registerSiteSettings("shippingCostNoticeFa")}
+                error={siteSettingsErrors.shippingCostNoticeFa?.message}
+              />
             </div>
             <div className={formStyles.formActions}>
               <Button variant="primary" type="submit" disabled={isLoadingSiteSettings}>

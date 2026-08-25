@@ -11,7 +11,8 @@
 
   // Add padding-top on mobile to account for fixed navbar
   @include max-tablet {
-    padding-top: calc(#{$navbar-height} + #{$spacing-3xl});
+    // Reduce gap: use smaller spacing so header padding is ~78px on mobile
+    padding-top: calc(#{$navbar-height-mobile} + #{$spacing-sm});
   }
 
   h1 {

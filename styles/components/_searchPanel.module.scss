@@ -54,7 +54,7 @@
     height: auto; // Auto height based on content
     bottom: auto; // Remove bottom constraint
     top: var(--navbar-height, 70px);
-    margin-top: $spacing-md;
+    margin-top: 0; // remove extra gap between navbar and search panel on mobile
     transition: max-height $transition-base ease-out, transform $transition-base ease-out, opacity $transition-base ease-out, visibility $transition-base ease-out;
 
     // Default compact state - just enough for search input
@@ -81,6 +81,7 @@
     max-height: calc(100vh - var(--navbar-height, 70px) - 20px);
     border-radius: $radius-xl;
     margin-top: $spacing-sm;
+    margin-top: 0; // reduce extra spacing on tablet/desktop dropdown
     bottom: auto;
 
     &.open {
