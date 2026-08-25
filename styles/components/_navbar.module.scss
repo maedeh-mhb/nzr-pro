@@ -44,11 +44,16 @@
   gap: clamp(1rem, 2vw, 2rem); // Gap shrinks dynamically
   list-style: none;
   align-items: center;
+
+  li {
+    flex-shrink: 0;
+  }
 }
 
 .link {
   color: $text-light;
   text-decoration: none;
+  white-space: nowrap;
   font-weight: 500;
   transition: all $transition-base;
   font-size: clamp(0.75rem, 1.2vw, 1rem); // Dynamically shrinks from 1rem to 0.75rem
