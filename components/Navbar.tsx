@@ -134,11 +134,6 @@ export default function Navbar() {
             </Link>
           </li>
           <li>
-            <Link href="/how-to-use" className={styles.link} onClick={() => setMenuOpen(false)}>
-              {t("How to Use", "نحوه استفاده از محصولات")}
-            </Link>
-          </li>
-          <li>
             <Link
               href="/products"
               className={styles.link}
@@ -151,13 +146,18 @@ export default function Navbar() {
             </Link>
           </li>
           <li>
+            <Link href="/how-to-use/how-to-use-products-1" className={styles.link} onClick={() => setMenuOpen(false)}>
+              {t("How to Use", "طرز استفاده از محصولات")}
+            </Link>
+          </li>
+          <li>
             <Link href="/contact" className={styles.link} onClick={() => setMenuOpen(false)}>
               {t("Contact Us", "تماس با ما")}
             </Link>
           </li>
           <li>
             <Link href="/about" className={styles.link} onClick={() => setMenuOpen(false)}>
-              {t("About Us", "درباره ما")}
+              {t("About Us", "درباره‌ نازیرا")}
             </Link>
           </li>
           <li className={styles.mobileLangSwitcher}>

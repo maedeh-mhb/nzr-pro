@@ -234,12 +234,12 @@ export default function ContactPage() {
       <Navbar />
       <div className={styles.pageHeader}>
         <h1>{t("Contact Us", "تماس با ما")}</h1>
-        <p>
+        {/* <p>
           {t(
             "We'd love to hear from you. Get in touch with us!",
             "خوشحال می‌شویم از شما بشنویم. با ما در تماس باشید!"
           )}
-        </p>
+        </p> */}
       </div>
 
       <div className={styles.contactContainer}>

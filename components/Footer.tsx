@@ -80,19 +80,19 @@ export default function Footer() {
               <Link href="/" className={styles.link}>{t("Home", "صفحه اصلی")}</Link>
             </li>
             <li>
-              <Link href="/how-to-use" className={styles.link}>{t("How to Use", "نحوه استفاده از محصولات")}</Link>
-            </li>
-            <li>
               <Link href="/instructions" className={styles.link}>{t("Instructions", "آموزش")}</Link>
             </li>
             <li>
               <Link href="/products" className={styles.link}>{t("Products", "محصولات")}</Link>
             </li>
             <li>
+              <Link href="/how-to-use/how-to-use-products-1" className={styles.link}>{t("How to Use", "طرز استفاده از محصولات")}</Link>
+            </li>
+            <li>
               <Link href="/contact" className={styles.link}>{t("Contact", "تماس")}</Link>
             </li>
             <li>
-              <Link href="/about" className={styles.link}>{t("About", "درباره")}</Link>
+              <Link href="/about" className={styles.link}>{t("About", "درباره نازیرا")}</Link>
             </li>
             <li>
               <Link href="/terms" className={styles.link}>{t("Terms", "شرایط و قوانین")}</Link>

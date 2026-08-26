@@ -108,7 +108,7 @@ export default function HowToUsePostPage() {
             <p>{error || t("Post not found", "مقاله یافت نشد")}</p>
             <BackButton
               href="/how-to-use"
-              label={t("Back to How to Use", "بازگشت به نحوه استفاده")}
+              label={t("Back to How to Use", "بازگشت")}
             />
           </div>
         </div>
@@ -128,7 +128,7 @@ export default function HowToUsePostPage() {
       <article className={styles.container}>
         <BackButton
           href="/how-to-use"
-          label={t("Back to How to Use", "بازگشت به نحوه استفاده")}
+          label={t("Back to How to Use", "بازگشت")}
         />
         {post.image && (
           <div className={styles.imageContainer}>

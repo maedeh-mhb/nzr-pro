@@ -71,13 +71,13 @@ export default function AboutPage() {
     <>
       <Navbar />
       <div className={styles.pageHeader}>
-        <h1>{t("About Us", "درباره ما")}</h1>
-        <p>
+        <h1>{t("About Us", "از نگاه نازیرا")}</h1>
+        {/* <p>
           {t(
             "Learn more about our story, mission, and values",
             "درباره داستان، ماموریت و ارزش‌های ما بیشتر بدانید"
           )}
-        </p>
+        </p> */}
       </div>
       <section className={styles.contentPage}>
         <div className={styles.card}>
