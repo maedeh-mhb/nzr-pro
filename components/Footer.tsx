@@ -92,7 +92,7 @@ export default function Footer() {
               <Link href="/how-to-use/how-to-use-products-1" className={styles.link}>{t("How to Use", "طرز استفاده از محصولات")}</Link>
             </li>
             <li>
-              <Link href="/contact" className={styles.link}>{t("Contact", "تماس")}</Link>
+              <Link href="/contact" className={styles.link}>{t("Contact", "ارتباط با ما")}</Link>
             </li>
             <li>
               <Link href="/terms" className={styles.link}>{t("Terms", "شرایط و قوانین")}</Link>

@@ -15,12 +15,11 @@ import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
 import Button from "@/components/ui/Button";
 import { FiRefreshCw, FiPhone, FiMail, FiMapPin, FiRotateCw , FiMessageCircle } from "react-icons/fi";
-import { FaTelegram, FaInstagram, FaWhatsapp } from "react-icons/fa";
+import { FaTelegram, FaWhatsapp } from "react-icons/fa";
 import styles from "@/styles/pages/_contact.module.scss";
 
 interface ContactSettings {
   telegram: string | null;
-  instagram: string | null;
   whatsapp: string | null;
   rubika: string | null;
   phone: string | null;
@@ -218,7 +217,7 @@ export default function ContactPage() {
     <>
       <Navbar />
       <div className={styles.pageHeader}>
-        <h1>{t("Contact Us", "تماس با ما")}</h1>
+        <h1>{t("Contact Us", "ارتباط با نازیرا")}</h1>
         {/* <p>
           {t(
             "We'd love to hear from you. Get in touch with us!",
@@ -362,10 +361,10 @@ export default function ContactPage() {
 
           {/* Contact Info */}
           <div className={styles.contactInfo}>
-            <h2>
+            {/* <h2>
               {/* <span>📞</span> */}
               <span>{t("Get in Touch", "در تماس باشید")}</span>
-            </h2>
+            </h2> */}
 
             {contactSettings?.telegram && (
               <a
@@ -383,27 +382,6 @@ export default function ContactPage() {
                     {contactSettings.telegram.startsWith("@")
                       ? contactSettings.telegram
                       : `@${contactSettings.telegram}`}
-                  </div>
-                </div>
-              </a>
-            )}
-
-            {contactSettings?.instagram && (
-              <a
-                href={`https://instagram.com/${contactSettings.instagram.replace("@", "")}`}
-                className={styles.contactItem}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <div className={styles.contactIcon}>
-                  <FaInstagram />
-                </div>
-                <div className={styles.contactDetails}>
-                  <div className={styles.contactLabel}>Instagram</div>
-                  <div className={styles.contactValue}>
-                    {contactSettings.instagram.startsWith("@")
-                      ? contactSettings.instagram
-                      : `@${contactSettings.instagram}`}
                   </div>
                 </div>
               </a>

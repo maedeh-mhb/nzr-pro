@@ -157,7 +157,7 @@ export default function Navbar() {
           </li>
           <li>
             <Link href="/contact" className={styles.link} onClick={() => setMenuOpen(false)}>
-              {t("Contact Us", "تماس با ما")}
+              {t("Contact Us", "ارتباط با ما")}
             </Link>
           </li>
           <li className={styles.mobileLangSwitcher}>
