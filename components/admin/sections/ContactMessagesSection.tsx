@@ -15,9 +15,7 @@ interface ContactMessage {
   id: string;
   userId: string | null;
   name: string;
-  email: string;
   phone: string | null;
-  subject: string;
   message: string;
   isRead: boolean;
   reply?: string | null;
@@ -331,7 +329,6 @@ export default function ContactMessagesSection() {
                         {message.user && <FiUser style={{ marginRight: "0.5rem" }} />}
                         {message.name}
                       </div>
-                      <div className={styles.mobileMessageCardSubject}>{message.subject}</div>
                     </div>
                     {!message.isRead && (
                       <span className={styles.mobileMessageUnreadBadge}>
@@ -343,15 +340,11 @@ export default function ContactMessagesSection() {
                 {expandedMessageId === message.id && (
                   <div className={styles.mobileMessageExpanded}>
                     <div className={styles.mobileMessageDetail}>
-                      <strong>{t("Email:", "ایمیل:")}</strong> {message.email}
-                    </div>
                     {message.phone && (
                       <div className={styles.mobileMessageDetail}>
                         <strong>{t("Phone:", "تلفن:")}</strong> {message.phone}
                       </div>
                     )}
-                    <div className={styles.mobileMessageDetail}>
-                      <strong>{t("Subject:", "موضوع:")}</strong> {message.subject}
                     </div>
                     <div className={styles.mobileMessageDetail}>
                       <strong>{t("Message:", "پیام:")}</strong>
@@ -446,8 +439,6 @@ export default function ContactMessagesSection() {
                 <tr>
                   <th className={styles.tableColNumber}>#</th>
                   <th className={styles.tableColName}>{t("Name", "نام")}</th>
-                  <th className={styles.tableColEmail}>{t("Email", "ایمیل")}</th>
-                  <th className={styles.tableColSubject}>{t("Subject", "موضوع")}</th>
                   <th className={styles.tableColDate}>{t("Date", "تاریخ")}</th>
                   <th className={styles.tableColStatus}>{t("Status", "وضعیت")}</th>
                   <th className={styles.tableColActions}>{t("Actions", "عملیات")}</th>
@@ -456,7 +447,7 @@ export default function ContactMessagesSection() {
               <tbody>
                 {messages.length === 0 && !isLoading ? (
                   <tr>
-                    <td colSpan={7} className={styles.tableEmptyCell}>
+                    <td colSpan={5} className={styles.tableEmptyCell}>
                       {t("No messages found", "پیامی یافت نشد")}
                     </td>
                   </tr>
@@ -473,8 +464,6 @@ export default function ContactMessagesSection() {
                           {message.name}
                         </div>
                       </td>
-                      <td className={styles.tableColEmail}>{message.email}</td>
-                      <td className={styles.tableColSubject}>{message.subject}</td>
                       <td className={styles.tableColDate}>
                         {formatDate(message.createdAt)}
                       </td>
@@ -547,17 +536,11 @@ export default function ContactMessagesSection() {
                 </span>
               )}
             </div>
-            <div style={{ marginBottom: "1rem" }}>
-              <strong>{t("Email:", "ایمیل:")}</strong> {selectedMessage.email}
-            </div>
             {selectedMessage.phone && (
               <div style={{ marginBottom: "1rem" }}>
                 <strong>{t("Phone:", "تلفن:")}</strong> {selectedMessage.phone}
               </div>
             )}
-            <div style={{ marginBottom: "1rem" }}>
-              <strong>{t("Subject:", "موضوع:")}</strong> {selectedMessage.subject}
-            </div>
             <div style={{ marginBottom: "1rem" }}>
               <strong>{t("Message:", "پیام:")}</strong>
               <div

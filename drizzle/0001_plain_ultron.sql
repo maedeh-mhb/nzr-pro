@@ -1,2 +1,8 @@
-ALTER TABLE "users" ADD COLUMN "phone" text;--> statement-breakpoint
-ALTER TABLE "users" ADD CONSTRAINT "users_phone_unique" UNIQUE("phone");
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "phone" text;--> statement-breakpoint
+DO $$ BEGIN
+	IF NOT EXISTS (
+		SELECT 1 FROM pg_constraint WHERE conname = 'users_phone_unique'
+	) THEN
+		ALTER TABLE "users" ADD CONSTRAINT "users_phone_unique" UNIQUE("phone");
+	END IF;
+END $$;

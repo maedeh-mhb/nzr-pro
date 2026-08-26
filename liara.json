@@ -4,6 +4,8 @@
         "builder": "node",
         "commands": [
             "npm install",
+            "npm run db:migrate",
+            "npm run db:ensure-contact",
             "npm run build"
         ]
     },

@@ -64,8 +64,8 @@ export async function POST(
         type: "message_reply",
         title: "New Reply to Your Message",
         titleFa: "پاسخ جدید به پیام شما",
-        message: `You have received a reply to your message: "${message.subject}"`,
-        messageFa: `شما پاسخ جدیدی برای پیام خود دریافت کرده‌اید: "${message.subject}"`,
+        message: `You have received a reply to your message from ${message.name}.`,
+        messageFa: `شما پاسخ جدیدی برای پیام ${message.name} دریافت کرده‌اید.`,
         notificationData: { messageId: messageId },
       });
     }

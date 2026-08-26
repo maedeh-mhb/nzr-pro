@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       return validationErrorResponse(validation.errors);
     }
 
-    const { name, email, phone, subject, message, captcha } = validation.data;
+    const { name, phone, message, captcha } = validation.data;
 
     // Verify CAPTCHA
     const storedCaptcha = request.cookies.get("captcha")?.value;
@@ -53,9 +53,7 @@ export async function POST(request: NextRequest) {
       .values({
         userId: session?.user?.id || null,
         name,
-        email,
         phone: normalizedPhone,
-        subject,
         message,
         isRead: false,
       })

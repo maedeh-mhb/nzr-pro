@@ -133,12 +133,12 @@ export async function GET(request: NextRequest) {
       activityData: {
         messageId: message.id,
         name: message.name,
-        email: message.email,
-        subject: message.subject,
+        phone: message.phone,
+        message: message.message,
       },
       userName: message.name,
-      userEmail: message.email,
-      subject: message.subject,
+      userEmail: undefined,
+      subject: undefined,
       createdAt: message.createdAt,
     }));
 

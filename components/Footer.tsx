@@ -77,7 +77,10 @@ export default function Footer() {
         <div className={styles.linksSection}>
           <ul className={styles.links}>
             <li>
-              <Link href="/" className={styles.link}>{t("Home", "صفحه اصلی")}</Link>
+              <Link href="/" className={styles.link}>{t("Home", "صفحه‌ی اصلی")}</Link>
+            </li>
+            <li>
+              <Link href="/about" className={styles.link}>{t("About", "درباره‌ی نازیرا")}</Link>
             </li>
             <li>
               <Link href="/instructions" className={styles.link}>{t("Instructions", "آموزش")}</Link>
@@ -90,9 +93,6 @@ export default function Footer() {
             </li>
             <li>
               <Link href="/contact" className={styles.link}>{t("Contact", "تماس")}</Link>
-            </li>
-            <li>
-              <Link href="/about" className={styles.link}>{t("About", "درباره نازیرا")}</Link>
             </li>
             <li>
               <Link href="/terms" className={styles.link}>{t("Terms", "شرایط و قوانین")}</Link>

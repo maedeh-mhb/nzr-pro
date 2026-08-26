@@ -92,9 +92,7 @@ export const signupSchema = z.object({
 // Contact form schema
 export const contactFormSchema = z.object({
   name: nameSchema,
-  email: emailSchema,
-  phone: phoneSchema,
-  subject: textSchema(200),
+  phone: z.string().regex(/^09\d{9}$/, "Phone must be 11 digits starting with 09"),
   message: textSchema(2000),
   captcha: z.string().min(1, "CAPTCHA is required"),
 });

@@ -19,6 +19,7 @@
     "test:all": "npm run test && npm run test:e2e",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node scripts/migrate.js",
+    "db:ensure-contact": "node scripts/ensure-contact-schema.js",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "create-superadmin": "tsx scripts/create-superadmin.ts",

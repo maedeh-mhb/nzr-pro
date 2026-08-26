@@ -32,20 +32,13 @@ interface ContactSettings {
 // Create schema factory function for bilingual support
 const createContactSchema = (t: (en: string, fa: string) => string) => yup.object({
   name: yup.string().required(t("Name is required", "نام الزامی است")),
-  email: yup
-    .string()
-    .required(t("Email is required", "ایمیل الزامی است"))
-    .test("has-at-and-com", t("Email must contain @ and .com", "ایمیل باید شامل @ و .com باشد"), (value) => {
-      return value?.includes("@") && value?.includes(".com");
-    }),
   phone: yup
     .string()
+    .required(t("Phone is required", "شماره تلفن الزامی است"))
     .test("phone-format", t("Phone must be 11 digits starting with 09", "شماره تلفن باید 11 رقم و با 09 شروع شود"), (value) => {
-      if (!value) return true; // Optional field
       const digits = value.replace(/\D/g, "");
       return digits.length === 11 && digits.startsWith("09");
     }),
-  subject: yup.string().required(t("Subject is required", "موضوع الزامی است")),
   message: yup.string().required(t("Message is required", "پیام الزامی است")),
   captcha: yup.string().required(t("CAPTCHA is required", "کد امنیتی الزامی است")),
 });
@@ -60,7 +53,7 @@ export default function ContactPage() {
   const [captcha, setCaptcha] = useState<string>("");
   const [isLoadingCaptcha, setIsLoadingCaptcha] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [userProfile, setUserProfile] = useState<{ name: string; surname: string | null; email: string } | null>(null);
+  const [userProfile, setUserProfile] = useState<{ name: string; surname: string | null } | null>(null);
 
   // Create schema with current language
   const contactSchema = useMemo(() => createContactSchema(t), [t]);
@@ -108,14 +101,12 @@ export default function ContactPage() {
           setUserProfile({
             name: data.name,
             surname: data.surname,
-            email: data.email,
           });
         } else {
           // Fallback to session data if profile fetch fails
           setUserProfile({
             name: session.user.name || "",
             surname: null,
-            email: session.user.email || "",
           });
         }
       } catch (error) {
@@ -124,7 +115,6 @@ export default function ContactPage() {
         setUserProfile({
           name: session.user.name || "",
           surname: null,
-          email: session.user.email || "",
         });
       }
     };
@@ -141,9 +131,6 @@ export default function ContactPage() {
         : userProfile.name;
 
       setValue("name", fullName || "");
-      setValue("email", userProfile.email || "");
-      // Only prefill phone if verified (we'll check this from user data)
-      // For now, we'll leave it empty as we don't have phone verification status
     }
   }, [userProfile, setValue]);
 
@@ -188,9 +175,7 @@ export default function ContactPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: data.name,
-          email: data.email,
-          phone: data.phone || null,
-          subject: data.subject,
+            phone: data.phone,
           message: data.message,
           captcha: data.captcha,
         }),
@@ -254,15 +239,15 @@ export default function ContactPage() {
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className={styles.formGroup}>
                 <Input
-                  label={t("Full Name", "نام کامل")}
+                  label={t("Full Name", "نام و نام خانوادگی ")}
                   {...register("name")}
                   error={errors.name?.message}
-                  placeholder={t("Enter your full name", "نام کامل خود را وارد کنید")}
+                  placeholder={t("Enter your full name", " ")}
                   disabled={isSubmitting}
                 />
               </div>
 
-              <div className={styles.formGroup}>
+              {/* <div className={styles.formGroup}>
                 <Input
                   label={t("Email Address", "آدرس ایمیل")}
                   type="email"
@@ -271,18 +256,18 @@ export default function ContactPage() {
                   placeholder={t("Enter your email", "ایمیل خود را وارد کنید")}
                   disabled={isSubmitting}
                 />
-              </div>
+              </div> */}
 
-              <div className={styles.formGroup}>
+               <div className={styles.formGroup}>
                 <label className={styles.label}>
                   <span>{t("Phone Number", "شماره تلفن")}</span>
-                  <span className={styles.optional}>({t("Optional", "اختیاری")})</span>
+                  {/* <span className={styles.optional}>({t("Optional", "اختیاری")})</span> */}
                 </label>
                 <Input
                   type="tel"
                   {...register("phone")}
                   error={errors.phone?.message}
-                  placeholder={t("Enter your phone number", "شماره تلفن خود را وارد کنید")}
+                  placeholder={t("Enter your phone number", " ")}
                   disabled={isSubmitting}
                   style={language === "fa" ? { direction: "rtl", textAlign: "right" } : {}}
                   onChange={(e) => {
@@ -293,7 +278,7 @@ export default function ContactPage() {
                 />
               </div>
 
-              <div className={styles.formGroup}>
+              {/* <div className={styles.formGroup}>
                 <Input
                   label={t("Subject", "موضوع")}
                   {...register("subject")}
@@ -301,7 +286,7 @@ export default function ContactPage() {
                   placeholder={t("What is this about?", "عنوان پیام خود را بنویسید")}
                   disabled={isSubmitting}
                 />
-              </div>
+              </div> */}
 
               <div className={styles.formGroup}>
                 <Textarea
@@ -378,7 +363,7 @@ export default function ContactPage() {
           {/* Contact Info */}
           <div className={styles.contactInfo}>
             <h2>
-              <span>📞</span>
+              {/* <span>📞</span> */}
               <span>{t("Get in Touch", "در تماس باشید")}</span>
             </h2>
 
@@ -492,7 +477,7 @@ export default function ContactPage() {
                 </div>
               </a>
             )}
-
+{/*
             <div className={styles.contactItem} style={{ cursor: "default" }}>
               <div className={styles.contactIcon}>
                 <FiMapPin />
@@ -503,7 +488,7 @@ export default function ContactPage() {
                   {displayAddress() || t("Not available", "در دسترس نیست")}
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

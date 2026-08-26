@@ -55,7 +55,6 @@ export async function GET(request: NextRequest) {
 
     const messages = userMessages.map((msg) => ({
       id: msg.id,
-      subject: msg.subject,
       message: msg.message,
       reply: msg.reply,
       replyAt: msg.replyAt,

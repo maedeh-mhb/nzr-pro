@@ -78,15 +78,14 @@ export async function GET(request: NextRequest) {
       type: "contact_message",
       title: "New Contact Message",
       titleFa: "پیام تماس جدید",
-      message: `From: ${message.name} - ${message.subject}`,
-      messageFa: `از: ${message.name} - ${message.subject}`,
+      message: `From: ${message.name}`,
+      messageFa: `از: ${message.name}`,
       isRead: message.isRead,
       createdAt: message.createdAt,
       data: {
         messageId: message.id,
         name: message.name,
-        email: message.email,
-        subject: message.subject,
+        phone: message.phone,
       },
     }));
 

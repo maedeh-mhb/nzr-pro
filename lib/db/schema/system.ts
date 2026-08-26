@@ -94,9 +94,7 @@ export const contactMessages = pgTable("contact_messages", {
   id: text("id").primaryKey().$defaultFn(() => createId()),
   userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
   name: text("name").notNull(),
-  email: text("email").notNull(),
   phone: text("phone"),
-  subject: text("subject").notNull(),
   message: text("message").notNull(),
   isRead: boolean("is_read").default(false).notNull(),
   parentMessageId: text("parent_message_id").references((): AnyPgColumn => contactMessages.id, { onDelete: "cascade" }), // For replies

@@ -125,7 +125,12 @@ export default function Navbar() {
         <ul ref={menuRef} className={`${styles.left} ${menuOpen ? styles.active : ""}`}>
           <li>
             <Link href="/" className={styles.link} onClick={() => setMenuOpen(false)}>
-              {t("Home", "صفحه اصلی")}
+              {t("Home", "صفحه‌ی اصلی")}
+            </Link>
+          </li>
+          <li>
+            <Link href="/about" className={styles.link} onClick={() => setMenuOpen(false)}>
+              {t("About Us", "درباره‌‌ی نازیرا")}
             </Link>
           </li>
           <li>
@@ -153,11 +158,6 @@ export default function Navbar() {
           <li>
             <Link href="/contact" className={styles.link} onClick={() => setMenuOpen(false)}>
               {t("Contact Us", "تماس با ما")}
-            </Link>
-          </li>
-          <li>
-            <Link href="/about" className={styles.link} onClick={() => setMenuOpen(false)}>
-              {t("About Us", "درباره‌ نازیرا")}
             </Link>
           </li>
           <li className={styles.mobileLangSwitcher}>
