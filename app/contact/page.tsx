@@ -361,11 +361,6 @@ export default function ContactPage() {
 
           {/* Contact Info */}
           <div className={styles.contactInfo}>
-            {/* <h2>
-              {/* <span>📞</span> */}
-              <span>{t("Get in Touch", "در تماس باشید")}</span>
-            </h2> */}
-
             {contactSettings?.telegram && (
               <a
                 href={`https://t.me/${contactSettings.telegram.replace("@", "")}`}
