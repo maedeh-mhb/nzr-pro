@@ -41,6 +41,7 @@ interface Product {
   categoryIds?: string | null;
   position?: number | null;
   image: string | null;
+  audioUrl?: string | null;
   badge: string | null;
   weight?: string | null;
   volume?: string | null;
@@ -127,6 +128,8 @@ export default function ProductsSection() {
   const [productImagePreview, setProductImagePreview] = useState<string>("");
   const [isUploadingProductImage, setIsUploadingProductImage] = useState(false);
   const productFileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingProductAudio, setIsUploadingProductAudio] = useState(false);
+  const productAudioFileInputRef = useRef<HTMLInputElement>(null);
   const [isCreatingProduct, setIsCreatingProduct] = useState(false);
   const [hasReward, setHasReward] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -165,6 +168,7 @@ export default function ProductsSection() {
     quantity: yup.number().min(0, t("Quantity must be positive", "مقدار باید عددی مثبت باشد")),
     slug: yup.string(),
     image: yup.string(),
+    audioUrl: yup.string(),
     ogImage: yup.string(),
     sellerId: yup.string().required(t("Seller is required", "انتخاب فروشنده الزامی است")),
     badge: yup.string(),
@@ -635,6 +639,35 @@ export default function ProductsSection() {
     setProductImagePreview(url);
   };
 
+  const handleProductAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingProductAudio(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/admin/upload-audio", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload audio");
+      }
+
+      const data = await response.json();
+      setValueProduct("audioUrl", data.url);
+      toast.success(t("Voice uploaded successfully", "فایل صوتی با موفقیت آپلود شد"));
+    } catch {
+      toast.error(t("Failed to upload voice", "آپلود فایل صوتی ناموفق بود"));
+    } finally {
+      setIsUploadingProductAudio(false);
+      e.target.value = "";
+    }
+  };
+
   // Extra image upload handler
   const handleExtraImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: 0 | 1) => {
     const file = e.target.files?.[0];
@@ -758,6 +791,7 @@ const handleEditProduct = useCallback(async (productId: string) => {
       quantity: fullProduct.quantity || 0,
       slug: fullProduct.slug || "",
       image: fullProduct.image || "",
+      audioUrl: fullProduct.audioUrl || "",
       ogImage: fullProduct.ogImage || "",
       badge: fullProduct.badge || "None",
       sellerId: fullProduct.sellerId || "",
@@ -856,6 +890,7 @@ const onProductSubmit = async (formData: ProductFormData) => {
       // NEW: Store all selected categories as JSON string
       categoryIds: JSON.stringify(validSelectedCategoryIds),
       sellerId: formData.sellerId,
+      audioUrl: formData.audioUrl || null,
       unit,
       volume: formData.volume,
       images: hasMultipleImages
@@ -2125,6 +2160,58 @@ const handleShowProduct = useCallback(async (productId: string) => {
                 {...registerProduct("ogImage")}
                 error={productErrors.ogImage?.message}
               />
+            </div>
+
+            {/* Product voice */}
+            <div className={formStyles.formGroup}>
+              <label className={formStyles.formLabel}>
+                {t("Product Voice", "فایل صوتی محصول")}
+              </label>
+              <div className={styles.uploadOptions}>
+                <div className={styles.uploadOption}>
+                  <input
+                    ref={productAudioFileInputRef}
+                    type="file"
+                    accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/m4a,audio/mp4"
+                    onChange={handleProductAudioUpload}
+                    disabled={isUploadingProductAudio}
+                    style={{ display: "none" }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isUploadingProductAudio}
+                    onClick={() => productAudioFileInputRef.current?.click()}
+                    style={{ width: "100%" }}
+                  >
+                    {isUploadingProductAudio
+                      ? t("Uploading...", "در حال آپلود...")
+                      : t("Upload voice file", "آپلود فایل صوتی")}
+                  </Button>
+                </div>
+                <div className={styles.uploadOption}>
+                  <Input
+                    type="text"
+                    placeholder={t("Or enter audio URL", "یا آدرس فایل صوتی را وارد کنید")}
+                    {...registerProduct("audioUrl")}
+                    error={productErrors.audioUrl?.message}
+                  />
+                </div>
+              </div>
+              {watchProduct("audioUrl") && (
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginTop: "0.75rem" }}>
+                  <audio controls preload="metadata" src={watchProduct("audioUrl")} style={{ flex: 1, minWidth: 0 }} />
+                  <button
+                    type="button"
+                    onClick={() => setValueProduct("audioUrl", "")}
+                    className={styles.removeImageBtn}
+                    title={t("Remove voice", "حذف فایل صوتی")}
+                    aria-label={t("Remove voice", "حذف فایل صوتی")}
+                  >
+                    <FiX />
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Multiple Images Toggle */}

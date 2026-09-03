@@ -2,9 +2,17 @@ import type { MetadataRoute } from "next";
 import { db } from "@/lib/db";
 import { products } from "@/lib/db/schema/products";
 import { journalPosts } from "@/lib/db/schema/journal";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull, lte, or } from "drizzle-orm";
+import { logger } from "@/lib/utils/logger";
+import { notifySitemapFailure } from "@/lib/seo/sitemapAlert";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.nazira.ir";
+
+const LOCALES = ["fa", "en"] as const;
+
+function localizedUrl(path: string, locale: (typeof LOCALES)[number]): string {
+  return `${BASE_URL}/${locale}${path === "/" ? "" : path}`;
+}
 
 function getValidDate(value: unknown): Date | undefined {
   if (!value) return undefined;
@@ -14,48 +22,24 @@ function getValidDate(value: unknown): Date | undefined {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const staticPages: MetadataRoute.Sitemap = [
-    {
-      url: BASE_URL,
-      changeFrequency: "daily",
-      priority: 1,
-    },
-    {
-      url: `${BASE_URL}/products`,
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
-    {
-      url: `${BASE_URL}/how-to-use`,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${BASE_URL}/about`,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${BASE_URL}/contact`,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${BASE_URL}/instructions`,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${BASE_URL}/privacy`,
-      changeFrequency: "yearly",
-      priority: 0.5,
-    },
-    {
-      url: `${BASE_URL}/terms`,
-      changeFrequency: "yearly",
-      priority: 0.5,
-    },
-  ];
+  const staticPageDefinitions = [
+    ["/", "daily", 1],
+    ["/products", "daily", 0.9],
+    ["/how-to-use", "weekly", 0.8],
+    ["/about", "monthly", 0.7],
+    ["/contact", "monthly", 0.7],
+    ["/instructions", "monthly", 0.7],
+    ["/privacy", "yearly", 0.5],
+    ["/terms", "yearly", 0.5],
+  ] as const;
+
+  const staticPages: MetadataRoute.Sitemap = staticPageDefinitions.flatMap(([path, changeFrequency, priority]) =>
+    LOCALES.map((locale) => ({
+      url: localizedUrl(path, locale),
+      changeFrequency,
+      priority,
+    }))
+  );
 
   const productUrls: MetadataRoute.Sitemap = [];
   const journalUrls: MetadataRoute.Sitemap = [];
@@ -66,38 +50,70 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .from(products);
 
     for (const product of allProducts) {
-      if (!product?.slug) continue;
+      const slug = product?.slug?.trim();
+      if (!slug) continue;
 
-      productUrls.push({
-        url: `${BASE_URL}/products/${product.slug}`,
-        lastModified: getValidDate(product.updatedAt || product.createdAt),
-        changeFrequency: "weekly",
-        priority: 0.8,
-      });
+      for (const locale of LOCALES) {
+        productUrls.push({
+          url: localizedUrl(`/products/${encodeURIComponent(slug)}`, locale),
+          lastModified: getValidDate(product.updatedAt || product.createdAt),
+          changeFrequency: "weekly",
+          priority: 0.8,
+        });
+      }
     }
   } catch (error) {
-    console.error("Sitemap products error:", error);
+    logger.error("Sitemap product URLs generation failed", error, {
+      type: "sitemap_generation_error",
+      section: "products",
+      baseUrl: BASE_URL,
+    });
+    void notifySitemapFailure("products", error).catch((alertError) => {
+      logger.error("Sitemap product alert failed", alertError, { type: "sitemap_alert_error" });
+    });
   }
 
   try {
     const allPosts = await db
       .select({ slug: journalPosts.slug, updatedAt: journalPosts.updatedAt, createdAt: journalPosts.createdAt })
       .from(journalPosts)
-      .where(eq(journalPosts.isPublished, true));
+      .where(
+        and(
+          eq(journalPosts.isPublished, true),
+          or(isNull(journalPosts.publishDate), lte(journalPosts.publishDate, new Date()))
+        )
+      );
 
     for (const post of allPosts) {
-      if (!post?.slug) continue;
+      const slug = post?.slug?.trim();
+      if (!slug) continue;
 
+      for (const locale of LOCALES) {
         journalUrls.push({
-          url: `${BASE_URL}/how-to-use/${post.slug}`,
-        lastModified: getValidDate(post.updatedAt || post.createdAt),
-        changeFrequency: "weekly",
-        priority: 0.7,
-      });
+          url: localizedUrl(`/how-to-use/${encodeURIComponent(slug)}`, locale),
+          lastModified: getValidDate(post.updatedAt || post.createdAt),
+          changeFrequency: "weekly",
+          priority: 0.7,
+        });
+      }
     }
   } catch (error) {
-    console.error("Sitemap journal error:", error);
+    logger.error("Sitemap article URLs generation failed", error, {
+      type: "sitemap_generation_error",
+      section: "articles",
+      baseUrl: BASE_URL,
+    });
+    void notifySitemapFailure("articles", error).catch((alertError) => {
+      logger.error("Sitemap article alert failed", alertError, { type: "sitemap_alert_error" });
+    });
   }
+
+  logger.info("Sitemap generated", {
+    type: "sitemap_generation",
+    staticPages: staticPages.length,
+    productUrls: productUrls.length,
+    articleUrls: journalUrls.length,
+  });
 
   return [...staticPages, ...productUrls, ...journalUrls];
 }

@@ -1,58 +1,52 @@
 // app/products/[slug]/layout.tsx
 import { Metadata } from "next";
+import { getProductBySlug } from "@/lib/data/productDetails";
+import { getLocaleMetadata, getRequestLocale } from "@/lib/seo/locale";
 
 type Props = {
   params: { slug: string };
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const decodedSlug = decodeURIComponent(params.slug);
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://nazira.ir";
-  const url = `${baseUrl}/products/${params.slug}`;
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.nazira.ir";
+  const locale = getRequestLocale();
+  const url = `${baseUrl}/${locale}/products/${params.slug}`;
   
   try {
-    const response = await fetch(`${baseUrl}/api/products/${encodeURIComponent(decodedSlug)}`, {
-      next: { revalidate: 3600 },
-    });
-
-    if (!response.ok) {
-      return {
-        title: "Product Not Found | Nazira Organic Soaps",
-      };
-    }
-
-    const data = await response.json();
-    const product = data.product;
-
+    const product = await getProductBySlug(params.slug);
     if (!product) {
       return {
         title: "Product Not Found | Nazira Organic Soaps",
       };
     }
 
-    const title = product.seoTitle || product.name;
-    const description = product.seoDescription || product.shortDescription;
+    const title = (locale === "fa"
+      ? product.seoTitle || product.nameFa || product.name
+      : product.name || product.seoTitle || product.nameFa) || "محصول نازیرا";
+    const description = (locale === "fa"
+      ? product.seoDescription || product.shortDescriptionFa || product.shortDescription || product.longDescriptionFa || product.longDescription
+      : product.seoDescription || product.shortDescription || product.longDescription || product.shortDescriptionFa) || "محصولات طبیعی و ارگانیک نازیرا با مواد اولیه باکیفیت.";
     const keywords = product.seoKeywords;
     const image = product.ogImage || product.image || "/images/logo.png";
 
+    const metadata = getLocaleMetadata(
+      locale,
+      `/products/${params.slug}`,
+      `${title} | ${locale === "fa" ? "نازیرا" : "Nazira"}`,
+      description,
+    );
+
     return {
-      title: `${title} | Nazira Organic Soaps`,
-      description: description || "Shop our premium organic soaps at Nazira. Crafted naturally, handmade with love.",
+      ...metadata,
       keywords: keywords ? keywords.split(",").map((k: string) => k.trim()) : ["organic soap", "natural soap", "handmade soap"],
-      alternates: {
-        canonical: url,
-      },
       openGraph: {
-        title: title,
-        description: description || "Shop our premium organic soaps at Nazira.",
-        images: [image],
-        type: "website",
-        url: url,
+        ...metadata.openGraph,
+        images: [{ url: image, alt: title }],
       },
       twitter: {
         card: "summary_large_image",
-        title: title,
-        description: description || "Shop our premium organic soaps at Nazira.",
+        title: `${title} | ${locale === "fa" ? "نازیرا" : "Nazira"}`,
+        description: description || "Handcrafted organic soaps made with natural, high-quality ingredients.",
         images: [image],
       },
     };

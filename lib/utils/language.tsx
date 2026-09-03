@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 type Language = "en" | "fa";
 
@@ -16,7 +17,10 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>("fa");
+  const pathname = usePathname();
+  const router = useRouter();
+  const pathLocale = pathname?.match(/^\/(fa|en)(?=\/|$)/)?.[1] as Language | undefined;
+  const [language, setLanguageState] = useState<Language>(pathLocale || "fa");
   const [currency, setCurrency] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -43,15 +47,26 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (pathLocale) {
+      setLanguageState(pathLocale);
+      localStorage.setItem("language", pathLocale);
+      return;
+    }
     const savedLang = localStorage.getItem("language") as Language;
     if (savedLang) {
       setLanguageState(savedLang);
     }
-  }, []);
+  }, [pathLocale]);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
     localStorage.setItem("language", lang);
+
+    if (typeof window !== "undefined") {
+      const currentPath = window.location.pathname;
+      const pathWithoutLocale = currentPath.replace(/^\/(fa|en)(?=\/|$)/, "") || "/";
+      router.push(`/${lang}${pathWithoutLocale === "/" ? "" : pathWithoutLocale}`);
+    }
 
     const html = document.documentElement;
     if (lang === "fa") {

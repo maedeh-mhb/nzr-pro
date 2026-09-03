@@ -26,7 +26,8 @@ interface SocialLink {
 }
 
 export default function Footer() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const localizedPath = (path: string) => `/${language}${path === "/" ? "" : path}`;
   const [contactSettings, setContactSettings] = useState<ContactSettings | null>(null);
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
 
@@ -77,28 +78,28 @@ export default function Footer() {
         <div className={styles.linksSection}>
           <ul className={styles.links}>
             <li>
-              <Link href="/" className={styles.link}>{t("Home", "صفحه‌ی اصلی")}</Link>
+              <Link href={localizedPath("/")} className={styles.link}>{t("Home", "صفحه‌ی اصلی")}</Link>
             </li>
             <li>
-              <Link href="/about" className={styles.link}>{t("About", "درباره‌ی نازیرا")}</Link>
+              <Link href={localizedPath("/about")} className={styles.link}>{t("About", "درباره‌ی نازیرا")}</Link>
             </li>
             <li>
-              <Link href="/instructions" className={styles.link}>{t("Instructions", "آموزش")}</Link>
+              <Link href={localizedPath("/instructions")} className={styles.link}>{t("Instructions", "آموزش")}</Link>
             </li>
             <li>
-              <Link href="/products" className={styles.link}>{t("Products", "محصولات")}</Link>
+              <Link href={localizedPath("/products")} className={styles.link}>{t("Products", "محصولات")}</Link>
             </li>
             <li>
-              <Link href="/how-to-use/how-to-use-products-1" className={styles.link}>{t("How to Use", "طرز استفاده از محصولات")}</Link>
+              <Link href={localizedPath("/how-to-use/how-to-use-products-1")} className={styles.link}>{t("How to Use", "راهنمای استفاده از محصولات")}</Link>
             </li>
             <li>
-              <Link href="/contact" className={styles.link}>{t("Contact", "ارتباط با ما")}</Link>
+              <Link href={localizedPath("/contact")} className={styles.link}>{t("Contact", "ارتباط با ما")}</Link>
             </li>
             <li>
-              <Link href="/terms" className={styles.link}>{t("Terms", "شرایط و قوانین")}</Link>
+              <Link href={localizedPath("/terms")} className={styles.link}>{t("Terms", "شرایط و قوانین")}</Link>
             </li>
             <li>
-              <Link href="/privacy" className={styles.link}>{t("Privacy", "حریم خصوصی")}</Link>
+              <Link href={localizedPath("/privacy")} className={styles.link}>{t("Privacy", "حریم خصوصی")}</Link>
             </li>
           </ul>
           <div className={`${styles.footerText} ${styles.desktopOnly}`}>

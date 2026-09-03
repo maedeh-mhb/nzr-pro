@@ -35,15 +35,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: $spacing-xl;
+  gap: clamp(0.75rem, 1.5vw, 1.5rem);
   position: relative;
 }
 
 .left {
   display: flex;
-  gap: clamp(1rem, 2vw, 2rem); // Gap shrinks dynamically
+  flex: 1 1 0;
+  min-width: 0;
+  gap: clamp(0.7rem, 1vw, 1.2rem); // Keeps the menu compact while preserving readability
   list-style: none;
   align-items: center;
+  padding-inline: clamp(0.5rem, 1.5vw, 2rem);
 
   li {
     flex-shrink: 0;
@@ -99,8 +102,28 @@
 
 .right {
   display: flex;
+  flex: 1 1 0;
+  min-width: 0;
   gap: clamp(0.75rem, 1.5vw, 1.5rem); // Gap shrinks dynamically
   align-items: center;
+  justify-content: flex-end;
+  padding-inline: clamp(0.5rem, 1.5vw, 2rem);
+}
+
+@include desktop {
+  .left {
+    gap: 0.55rem;
+    padding-inline: 0.5rem;
+  }
+
+  .link {
+    font-size: 0.9rem;
+  }
+
+  .right {
+    gap: 0.7rem;
+    padding-inline: 0.5rem;
+  }
 }
 
 .icon {
@@ -241,18 +264,19 @@
   .left {
     flex: 1;
     justify-content: flex-start;
-    padding-right: clamp(50px, 8vw, 80px); // Space for centered logo, shrinks dynamically
+    gap: clamp(0.55rem, 0.9vw, 1rem);
+    padding-inline: clamp(0.9rem, 2vw, 2.5rem);
 
     // In LTR (English), push links closer to left edge
     [dir="ltr"] & {
-      padding-left: 0;
-      padding-right: clamp(50px, 8vw, 80px);
+      padding-left: clamp(0.9rem, 2vw, 2.5rem);
+      padding-right: clamp(0.9rem, 2vw, 2.5rem);
     }
 
     // In RTL (Farsi), push links closer to right edge
     [dir="rtl"] & {
-      padding-left: clamp(50px, 8vw, 80px);
-      padding-right: 0;
+      padding-left: clamp(0.9rem, 2vw, 2.5rem);
+      padding-right: clamp(0.9rem, 2vw, 2.5rem);
     }
   }
 
@@ -263,18 +287,19 @@
   .right {
     flex: 1;
     justify-content: flex-end;
-    padding-left: clamp(50px, 8vw, 80px); // Space for centered logo, shrinks dynamically
+    gap: clamp(0.7rem, 1.2vw, 1.3rem);
+    padding-inline: clamp(0.9rem, 2vw, 2.5rem);
 
     // In LTR (English), push icons closer to right edge
     [dir="ltr"] & {
-      padding-left: clamp(50px, 8vw, 80px);
-      padding-right: 0;
+      padding-left: clamp(0.9rem, 2vw, 2.5rem);
+      padding-right: clamp(0.9rem, 2vw, 2.5rem);
     }
 
     // In RTL (Farsi), push icons closer to left edge
     [dir="rtl"] & {
-      padding-left: 0;
-      padding-right: clamp(50px, 8vw, 80px);
+      padding-left: clamp(0.9rem, 2vw, 2.5rem);
+      padding-right: clamp(0.9rem, 2vw, 2.5rem);
     }
   }
 
@@ -345,8 +370,8 @@
   }
 }
 
-// Mobile First Responsive (<= 640px)
-@include max-tablet {
+// Compact navigation for mobile and tablet (< 1080px)
+@include max-desktop {
   .container {
     justify-content: space-between;
   }
@@ -462,7 +487,7 @@
 .accountDropdown {
   position: relative;
 
-  @include max-tablet {
+  @include max-desktop {
     display: none;
   }
 }

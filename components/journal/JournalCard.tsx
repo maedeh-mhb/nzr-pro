@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useLanguage } from "@/lib/utils/language";
 import { FiArrowRight } from "react-icons/fi";
 import styles from "@/styles/components/_journalCard.module.scss";
@@ -51,13 +52,20 @@ export default function JournalCard({
   const displayExcerpt = language === "fa" && excerptFa ? excerptFa : (excerpt || "");
   const displayCategory = language === "fa" && categoryNameFa ? categoryNameFa : categoryName;
 
-  const postUrl = slug ? `/journal/${slug}` : "#";
+  const postUrl = slug ? `/${language}/how-to-use/${slug}` : "#";
 
   return (
     <Link href={postUrl} className={styles.journalCard}>
       <div className={styles.imageContainer}>
         {image ? (
-          <img src={image} alt={displayTitle} className={styles.image} />
+          <Image
+          src={image}
+          alt={displayTitle}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          unoptimized
+          className={styles.image}
+          />
         ) : (
           <div className={styles.imagePlaceholder} />
         )}

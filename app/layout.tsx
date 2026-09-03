@@ -6,15 +6,24 @@ import { Providers } from "./providers";
 import { LanguageProvider } from "@/lib/utils/language";
 import CartPanel from "@/components/cart/CartPanel";
 import FontLoader from "@/components/FontLoader";
+import { getLocaleMetadata, getRequestLocale } from "@/lib/seo/locale";
 
 export const viewport: Viewport = {
   themeColor: "#ffffff",
 };
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = getRequestLocale();
+  const title = locale === "fa"
+    ? "صابون‌های ارگانیک و محصولات مراقبت طبیعی پوست | نازیرا"
+    : "Nazira Organic Soaps and Natural Skincare";
+  const description = locale === "fa"
+    ? "نازیرا ارائه‌دهنده صابون‌های ارگانیک دست‌ساز و محصولات مراقبت طبیعی پوست با مواد اولیه باکیفیت است."
+    : "Nazira offers handcrafted organic soaps and natural skincare products made with premium ingredients.";
+
+  return {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.nazira.ir"),
-  title: "Nazira (نازیرا) Organic Soaps",
-  description: "Nazira (نازیرا) offers handcrafted organic soaps and natural skincare products made with premium ingredients.",
+  ...getLocaleMetadata(locale, "/", title, description),
   manifest: "/manifest.json",
   icons: {
     icon: [
@@ -52,8 +61,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    title: "Nazira (نازیرا) Organic Soaps",
-    description: "Nazira (نازیرا) offers handcrafted organic soaps and natural skincare products made with premium ingredients.",
+    title,
+    description,
     url: "/",
     siteName: "Nazira",
     locale: "fa_IR",
@@ -63,17 +72,18 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Nazira Organic Soaps",
+        alt: "صابون‌های ارگانیک نازیرا",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Nazira (نازیرا) Organic Soaps",
-    description: "Nazira (نازیرا) offers handcrafted organic soaps and natural skincare products made with premium ingredients.",
+    title,
+    description,
     images: ["/og-image.png"],
   },
-};
+  };
+}
 
 export default function RootLayout({
   children,

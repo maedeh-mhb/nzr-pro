@@ -9,6 +9,7 @@ import { parsePaginationParams } from "@/lib/utils/pagination";
 import { cache, cacheKeys, cacheTTL } from "@/lib/utils/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { generateUniqueSlug } from "@/lib/utils/slugify";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
@@ -102,6 +103,7 @@ export async function POST(request: NextRequest) {
       category,
       slug,
       image,
+      audioUrl,
       ogImage,
       badge,
       productType,
@@ -154,32 +156,18 @@ export async function POST(request: NextRequest) {
     }
 
     
-    // Generate slug if not provided
-    let productSlug = slug;
+    // Generate a Persian slug from the Persian product name when no slug is provided.
+    let productSlug = slug?.trim();
     if (!productSlug) {
-      const baseSlug = name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
-
-      // Check if slug exists, append number if needed
-      let slugExists = true;
-      let slugCounter = 1;
-      while (slugExists) {
-        const checkSlug = slugCounter === 1 ? baseSlug : `${baseSlug}-${slugCounter}`;
+      productSlug = await generateUniqueSlug(nameFa || name, async (candidate) => {
         const existing = await db
-          .select()
+          .select({ id: products.id })
           .from(products)
-          .where(eq(products.slug, checkSlug))
+          .where(eq(products.slug, candidate))
           .limit(1);
 
-        if (existing.length === 0) {
-          productSlug = checkSlug;
-          slugExists = false;
-        } else {
-          slugCounter++;
-        }
-      }
+        return existing.length > 0;
+      });
     } else {
       // Normalize slug: remove leading/trailing slashes and spaces
       productSlug = productSlug.replace(/^\/+|\/+$/g, "").trim();
@@ -204,6 +192,7 @@ export async function POST(request: NextRequest) {
         categoryIds: resolvedCategoryIds.length > 0 ? JSON.stringify(resolvedCategoryIds) : null,
         slug: productSlug,
         image: image || null,
+        audioUrl: audioUrl || null,
         ogImage: ogImage || null,
         badge: badge || "None",
         productType: productType as "economic" | "featured",

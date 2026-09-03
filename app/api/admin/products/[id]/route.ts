@@ -112,6 +112,7 @@ export async function PUT(
     if (body.category !== undefined) updateData.category = body.category;
     if (body.slug !== undefined) updateData.slug = body.slug || null;
     if (body.image !== undefined) updateData.image = body.image || null;
+    if (body.audioUrl !== undefined) updateData.audioUrl = body.audioUrl || null;
     if (body.ogImage !== undefined) updateData.ogImage = body.ogImage || null;
     if (body.badge !== undefined) updateData.badge = body.badge || "None";
     if (body.productType !== undefined) updateData.productType = body.productType || null;

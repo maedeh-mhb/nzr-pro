@@ -292,7 +292,7 @@ export default function ContactPage() {
                   label={t("Message", "پیام")}
                   {...register("message")}
                   error={errors.message?.message}
-                  placeholder={t("Write your message here...", "پیام خود را اینجا بنویسید...")}
+                  placeholder={t("Write your message here...", "")}
                   disabled={isSubmitting}
                   className={styles.textarea}
                   style={{ resize: "none" }}

@@ -47,6 +47,7 @@ export const products = pgTable("products", {
   categoryId: text("category_id").references(() => categories.id, { onDelete: "set null" }),
   slug: text("slug").unique(),
   image: text("image"),
+  audioUrl: text("audio_url"),
   ogImage: text("og_image"), // Open Graph image URL for social sharing
   badge: text("badge"), // None, Presale, Sale, New Arrival, Out of Stock, Not Available
   productType: productTypeEnum("product_type").default("economic").notNull(), // economic or featured

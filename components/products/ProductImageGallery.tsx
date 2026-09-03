@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import Image from "next/image";
 import styles from "@/styles/components/_productImageGallery.module.scss";
 
 interface ProductImageGalleryProps {
@@ -52,12 +53,15 @@ export default function ProductImageGallery({
     return (
         <div className={styles.gallery}>
             <div className={styles.imageContainer}>
-                <img
+                <Image
                     src={currentImage}
                     alt={altText}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    unoptimized
                     className={styles.image}
-                    onError={(e) => {
-                        (e.target as HTMLImageElement).src = "/placeholder-product.jpg";
+                    onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                        (e.currentTarget as HTMLImageElement).src = "/placeholder-product.jpg";
                     }}
                 />
 

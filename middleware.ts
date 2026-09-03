@@ -1,23 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
-  const host = request.headers.get("host") || "";
-  if (host === "nazira.ir") {
-    const url = request.nextUrl.clone();
-    url.host = "www.nazira.ir";
-    return NextResponse.redirect(url, { status: 301 });
-  }
-
-  const response = NextResponse.next();
-
-  // Security headers
+function addSecurityHeaders(response: NextResponse): NextResponse {
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-XSS-Protection", "1; mode=block");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
 
-  // Content Security Policy (adjust as needed for your app)
   const csp = [
     "default-src 'self'",
     "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://zibal.ir",
@@ -33,7 +22,6 @@ export function middleware(request: NextRequest) {
   ].join("; ");
   response.headers.set("Content-Security-Policy", csp);
 
-  // Strict Transport Security (only in production with HTTPS)
   if (process.env.NODE_ENV === "production") {
     response.headers.set(
       "Strict-Transport-Security",
@@ -41,16 +29,52 @@ export function middleware(request: NextRequest) {
     );
   }
 
-  // Permissions Policy (formerly Feature Policy)
-  const permissionsPolicy = [
-    "geolocation=()",
-    "microphone=()",
-    "camera=()",
-    "payment=()",
-  ].join(", ");
-  response.headers.set("Permissions-Policy", permissionsPolicy);
+  response.headers.set(
+    "Permissions-Policy",
+    "geolocation=(), microphone=(), camera=(), payment=()"
+  );
 
   return response;
+}
+
+export function middleware(request: NextRequest) {
+  const host = request.headers.get("host") || "";
+  if (host === "nazira.ir") {
+    const url = request.nextUrl.clone();
+    url.host = "www.nazira.ir";
+    return NextResponse.redirect(url, { status: 301 });
+  }
+
+  const pathname = request.nextUrl.pathname;
+  const localeMatch = pathname.match(/^\/(fa|en)(?=\/|$)/);
+  const publicPaths = ["/", "/products", "/how-to-use", "/about", "/contact", "/instructions", "/privacy", "/terms"];
+  const isPublicPath = (path: string) =>
+    publicPaths.some((publicPath) => path === publicPath || path.startsWith(`${publicPath}/`));
+
+  if (!localeMatch && isPublicPath(pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/fa${pathname === "/" ? "" : pathname}`;
+    return NextResponse.redirect(url, { status: 308 });
+  }
+
+  if (localeMatch) {
+    const locale = localeMatch[1];
+    const pathWithoutLocale = pathname.replace(/^\/(?:fa|en)(?=\/|$)/, "") || "/";
+    if (!isPublicPath(pathWithoutLocale)) {
+      return NextResponse.next();
+    }
+
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("x-nazira-locale", locale);
+    const rewrittenUrl = request.nextUrl.clone();
+    rewrittenUrl.pathname = pathWithoutLocale;
+    const response = NextResponse.rewrite(rewrittenUrl, {
+      request: { headers: requestHeaders },
+    });
+    return addSecurityHeaders(response);
+  }
+
+  return addSecurityHeaders(NextResponse.next());
 }
 
 // Configure which routes this middleware runs on

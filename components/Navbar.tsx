@@ -17,6 +17,7 @@ export default function Navbar() {
   const { data: session } = useSession();
   const pathname = usePathname();
   const { openCart, getTotalItems } = useCart();
+  const localizedPath = (path: string) => `/${language}${path === "/" ? "" : path}`;
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
@@ -124,23 +125,23 @@ export default function Navbar() {
 
         <ul ref={menuRef} className={`${styles.left} ${menuOpen ? styles.active : ""}`}>
           <li>
-            <Link href="/" className={styles.link} onClick={() => setMenuOpen(false)}>
+            <Link href={localizedPath("/")} className={styles.link} onClick={() => setMenuOpen(false)}>
               {t("Home", "صفحه‌ی اصلی")}
             </Link>
           </li>
           <li>
-            <Link href="/about" className={styles.link} onClick={() => setMenuOpen(false)}>
+            <Link href={localizedPath("/about")} className={styles.link} onClick={() => setMenuOpen(false)}>
               {t("About Us", "درباره‌‌ی نازیرا")}
             </Link>
           </li>
           <li>
-            <Link href="/instructions" className={styles.link} onClick={() => setMenuOpen(false)}>
+            <Link href={localizedPath("/instructions")} className={styles.link} onClick={() => setMenuOpen(false)}>
               {t("Instructions", "آموزش")}
             </Link>
           </li>
           <li>
             <Link
-              href="/products"
+              href={localizedPath("/products")}
               className={styles.link}
               onClick={() => {
                 setMenuOpen(false);
@@ -151,12 +152,12 @@ export default function Navbar() {
             </Link>
           </li>
           <li>
-            <Link href="/how-to-use/how-to-use-products-1" className={styles.link} onClick={() => setMenuOpen(false)}>
+            <Link href={localizedPath("/how-to-use/how-to-use-products-1")} className={styles.link} onClick={() => setMenuOpen(false)}>
               {t("How to Use", "طرز استفاده از محصولات")}
             </Link>
           </li>
           <li>
-            <Link href="/contact" className={styles.link} onClick={() => setMenuOpen(false)}>
+            <Link href={localizedPath("/contact")} className={styles.link} onClick={() => setMenuOpen(false)}>
               {t("Contact Us", "ارتباط با ما")}
             </Link>
           </li>
@@ -191,7 +192,7 @@ export default function Navbar() {
           </li>
         </ul>
 
-        <Link href="/" className={styles.logo}>
+        <Link href={localizedPath("/")} className={styles.logo}>
           <Image 
             src="/images/logo.png" 
             alt="Logo" 
