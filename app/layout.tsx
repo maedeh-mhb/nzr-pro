@@ -6,7 +6,7 @@ import { Providers } from "./providers";
 import { LanguageProvider } from "@/lib/utils/language";
 import CartPanel from "@/components/cart/CartPanel";
 import FontLoader from "@/components/FontLoader";
-import { getLocaleMetadata, getRequestLocale } from "@/lib/seo/locale";
+import { getLocaleMetadata, getLocalePath, getRequestLocale } from "@/lib/seo/locale";
 
 export const viewport: Viewport = {
   themeColor: "#ffffff",
@@ -63,7 +63,7 @@ export async function generateMetadata(): Promise<Metadata> {
     type: "website",
     title,
     description,
-    url: "/",
+    url: getLocalePath("/", locale),
     siteName: "Nazira",
     locale: "fa_IR",
     alternateLocale: ["en_US"],
@@ -85,13 +85,15 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = getRequestLocale();
+
   return (
-    <html lang="fa" dir="rtl">
+    <html lang={locale} dir={locale === "fa" ? "rtl" : "ltr"}>
       <head>
         <meta name="enamad" content="52968384" />
       </head>

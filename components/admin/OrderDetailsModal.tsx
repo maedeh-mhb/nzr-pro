@@ -1180,6 +1180,23 @@ export default function OrderDetailsModal({
           {/* Order Summary */}
           <div className={styles.orderDetailsSection}>
             <div className={styles.orderDetailsSummary}>
+              <div className={styles.orderDetailsSummaryRow}>
+                <span>{t("Subtotal", "جمع جزء")}:</span>
+                <span>
+                  {formatPrice(
+                    order.items.reduce(
+                      (sum, item) => sum + parseFloat(item.price) * item.quantity,
+                      0
+                    ),
+                    language,
+                    currency || "toman"
+                  )}
+                </span>
+              </div>
+              <div className={styles.orderDetailsSummaryRow}>
+                <span>{t("Shipping Cost", "هزینه ارسال")}:</span>
+                <span>{formatPrice(order.shippingCost, language, currency || "toman")}</span>
+              </div>
               {order.discountAmount && parseFloat(order.discountAmount) > 0 && (
                 <div className={styles.orderDetailsSummaryRow}>
                   <span>{t("Discount", "تخفیف")}:</span>

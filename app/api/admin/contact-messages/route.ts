@@ -70,3 +70,32 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// DELETE: Delete all contact messages
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userRole = (session.user as any)?.role;
+    if (userRole !== "admin" && userRole !== "superadmin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const deletedMessages = await db.delete(contactMessages).returning({ id: contactMessages.id });
+
+    return NextResponse.json({
+      success: true,
+      deletedCount: deletedMessages.length,
+    });
+  } catch (error) {
+    console.error("Error deleting all contact messages:", error);
+    return NextResponse.json(
+      { error: "Failed to delete all contact messages" },
+      { status: 500 }
+    );
+  }
+}
+

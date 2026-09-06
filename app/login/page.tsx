@@ -62,6 +62,20 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState<{ [key: string]: boolean }>({});
   const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>(null);
 
+  useEffect(() => {
+    const error = new URLSearchParams(window.location.search).get("error");
+    if (!error) return;
+
+    const errorMessage = error === "AccessDenied"
+      ? t("Google sign-in was cancelled or denied.", "ورود با گوگل لغو شد یا اجازه دسترسی داده نشد.")
+      : error === "Configuration"
+        ? t("Google sign-in is not configured correctly.", "ورود با گوگل به درستی پیکربندی نشده است.")
+        : t("Google sign-in failed. Please try again.", "ورود با گوگل ناموفق بود. لطفاً دوباره تلاش کنید.");
+
+    toast.error(errorMessage);
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }, [t]);
+
   // Redirect if already logged in
   useEffect(() => {
     if (status === "authenticated" && session) {
@@ -268,8 +282,23 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleSignIn = () => {
-    signIn("google", { callbackUrl: "/dashboard" });
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    try {
+      const result = await signIn("google", { callbackUrl: "/dashboard" });
+      if (result?.error) {
+        toast.error(
+          t("Google sign-in failed. Please try again.", "ورود با گوگل ناموفق بود. لطفاً دوباره تلاش کنید.")
+        );
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error("Google sign-in error:", error);
+      toast.error(
+        t("An error occurred during Google sign-in.", "خطایی هنگام ورود با گوگل رخ داد.")
+      );
+      setIsLoading(false);
+    }
   };
 
   // Show loading state while checking session

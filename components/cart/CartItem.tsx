@@ -14,7 +14,7 @@ interface CartItemProps {
 }
 
 export default function CartItem({ item }: CartItemProps) {
-  const { updateQuantity, removeItem, selectedItems, toggleItemSelection } = useCart();
+  const { updateQuantity, removeItem, closeCart, selectedItems, toggleItemSelection } = useCart();
   const { language, currency } = useLanguage();
   const isSelected = selectedItems.has(item.id);
 
@@ -24,6 +24,7 @@ export default function CartItem({ item }: CartItemProps) {
   const displayCurrency = currency || "toman";
   const formattedPrice = formatPrice(price, language, displayCurrency);
   const formattedSubtotal = formatPrice(subtotal, language, displayCurrency);
+  const productHref = item.slug ? `/${language}/products/${item.slug}` : "#";
 
   // Debug: Log maxOrderQuantity to verify it's being loaded
   // console.log('CartItem maxOrderQuantity:', item.maxOrderQuantity, 'quantity:', item.quantity, 'productId:', item.productId);
@@ -107,8 +108,9 @@ export default function CartItem({ item }: CartItemProps) {
       />
       {item.image ? (
         <Link
-          href={item.slug ? `/products/${item.slug}` : "#"}
+          href={productHref}
           className={styles.imageLink}
+          onClick={closeCart}
         >
           <div className={styles.imageContainer}>
             <img
@@ -124,8 +126,9 @@ export default function CartItem({ item }: CartItemProps) {
 
       <div className={styles.content}>
         <Link
-          href={item.slug ? `/products/${item.slug}` : "#"}
+          href={productHref}
           className={styles.name}
+          onClick={closeCart}
         >
           {displayName}
         </Link>

@@ -132,7 +132,7 @@
     width: 60px;
     height: 60px;
     border-radius: $radius-md;
-    overflow: hidden;
+    overflow: visible;
     border: 1px solid $border-color;
 
     @include max-mobile {
@@ -145,6 +145,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: inherit;
 }
 
 .placeholderImage {
@@ -160,23 +161,26 @@
 
 .itemQuantityBadge {
     position: absolute;
-    top: -6px;
-    right: -6px;
+    top: -8px;
+    right: -8px;
     background: $primary;
     color: $text-light;
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: $font-xs;
     font-weight: 700;
     border: 2px solid $surface;
+    line-height: 1;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 
     [dir="rtl"] & {
         right: auto;
-        left: -6px;
+        left: -8px;
     }
 }
 

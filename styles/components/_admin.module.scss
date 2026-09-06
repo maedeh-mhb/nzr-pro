@@ -630,8 +630,18 @@
 }
 
 .orderDetailsItemQuantity {
-  color: #666;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  min-height: 1.75rem;
+  padding: 0 $spacing-xs;
+  border-radius: $radius-full;
+  background: $primary;
+  color: $text-light;
   font-size: $font-sm;
+  font-weight: 700;
+  line-height: 1;
   flex-shrink: 0;
 
   [dir="rtl"] & {

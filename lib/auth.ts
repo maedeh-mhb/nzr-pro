@@ -8,6 +8,31 @@ import { users, accounts } from "./db/schema";
 import { eq, and } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
+const useSecureCookies = process.env.NEXTAUTH_URL?.startsWith("https://") ?? process.env.NODE_ENV === "production";
+const authCookiePrefix = useSecureCookies ? "__Secure-" : "";
+const googleClientId = process.env.GOOGLE_CLIENT_ID?.trim();
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
+const googleProvider = googleClientId && googleClientSecret
+  ? GoogleProvider({
+      clientId: googleClientId,
+      clientSecret: googleClientSecret,
+      // Use explicit endpoints because some hosts return 403 for Google's
+      // default OpenID discovery/JWKS endpoint.
+      wellKnown: undefined,
+      issuer: "https://accounts.google.com",
+      authorization: "https://accounts.google.com/o/oauth2/v2/auth",
+      token: "https://oauth2.googleapis.com/token",
+      jwks_endpoint: "https://www.googleapis.com/oauth2/v1/certs",
+      httpOptions: {
+        timeout: Number(process.env.NEXTAUTH_GOOGLE_TIMEOUT_MS || 30000),
+      },
+    })
+  : null;
+
+if (!googleProvider) {
+  console.error("Google OAuth is disabled: GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET are required.");
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -62,15 +87,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
 
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-      httpOptions: {
-        timeout: Number(process.env.NEXTAUTH_GOOGLE_TIMEOUT_MS || 10000),
-      },
-      // You can temporarily add this line for testing (remove later):
-      // checks: ["none"],
-    }),
+    ...(googleProvider ? [googleProvider] : []),
 
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID || "",
@@ -83,39 +100,39 @@ export const authOptions: NextAuthOptions = {
   // ────────────────────────────────────────────────
   cookies: {
     pkceCodeVerifier: {
-      name: "__Secure-next-auth.pkce.code_verifier",
+      name: `${authCookiePrefix}next-auth.pkce.code_verifier`,
       options: {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        secure: true,
+        secure: useSecureCookies,
       },
     },
     state: {
-      name: "__Secure-next-auth.state",
+      name: `${authCookiePrefix}next-auth.state`,
       options: {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        secure: true,
+        secure: useSecureCookies,
       },
     },
     sessionToken: {
-      name: "__Secure-next-auth.session-token",
+      name: `${authCookiePrefix}next-auth.session-token`,
       options: {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        secure: true,
+        secure: useSecureCookies,
       },
     },
     callbackUrl: {
-      name: "__Secure-next-auth.callback-url",
+      name: `${authCookiePrefix}next-auth.callback-url`,
       options: {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        secure: true,
+        secure: useSecureCookies,
       },
     },
   },

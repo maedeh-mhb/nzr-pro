@@ -39,7 +39,7 @@ export default function OrderSummary({
     hasAddress = false,
 }: OrderSummaryProps) {
     const { t, language, currency } = useLanguage();
-    const [isMobileExpanded, setIsMobileExpanded] = useState(false);
+    const [isMobileExpanded, setIsMobileExpanded] = useState(true);
 
     const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
     const displayCurrency = currency || "toman";

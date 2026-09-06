@@ -37,6 +37,8 @@ export default function ContactMessagesSection() {
   const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
+  const [isDeletingAll, setIsDeletingAll] = useState(false);
   const [deletingMessageId, setDeletingMessageId] = useState<string | null>(null);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
@@ -177,6 +179,38 @@ export default function ContactMessagesSection() {
     }
   };
 
+  const confirmDeleteAll = async () => {
+    setIsDeletingAll(true);
+    try {
+      const response = await fetch("/api/admin/contact-messages", {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete all messages");
+      }
+
+      const data = await response.json();
+      toast.success(
+        t(
+          `${data.deletedCount || 0} messages deleted successfully`,
+          `${data.deletedCount || 0} پیام با موفقیت حذف شد`
+        )
+      );
+      setMessages([]);
+      setNextCursor(null);
+      setHasMore(false);
+      setSelectedMessage(null);
+      setIsViewModalOpen(false);
+      setIsDeleteAllModalOpen(false);
+    } catch (error) {
+      console.error("Error deleting all messages:", error);
+      toast.error(t("Failed to delete all messages", "خطا در حذف همه پیام‌ها"));
+    } finally {
+      setIsDeletingAll(false);
+    }
+  };
+
   const handleMarkAsRead = async (messageId: string) => {
     try {
       const response = await fetch(`/api/admin/contact-messages/${messageId}`, {
@@ -290,6 +324,15 @@ export default function ContactMessagesSection() {
             <FiMail />
             {t("Contact Messages", "پیام‌های تماس")}
           </h2>
+          <Button
+            variant="danger"
+            size="small"
+            onClick={() => setIsDeleteAllModalOpen(true)}
+            disabled={isLoading || messages.length === 0}
+          >
+            <FiTrash2 />
+            {t("Delete All Messages", "حذف همه پیام‌ها")}
+          </Button>
         </div>
 
         {error && (
@@ -654,6 +697,34 @@ export default function ContactMessagesSection() {
             </Button>
             <Button variant="danger" onClick={confirmDelete}>
               {t("Delete", "حذف")}
+            </Button>
+          </div>
+        </Modal>
+      )}
+
+      {/* Delete All Confirmation Modal */}
+      {isDeleteAllModalOpen && (
+        <Modal
+          isOpen={isDeleteAllModalOpen}
+          onClose={() => setIsDeleteAllModalOpen(false)}
+          title={t("Delete All Messages", "حذف همه پیام‌ها")}
+        >
+          <p>
+            {t(
+              "Are you sure you want to permanently delete all messages? This action cannot be undone.",
+              "آیا مطمئن هستید که می‌خواهید همه پیام‌ها را برای همیشه حذف کنید؟ این عمل قابل بازگشت نیست."
+            )}
+          </p>
+          <div style={{ display: "flex", gap: "1rem", marginTop: "1.5rem", justifyContent: "flex-end" }}>
+            <Button
+              variant="secondary"
+              onClick={() => setIsDeleteAllModalOpen(false)}
+              disabled={isDeletingAll}
+            >
+              {t("Cancel", "لغو")}
+            </Button>
+            <Button variant="danger" onClick={confirmDeleteAll} disabled={isDeletingAll}>
+              {isDeletingAll ? t("Deleting...", "در حال حذف...") : t("Delete All", "حذف همه")}
             </Button>
           </div>
         </Modal>
