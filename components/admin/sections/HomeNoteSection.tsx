@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/lib/utils/language";
-import { FiFileText, FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { FiCalendar, FiFileText, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import AdminCard from "../AdminCard";
 import Button from "@/components/ui/Button";
 import RichTextEditor from "@/components/ui/RichTextEditor";
@@ -17,6 +17,10 @@ export default function HomeNoteSection() {
   const [isLoading, setIsLoading] = useState(false);
   const [contentEn, setContentEn] = useState("");
   const [contentFa, setContentFa] = useState("");
+  const [availabilityTitleEn, setAvailabilityTitleEn] = useState("");
+  const [availabilityTitleFa, setAvailabilityTitleFa] = useState("");
+  const [availabilityDates, setAvailabilityDates] = useState<string[]>([]);
+  const [availabilityIsEnabled, setAvailabilityIsEnabled] = useState(true);
   const [isEnabled, setIsEnabled] = useState(true);
 
   useEffect(() => {
@@ -30,6 +34,10 @@ export default function HomeNoteSection() {
       if (res.ok) {
         const data = await res.json();
         if (data.note) {
+          setAvailabilityTitleEn(data.note.availabilityTitleEn || "");
+          setAvailabilityTitleFa(data.note.availabilityTitleFa || "");
+          setAvailabilityDates(data.note.availabilityDates || []);
+          setAvailabilityIsEnabled(data.note.availabilityIsEnabled ?? true);
           setContentEn(data.note.contentEn || "");
           setContentFa(data.note.contentFa || "");
           setIsEnabled(data.note.isEnabled ?? true);
@@ -47,7 +55,7 @@ export default function HomeNoteSection() {
       const res = await fetch("/api/admin/home-note", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contentEn, contentFa, isEnabled }),
+        body: JSON.stringify({ contentEn, contentFa, availabilityTitleEn, availabilityTitleFa, availabilityDates, availabilityIsEnabled, isEnabled }),
       });
       if (res.ok) {
         toast.success(t("Note saved!", "یادداشت ذخیره شد!"));
@@ -121,6 +129,46 @@ export default function HomeNoteSection() {
                   onImageUpload={handleImageUpload}
                   onAudioUpload={handleAudioUpload}
                 />
+              </div>
+
+              <div className={styles.sectionDivider}>
+                <h4 className={styles.sectionDividerTitle}>
+                  <FiCalendar />
+                  <span>{t("Product Availability", "زمان عرضه محصولات")}</span>
+                </h4>
+                <p className={styles.sectionDividerDescription}>
+                  {t("This section appears before categories and shows the dates products are available.", "این بخش قبل از دسته‌بندی‌ها نمایش داده می‌شود و تاریخ‌های عرضه محصولات را نشان می‌دهد.")}
+                </p>
+              </div>
+
+              <div className={formStyles.formGrid}>
+                <div className={formStyles.formGroup}>
+                  <label className={formStyles.formLabel}>{t("Title (English)", "عنوان (انگلیسی)")}</label>
+                  <input className={formStyles.formInput} value={availabilityTitleEn} onChange={(event) => setAvailabilityTitleEn(event.target.value)} placeholder="Products are available on these dates" />
+                </div>
+                <div className={formStyles.formGroup}>
+                  <label className={formStyles.formLabel}>{t("Title (Farsi)", "عنوان (فارسی)")}</label>
+                  <input className={formStyles.formInput} value={availabilityTitleFa} onChange={(event) => setAvailabilityTitleFa(event.target.value)} placeholder="محصولات در این تاریخ‌ها عرضه می‌شوند" dir="rtl" />
+                </div>
+              </div>
+
+              <div className={formStyles.formGroup}>
+                <label className={formStyles.formLabel}>{t("Product availability dates", "تاریخ‌های عرضه محصولات")}</label>
+                <textarea
+                  rows={3}
+                  className={formStyles.formTextarea}
+                  value={availabilityDates.join("\n")}
+                  onChange={(event) => setAvailabilityDates(event.target.value.split("\n").map((date) => date.trim()).filter(Boolean))}
+                  placeholder={t("Enter one date per line, for example: 2026-09-20", "هر تاریخ را در یک خط وارد کنید، مثال: ۱۴۰۵/۰۶/۲۹")}
+                  dir="ltr"
+                />
+              </div>
+
+              <div className={formStyles.formGroup}>
+                <label className={formStyles.formLabel} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <input type="checkbox" checked={availabilityIsEnabled} onChange={(event) => setAvailabilityIsEnabled(event.target.checked)} style={{ width: "auto" }} />
+                  <span>{t("Enable Product Availability", "فعال‌سازی زمان عرضه محصولات")}</span>
+                </label>
               </div>
 
               <div className={formStyles.formGroup}>

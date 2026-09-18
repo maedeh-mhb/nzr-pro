@@ -1,0 +1,58 @@
+.section {
+  width: 100%;
+  padding: 2rem 5%;
+  background: rgba(139, 218, 171, 0.15);
+
+  border-top: 1px solid rgba(54, 114, 96, 0.18);
+  border-bottom: 1px solid rgba(54, 114, 96, 0.18);
+  text-align: center;
+}
+
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  color: #367260;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.title {
+  margin: 0;
+  color: #244d42;
+  font-size: clamp(1.25rem, 3vw, 2rem);
+}
+
+.days {
+  margin: 0.75rem 0 0;
+  color: #367260;
+  font-size: clamp(1.05rem, 2vw, 1.3rem);
+  font-weight: 700;
+}
+
+.dates {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 1rem 0 0;
+}
+
+.date {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 7rem;
+  padding: 0.65rem 1rem;
+  border: 3px solid #fff;
+  border-radius: 999px;
+  color: #367260;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  background: rgba(255, 255, 255, 0.18);
+}

@@ -12,6 +12,7 @@ import heroStyles from "@/styles/components/_hero.module.scss";
 import categoryStyles from "@/styles/components/_categories.module.scss";
 import productStyles from "@/styles/components/_products.module.scss";
 import ProductCard from "@/components/products/ProductCard";
+import ProductAvailabilitySection from "@/components/ProductAvailabilitySection";
 
 interface HeroSettings {
   titleEn: string;
@@ -251,9 +252,11 @@ export default function HomePage() {
         </div>
       )}
 
+      <ProductAvailabilitySection />
+
       <section className={categoryStyles.categories}>
         <h2 className={categoryStyles.sectionTitle}>
-          {t("Our Categories", "دسته بندی های ما")}
+          {t("Our Categories", "دسته بندی های نازیرا")}
         </h2>
         {isLoadingCategories ? (
           <div style={{ padding: "2rem", textAlign: "center" }}>

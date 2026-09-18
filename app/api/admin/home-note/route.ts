@@ -15,7 +15,12 @@ export async function GET() {
     }
 
     const note = await db.query.homeNote.findFirst();
-    return NextResponse.json({ note: note || null });
+    let availabilityDays: string[] = [];
+    let availabilityDates: string[] = [];
+    try { availabilityDays = note?.availabilityDays ? JSON.parse(note.availabilityDays) : []; } catch { availabilityDays = []; }
+    try { availabilityDates = note?.availabilityDates ? JSON.parse(note.availabilityDates) : []; } catch { availabilityDates = []; }
+
+    return NextResponse.json({ note: note ? { ...note, availabilityDays, availabilityDates } : null });
   } catch (error) {
     console.error("Error fetching home note:", error);
     return NextResponse.json({ error: "Failed to fetch" }, { status: 500 });
@@ -31,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { contentEn, contentFa, isEnabled } = body;
+    const { contentEn, contentFa, availabilityTitleEn, availabilityTitleFa, availabilityDays, availabilityDates, availabilityIsEnabled, isEnabled } = body;
 
     const existing = await db.query.homeNote.findFirst();
 
@@ -39,6 +44,11 @@ export async function POST(request: NextRequest) {
       await db.update(homeNote).set({
         contentEn: contentEn || null,
         contentFa: contentFa || null,
+        availabilityTitleEn: availabilityTitleEn || null,
+        availabilityTitleFa: availabilityTitleFa || null,
+        availabilityDays: JSON.stringify(Array.isArray(availabilityDays) ? availabilityDays : []),
+        availabilityDates: JSON.stringify(Array.isArray(availabilityDates) ? availabilityDates : []),
+        availabilityIsEnabled: availabilityIsEnabled ?? true,
         isEnabled: isEnabled ?? true,
         updatedAt: new Date(),
       }).where(eq(homeNote.id, existing.id));
@@ -46,6 +56,11 @@ export async function POST(request: NextRequest) {
       await db.insert(homeNote).values({
         contentEn: contentEn || null,
         contentFa: contentFa || null,
+        availabilityTitleEn: availabilityTitleEn || null,
+        availabilityTitleFa: availabilityTitleFa || null,
+        availabilityDays: JSON.stringify(Array.isArray(availabilityDays) ? availabilityDays : []),
+        availabilityDates: JSON.stringify(Array.isArray(availabilityDates) ? availabilityDates : []),
+        availabilityIsEnabled: availabilityIsEnabled ?? true,
         isEnabled: isEnabled ?? true,
       });
     }
