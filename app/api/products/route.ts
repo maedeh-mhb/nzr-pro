@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { products } from "@/lib/db/schema";
-import { eq, ilike, or, and, isNull, count as drizzleCount, sql, desc } from "drizzle-orm";
+import { eq, ilike, or, and, isNull, ne, count as drizzleCount, sql, desc } from "drizzle-orm";
 import { checkRateLimit, getRateLimitIdentifier, extractIpAddress, getRateLimitError } from "@/lib/utils/rateLimiter";
 import { paginatedResponse } from "@/lib/utils/apiResponse";
 export const dynamic = "force-dynamic";
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     if (limit > 100) limit = 100;
     if (isNaN(page) || page < 1) page = 1;
 
-    const conditions = [];
+    const conditions = [or(isNull(products.badge), ne(products.badge, "Not Available"))!];
 
     // Apply search filter if provided (include all fields)
     if (search.trim()) {
