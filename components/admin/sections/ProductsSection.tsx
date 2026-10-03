@@ -179,8 +179,8 @@ export default function ProductsSection() {
       if (!value || !min) return true;
       return value >= min;
     }),
-    weight: yup.number().min(0, t("Weight must be positive", "وزن باید عددی مثبت باشد")),
-    volume: yup.number().transform((v, o) => (o === "" || o === null || o === undefined ? undefined : v)).min(0, t("Volume must be positive", "حجم باید عددی مثبت باشد")).optional(),
+    weight: yup.number().transform((v, o) => (o === "" || o === null || o === undefined ? undefined : v)).min(0, t("Weight must be positive", "وزن باید عددی مثبت باشد")).integer(t("Weight must be a whole number of grams", "وزن باید عدد کامل گرم باشد")).optional(),
+    volume: yup.number().transform((v, o) => (o === "" || o === null || o === undefined ? undefined : v)).min(0, t("Volume must be positive", "حجم باید عددی مثبت باشد")).integer(t("Volume must be a whole number of millilitres", "حجم باید عدد کامل میلی‌لیتر باشد")).optional(),
     rewardPoints: yup.number().nullable().min(0, t("Reward points must be positive", "عدد جایزه باید عددی مثبت باشد")),
     seoTitle: yup.string(),
     seoDescription: yup.string(),
@@ -798,8 +798,12 @@ const handleEditProduct = useCallback(async (productId: string) => {
       productType: fullProduct.productType || "economic",
       minOrderQuantity: fullProduct.minOrderQuantity || 1,
       maxOrderQuantity: fullProduct.maxOrderQuantity || undefined,
-      weight: fullProduct.weight ? parseFloat(fullProduct.weight) : undefined,
-      volume: fullProduct.volume ? parseFloat(fullProduct.volume) : undefined,
+      weight: fullProduct.weight !== null && fullProduct.weight !== undefined
+        ? parseFloat(fullProduct.weight) * 1000
+        : undefined,
+      volume: fullProduct.volume !== null && fullProduct.volume !== undefined
+        ? parseFloat(fullProduct.volume) * 1000
+        : undefined,
       rewardPoints: fullProduct.rewardPoints || undefined,
       seoTitle: fullProduct.seoTitle || "",
       seoDescription: fullProduct.seoDescription || "",
@@ -892,7 +896,8 @@ const onProductSubmit = async (formData: ProductFormData) => {
       sellerId: formData.sellerId,
       audioUrl: formData.audioUrl || null,
       unit,
-      volume: formData.volume,
+      weight: formData.weight !== undefined ? formData.weight / 1000 : undefined,
+      volume: formData.volume !== undefined ? formData.volume / 1000 : undefined,
       images: hasMultipleImages
         ? JSON.stringify(extraImagePreviews.filter((url) => url !== ""))
         : null,
@@ -2037,17 +2042,17 @@ const handleShowProduct = useCallback(async (productId: string) => {
             {/* Weight, Volume & Slug */}
             <div className={formStyles.formGrid}>
               <Input
-                label={t("Weight (kg)", "وزن (کیلوگرم)")}
+                label={t("Weight (g)", "وزن (گرم)")}
                 type="number"
-                step="0.01"
-                placeholder="0.00"
+                step="1"
+                placeholder="0"
                 {...registerProduct("weight")}
                 error={productErrors.weight?.message}
               />
               <Input
-                label={t("Volume - L (optional)", "حجم (لیتر) (غیر اجباری)")}
+                label={t("Volume - ml (optional)", "حجم (میلی‌لیتر) (غیر اجباری)")}
                 type="number"
-                step="0.001"
+                step="1"
                 placeholder={t("Optional", "غیر اجباری")}
                 {...registerProduct("volume")}
                 error={productErrors.volume?.message}

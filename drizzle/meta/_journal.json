@@ -302,6 +302,13 @@
       "when": 1788351568275,
       "tag": "0042_lonely_yellow_claw",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1791013974960,
+      "tag": "0043_weight_grams_precision",
+      "breakpoints": true
     }
   ]
 }

@@ -728,7 +728,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                     const volumeInMl = parseFloat(product.volume) * 1000;
                     return (
                       <span className={styles.weight}>
-                        {t("Volume", "حجم")}: {language === "fa" ? volumeInMl.toFixed(0).replace(/\d/g, d => "۰�1۲۳۴۵۶۷۸۹"[+d]) : volumeInMl.toFixed(0)} {t("ml", "میلی‌لیتر")}
+                        {t("Volume", "حجم")}: {language === "fa" ? volumeInMl.toFixed(0).replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[+d]) : volumeInMl.toFixed(0)} {t("ml", "میلی‌لیتر")}
                       </span>
                     );
                   })()}

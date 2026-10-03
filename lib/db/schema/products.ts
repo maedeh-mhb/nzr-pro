@@ -53,7 +53,7 @@ export const products = pgTable("products", {
   productType: productTypeEnum("product_type").default("economic").notNull(), // economic or featured
   minOrderQuantity: integer("min_order_quantity").default(1),
   maxOrderQuantity: integer("max_order_quantity"),
-  weight: decimal("weight", { precision: 10, scale: 2 }), // Weight in kg
+  weight: decimal("weight", { precision: 10, scale: 3 }), // Weight in kg
   volume: decimal("volume", { precision: 10, scale: 3 }), // Volume in liters
   unit: text("unit"), // "weight" | "volume"
   images: text("images"), // JSON array of extra image URLs (up to 2)
