@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Always return success to prevent email enumeration
-    if (user) {
+    if (user?.email) {
       // Generate reset token
       const resetToken = crypto.randomBytes(32).toString("hex");
       const resetTokenExpiry = new Date();
@@ -76,4 +76,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
