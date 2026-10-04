@@ -6,7 +6,6 @@ import toast from "react-hot-toast";
 import { FiX } from "react-icons/fi";
 import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
-import Select from "@/components/ui/Select";
 import ProvinceCitySelector from "@/components/checkout/ProvinceCitySelector";
 import Button from "@/components/ui/Button";
 import styles from "@/styles/components/_dashboard.module.scss";
@@ -22,19 +21,19 @@ interface Address {
   isDefault: boolean;
 }
 
-interface AddressFormModalProps {
+interface AddressFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
   address?: Address | null;
 }
 
-export default function AddressFormModal({
+export default function AddressForm({
   isOpen,
   onClose,
   onSuccess,
   address,
-}: AddressFormModalProps) {
+}: AddressFormProps) {
   const { t } = useLanguage();
   const [name, setName] = useState("");
   const [provinceId, setProvinceId] = useState<number | null>(null);
@@ -148,95 +147,94 @@ export default function AddressFormModal({
 
   if (!isOpen) return null;
 
-  return (
-    <div className={`${styles.modalOverlay} ${styles['modalOverlay--fullscreen']}`} onClick={onClose}>
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.modalHeader}>
-          <h3 className={styles.modalTitle}>
-            {address
-              ? t("Edit Address", "ویرایش آدرس")
-              : t("Add New Address", "افزودن آدرس جدید")}
-          </h3>
-          <button className={styles.modalClose} onClick={onClose}>
-            <FiX />
-          </button>
+  const formContent = (
+    <>
+      <div className={styles.modalHeader}>
+        <h3 className={styles.modalTitle}>
+          {address
+            ? t("Edit Address", "ویرایش آدرس")
+            : t("Add New Address", "افزودن آدرس جدید")}
+        </h3>
+        <button type="button" className={styles.modalClose} onClick={onClose}>
+          <FiX />
+        </button>
+      </div>
+
+      <form onSubmit={handleSubmit} className={styles.addressForm}>
+        <Input
+          label={t("Address Name", "نام آدرس")}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder={t("e.g., Home, Office", "مثال: خانه، دفتر")}
+          error={errors.name}
+        />
+
+        <ProvinceCitySelector
+          provinceId={provinceId}
+          cityId={cityId}
+          onProvinceChange={setProvinceId}
+          onCityChange={setCityId}
+          error={errors.province || errors.city}
+        />
+
+        <Textarea
+          label={t("Address", "آدرس")}
+          value={addressText}
+          onChange={(e) => setAddressText(e.target.value)}
+          placeholder={t("Enter full address", "آدرس کامل را وارد کنید")}
+          rows={3}
+          error={errors.address}
+          className={styles.noResize}
+        />
+
+        <Input
+          label={t("Postal Code", "کد پستی")}
+          type="text"
+          value={postalCode}
+          onChange={(e) => {
+            const value = e.target.value.replace(/\D/g, ""); // Only digits
+            if (value.length <= 10) {
+              setPostalCode(value);
+            }
+          }}
+          placeholder={t("1234567890", "1234567890")}
+          maxLength={10}
+          error={errors.postalCode}
+        />
+
+        <div className={styles.checkboxGroup}>
+          <input
+            type="checkbox"
+            id="isDefault"
+            checked={isDefault}
+            onChange={(e) => setIsDefault(e.target.checked)}
+            className={styles.checkbox}
+          />
+          <label htmlFor="isDefault" className={styles.checkboxLabel}>
+            {t("Set as default address", "تنظیم به عنوان آدرس پیش‌فرض")}
+          </label>
         </div>
 
-        <form onSubmit={handleSubmit} className={styles.addressForm}>
-          <Input
-            label={t("Address Name", "نام آدرس")}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder={t("e.g., Home, Office", "مثال: خانه، دفتر")}
-            error={errors.name}
-          />
-
-          <ProvinceCitySelector
-            provinceId={provinceId}
-            cityId={cityId}
-            onProvinceChange={setProvinceId}
-            onCityChange={setCityId}
-            error={errors.province || errors.city}
-          />
-
-          <Textarea
-            label={t("Address", "آدرس")}
-            value={addressText}
-            onChange={(e) => setAddressText(e.target.value)}
-            placeholder={t("Enter full address", "آدرس کامل را وارد کنید")}
-            rows={3}
-            error={errors.address}
-            className={styles.noResize}
-          />
-
-          <Input
-            label={t("Postal Code", "کد پستی")}
-            type="text"
-            value={postalCode}
-            onChange={(e) => {
-              const value = e.target.value.replace(/\D/g, ""); // Only digits
-              if (value.length <= 10) {
-                setPostalCode(value);
-              }
-            }}
-            placeholder={t("1234567890", "1234567890")}
-            maxLength={10}
-            error={errors.postalCode}
-          />
-
-          <div className={styles.checkboxGroup}>
-            <input
-              type="checkbox"
-              id="isDefault"
-              checked={isDefault}
-              onChange={(e) => setIsDefault(e.target.checked)}
-              className={styles.checkbox}
-            />
-            <label htmlFor="isDefault" className={styles.checkboxLabel}>
-              {t("Set as default address", "تنظیم به عنوان آدرس پیش‌فرض")}
-            </label>
-          </div>
-
-          <div className={styles.modalActions}>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              disabled={saving}
-            >
-              {t("Cancel", "لغو")}
-            </Button>
-            <Button type="submit" variant="primary" disabled={saving}>
-              {saving
-                ? t("Saving...", "در حال ذخیره...")
-                : address
-                  ? t("Update", "به‌روزرسانی")
-                  : t("Add", "افزودن")}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div className={styles.modalActions}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            disabled={saving}
+          >
+            {t("Cancel", "لغو")}
+          </Button>
+          <Button type="submit" variant="primary" disabled={saving}>
+            {saving
+              ? t("Saving...", "در حال ذخیره...")
+              : address
+                ? t("Update", "به‌روزرسانی")
+                : t("Add", "افزودن")}
+          </Button>
+        </div>
+      </form>
+    </>
   );
-}
 
+  return <div className={styles.addressFormInline}>{formContent}</div>;
+}

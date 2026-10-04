@@ -6,7 +6,7 @@ import { useLanguage } from "@/lib/utils/language";
 import toast from "react-hot-toast";
 import { FiUser, FiMapPin, FiHome, FiBriefcase, FiArrowLeft, FiCheck, FiX, FiEdit2, FiTrash2 } from "react-icons/fi";
 import Button from "@/components/ui/Button";
-import AddressFormModal from "@/components/dashboard/AddressFormModal";
+import AddressForm from "@/components/dashboard/AddressForm";
 import AddressCard from "@/components/dashboard/AddressCard";
 import PhoneVerification from "@/components/phone/PhoneVerification";
 import EmailVerification from "@/components/email/EmailVerification";
@@ -55,7 +55,7 @@ export default function ProfileSection({ setActiveSection, onProfileUpdate }: Pr
   const [saving, setSaving] = useState(false);
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [loadingAddresses, setLoadingAddresses] = useState(true);
-  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [showPhoneVerification, setShowPhoneVerification] = useState(false);
   const [showEmailVerification, setShowEmailVerification] = useState(false);
@@ -116,12 +116,12 @@ export default function ProfileSection({ setActiveSection, onProfileUpdate }: Pr
 
   const handleAddAddress = () => {
     setEditingAddress(null);
-    setIsAddressModalOpen(true);
+    setIsAddressFormOpen(true);
   };
 
   const handleEditAddress = (address: Address) => {
     setEditingAddress(address);
-    setIsAddressModalOpen(true);
+    setIsAddressFormOpen(true);
   };
 
   const handleDeleteAddress = async (addressId: string) => {
@@ -501,9 +501,18 @@ export default function ProfileSection({ setActiveSection, onProfileUpdate }: Pr
             {t("Add New Address", "افزودن آدرس جدید")}
           </a>
         </div>
+        <AddressForm
+          isOpen={isAddressFormOpen}
+          onClose={() => {
+            setIsAddressFormOpen(false);
+            setEditingAddress(null);
+          }}
+          onSuccess={handleAddressSuccess}
+          address={editingAddress}
+        />
         {loadingAddresses ? (
           <SkeletonLoader type="list" count={2} />
-        ) : addresses.length === 0 ? (
+        ) : addresses.length === 0 && !isAddressFormOpen ? (
           <EmptyState
             icon={<FiMapPin />}
             title={t("No Addresses Saved", "هیچ آدرسی ذخیره نشده")}
@@ -530,15 +539,6 @@ export default function ProfileSection({ setActiveSection, onProfileUpdate }: Pr
         )}
       </div>
 
-      <AddressFormModal
-        isOpen={isAddressModalOpen}
-        onClose={() => {
-          setIsAddressModalOpen(false);
-          setEditingAddress(null);
-        }}
-        onSuccess={handleAddressSuccess}
-        address={editingAddress}
-      />
     </>
   );
 }

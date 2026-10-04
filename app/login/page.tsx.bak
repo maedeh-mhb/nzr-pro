@@ -292,7 +292,7 @@ export default function LoginPage() {
               {activeForm === "login"
                 ? t("Sign in to continue", "برای ادامه وارد شوید")
                 : activeForm === "signup"
-                  ? t("Join us today", "همین امروز به ما بپیوندید")
+                  ? t("", "")
                   : t("Enter your email to reset", "ایمیل خود را وارد کنید")}
             </p>
           </div>

@@ -1616,6 +1616,13 @@
   }
 }
 
+.addressFormInline {
+  margin-bottom: $spacing-lg;
+  border: 1px solid $tertiary;
+  border-radius: $radius-lg;
+  overflow: hidden;
+}
+
 .checkboxGroup {
   display: flex;
   align-items: center;

@@ -448,7 +448,7 @@ export default function LoginPage() {
               {activeForm === "login"
                 ? t("Sign in to continue", "برای ادامه وارد شوید")
                 : activeForm === "signup"
-                  ? t("Join us today", "همین امروز به ما بپیوندید")
+                  ? t("", "")
                   : t("Enter your email to reset", "ایمیل خود را وارد کنید")}
             </p>
           </div>
@@ -465,8 +465,9 @@ export default function LoginPage() {
                 <div className={styles.inputWrapper}>
                   <input
                     type="text"
+                    dir="ltr"
                     {...registerLogin("emailOrPhone")}
-                    placeholder={t("Enter email or phone", "ایمیل یا تلفن را وارد کنید")}
+                    placeholder={t("", "")}
                     className={loginErrors.emailOrPhone ? styles.inputError : ""}
                   />
                   <span className={styles.inputIcon}>👤</span>
@@ -482,7 +483,7 @@ export default function LoginPage() {
                   <input
                     type={showPassword.loginPassword ? "text" : "password"}
                     {...registerLogin("password")}
-                    placeholder={t("Enter password", "رمز عبور را وارد کنید")}
+                    placeholder={t("", "")}
                     className={loginErrors.password ? styles.inputError : ""}
                   />
                   <button
@@ -585,7 +586,7 @@ export default function LoginPage() {
                     type="text"
                     autoComplete="given-name"
                     {...registerSignup("name")}
-                    placeholder={t("Enter your first name", "نام خود را وارد کنید")}
+                    placeholder={t("")}
                     className={signupErrors.name ? styles.inputError : ""}
                     required
                   />
@@ -601,7 +602,7 @@ export default function LoginPage() {
                     type="text"
                     autoComplete="family-name"
                     {...registerSignup("surname")}
-                    placeholder={t("Enter your family name", "نام خانوادگی خود را وارد کنید")}
+                    placeholder={t("")}
                     className={signupErrors.surname ? styles.inputError : ""}
                     required
                   />
@@ -610,23 +611,7 @@ export default function LoginPage() {
                 {signupErrors.surname && <span className={styles.error}>{signupErrors.surname.message}</span>}
               </div>
 
-              <div className={styles.formGroup}>
-                <label className={styles.label}>
-                  <span>{t("Email Address", "آدرس ایمیل")}</span>
-                  <span className={styles.optional}>{t("(Optional)", "(اختیاری)")}</span>
-                </label>
-                <div className={styles.inputWrapper}>
-                  <input
-                    type="email"
-                    {...registerSignup("email")}
-                    placeholder={t("Enter your email", "ایمیل خود را وارد کنید")}
-                    className={signupErrors.email ? styles.inputError : ""}
-                  />
-                  <span className={styles.inputIcon}>📧</span>
-                </div>
-                {signupErrors.email && <span className={styles.error}>{signupErrors.email.message}</span>}
-              </div>
-
+    
               <div className={styles.formGroup}>
                 <label className={styles.label}>
                   <span>{t("Phone Number", "شماره تلفن")}</span>
@@ -683,7 +668,22 @@ export default function LoginPage() {
                   </span>
                 )}
               </div>
-
+ <div className={styles.formGroup}>
+                <label className={styles.label}>
+                  <span>{t("Email Address", "آدرس ایمیل")}</span>
+                  <span className={styles.optional}>{t("(Optional)", "(اختیاری)")}</span>
+                </label>
+                <div className={styles.inputWrapper}>
+                  <input
+                    type="email"
+                    {...registerSignup("email")}
+                    placeholder={t("")}
+                    className={signupErrors.email ? styles.inputError : ""}
+                  />
+                  {/* <span className={styles.inputIcon}>📧</span> */}
+                </div>
+                {signupErrors.email && <span className={styles.error}>{signupErrors.email.message}</span>}
+              </div>
               <div className={styles.formGroup}>
                 <label className={styles.label}>{t("Password", "رمز عبور")}</label>
                 <div className={styles.inputWrapper}>
