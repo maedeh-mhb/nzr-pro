@@ -2,20 +2,25 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useLanguage } from "@/lib/utils/language";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useState, useEffect, useRef } from "react";
-import { FiSearch, FiUser, FiShoppingCart, FiMenu, FiX } from "react-icons/fi";
+import { FiSearch, FiUser, FiShoppingCart, FiMenu, FiX, FiLogIn, FiLogOut } from "react-icons/fi";
+import toast from "react-hot-toast";
 import { useCart } from "@/lib/contexts/CartContext";
 import SearchPanel from "@/components/SearchPanel";
 import UserAccountDropdown from "@/components/UserAccountDropdown";
 import styles from "@/styles/components/_navbar.module.scss";
 
-export default function Navbar() {
+interface NavbarProps {
+  dashboardDesktopOnly?: boolean;
+}
+
+export default function Navbar({ dashboardDesktopOnly = false }: NavbarProps) {
   const { language, setLanguage, t } = useLanguage();
   const { data: session } = useSession();
-  const pathname = usePathname();
+  const router = useRouter();
   const { openCart, getTotalItems } = useCart();
   const localizedPath = (path: string) => `/${language}${path === "/" ? "" : path}`;
   const [menuOpen, setMenuOpen] = useState(false);
@@ -27,8 +32,15 @@ export default function Navbar() {
   const menuToggleRef = useRef<HTMLButtonElement>(null);
   const accountButtonRef = useRef<HTMLButtonElement>(null);
 
-  const isDashboard = pathname?.startsWith("/dashboard");
   const totalItems = getTotalItems();
+
+  const handleMobileLogout = async () => {
+    await signOut({ redirect: false });
+    setMenuOpen(false);
+    toast.success(t("Logged out successfully", "با موفقیت خارج شدید"));
+    router.push("/");
+    router.refresh();
+  };
 
   // Set menu top position to match navbar height exactly (no gap)
   useEffect(() => {
@@ -107,12 +119,11 @@ export default function Navbar() {
     }
   }, [menuOpen]);
 
-  if (isDashboard) {
-    return null;
-  }
-
   return (
-    <nav ref={navbarRef} className={styles.navbar}>
+    <nav
+      ref={navbarRef}
+      className={`${styles.navbar} ${dashboardDesktopOnly ? styles.dashboardDesktopOnly : ""}`}
+    >
       <div className={styles.container}>
         <button
           className={styles.searchIconMobile}
@@ -161,6 +172,28 @@ export default function Navbar() {
               {t("Contact Us", "ارتباط با ما")}
             </Link>
           </li>
+          {session ? (
+            <>
+              <li className={styles.mobileAuthItem}>
+                <Link href="/dashboard" className={styles.mobileAuthAction} onClick={() => setMenuOpen(false)}>
+                  <span>{t("Profile", "پروفایل")}</span>
+                </Link>
+              </li>
+              <li className={styles.mobileAuthItem}>
+                <button type="button" className={styles.mobileAuthAction} onClick={handleMobileLogout}>
+                  <span>{t("Logout", "خروج")}</span>
+                  <FiLogOut />
+                </button>
+              </li>
+            </>
+          ) : (
+            <li className={styles.mobileAuthItem}>
+              <Link href="/login" className={styles.mobileAuthAction} onClick={() => setMenuOpen(false)}>
+                <span>{t("Login", "ورود")}</span>
+                <FiLogIn />
+              </Link>
+            </li>
+          )}
           <li className={styles.mobileLangSwitcher}>
             <div className={styles.langSwitcher}>
               <button
@@ -232,31 +265,32 @@ export default function Navbar() {
               <span className={styles.cartBadge}>{totalItems}</span>
             )}
           </button>
-          {session ? (
-            <div className={styles.accountDropdown}>
-              <button
-                ref={accountButtonRef}
-                className={`${styles.icon} ${styles.iconLoggedIn} ${styles.accountButton}`}
-                onClick={() => setAccountDropdownOpen(!accountDropdownOpen)}
-                aria-label={t("Account", "حساب کاربری")}
+          {!dashboardDesktopOnly &&
+            (session ? (
+              <div className={styles.accountDropdown}>
+                <button
+                  ref={accountButtonRef}
+                  className={`${styles.icon} ${styles.iconLoggedIn} ${styles.accountButton}`}
+                  onClick={() => setAccountDropdownOpen(!accountDropdownOpen)}
+                  aria-label={t("Account", "حساب کاربری")}
+                >
+                  <FiUser />
+                </button>
+                <UserAccountDropdown
+                  isOpen={accountDropdownOpen}
+                  onClose={() => setAccountDropdownOpen(false)}
+                />
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className={styles.icon}
+                aria-label={t("Login", "ورود")}
+                title={t("Login", "ورود")}
               >
                 <FiUser />
-              </button>
-              <UserAccountDropdown
-                isOpen={accountDropdownOpen}
-                onClose={() => setAccountDropdownOpen(false)}
-              />
-            </div>
-          ) : (
-            <Link
-              href="/login"
-              className={styles.icon}
-              aria-label={t("Login", "ورود")}
-              title={t("Login", "ورود")}
-            >
-              <FiUser />
-            </Link>
-          )}
+              </Link>
+            ))}
         </div>
 
         <button

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { users, otpCodes } from "@/lib/db/schema";
+import { users, otpCodes, registrationOtpCodes } from "@/lib/db/schema";
 import { eq, and, gte, sql } from "drizzle-orm";
 import { createHash } from "crypto";
 import { randomInt } from "crypto";
@@ -26,15 +26,23 @@ function isValidPhoneFormat(phone: string): boolean {
 }
 
 // Send SMS via s.api.ir
-async function sendSMS(phone: string, code: string): Promise<{ success: boolean; error?: string }> {
+async function sendSMS(phone: string, code: string): Promise<{ success: boolean; error?: string; code?: string }> {
   try {
     const apiToken = process.env.SMS_API_TOKEN;
     const apiBaseUrl = process.env.SMS_API_BASE_URL || "https://s.api.ir/api/sw1/SmsOTP";
     const templateId = process.env.SMS_OTP_TEMPLATE_ID;
 
-    if (!apiToken || !templateId) {
-      console.error("SMS API configuration missing");
-      return { success: false, error: "SMS service not configured" };
+    const missingSettings = [
+      !apiToken && "SMS_API_TOKEN",
+      !templateId && "SMS_OTP_TEMPLATE_ID",
+    ].filter(Boolean);
+    if (missingSettings.length > 0) {
+      console.error(`SMS API configuration missing: ${missingSettings.join(", ")}`);
+      return {
+        success: false,
+        error: "SMS service not configured",
+        code: "SMS_NOT_CONFIGURED",
+      };
     }
 
     const response = await fetch(apiBaseUrl, {
@@ -81,16 +89,6 @@ async function sendSMS(phone: string, code: string): Promise<{ success: boolean;
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Unauthorized", code: "UNAUTHORIZED" },
-        { status: 401 }
-      );
-    }
-
-    const userId = session.user.id;
-
     // CSRF validation: accept token from header or JSON body
     let csrfToken = request.headers.get("x-csrf-token") || null;
     if (!csrfToken) {
@@ -107,6 +105,89 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       );
     }
+
+    const body = await request.json();
+    if (body?.registration === true) {
+      const phone = body.phone;
+      if (typeof phone !== "string" || !/^09\d{9}$/.test(phone)) {
+        return NextResponse.json(
+          { error: "Phone must be 11 digits starting with 09.", code: "INVALID_PHONE_FORMAT" },
+          { status: 400 }
+        );
+      }
+
+      const existingUser = await db.query.users.findFirst({
+        where: eq(users.phone, phone),
+      });
+      if (existingUser) {
+        return NextResponse.json(
+          { error: "This phone number is already registered.", code: "PHONE_ALREADY_REGISTERED" },
+          { status: 409 }
+        );
+      }
+
+      const now = new Date();
+      const currentCode = await db.query.registrationOtpCodes.findFirst({
+        where: and(
+          eq(registrationOtpCodes.phone, phone),
+          eq(registrationOtpCodes.used, false),
+          gte(registrationOtpCodes.expiresAt, now)
+        ),
+      });
+      if (currentCode) {
+        return NextResponse.json(
+          { error: "Please wait before requesting another verification code.", code: "RATE_LIMIT_EXCEEDED" },
+          { status: 429 }
+        );
+      }
+
+      const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+      const recentCodes = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(registrationOtpCodes)
+        .where(and(
+          eq(registrationOtpCodes.phone, phone),
+          gte(registrationOtpCodes.createdAt, oneHourAgo)
+        ));
+      if (Number(recentCodes[0]?.count || 0) >= 3) {
+        return NextResponse.json(
+          { error: "Too many verification requests. Please try again later.", code: "RATE_LIMIT_EXCEEDED" },
+          { status: 429 }
+        );
+      }
+
+      const code = randomInt(100000, 1000000).toString();
+      const [otpRecord] = await db.insert(registrationOtpCodes).values({
+        phone,
+        otpHash: hashOTP(code),
+        expiresAt: new Date(now.getTime() + 2 * 60 * 1000),
+      }).returning({ id: registrationOtpCodes.id });
+
+      const smsResult = await sendSMS(phone, code);
+      if (!smsResult.success) {
+        await db.delete(registrationOtpCodes).where(eq(registrationOtpCodes.id, otpRecord.id));
+        console.error("Registration SMS sending failed:", smsResult.error);
+        return NextResponse.json(
+          {
+            error: "Failed to send verification code. Please try again later.",
+            code: smsResult.code || "OTP_SEND_FAILED",
+          },
+          { status: smsResult.code === "SMS_NOT_CONFIGURED" ? 503 : 500 }
+        );
+      }
+
+      return NextResponse.json({ success: true, message: "Verification code sent successfully" });
+    }
+
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized", code: "UNAUTHORIZED" },
+        { status: 401 }
+      );
+    }
+
+    const userId = session.user.id;
 
     // Fetch user to get phone number
     const user = await db.query.users.findFirst({
@@ -219,9 +300,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: "Failed to send verification code. Please try again later.",
-          code: "OTP_SEND_FAILED",
+          code: smsResult.code || "OTP_SEND_FAILED",
         },
-        { status: 500 }
+        { status: smsResult.code === "SMS_NOT_CONFIGURED" ? 503 : 500 }
       );
     }
 

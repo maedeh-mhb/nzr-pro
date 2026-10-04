@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useLanguage } from "@/lib/utils/language";
+import Navbar from "@/components/Navbar";
 import DashboardNav from "./DashboardNav";
 import DashboardBottomNav from "./DashboardBottomNav";
 import HomeSection from "./sections/HomeSection";
@@ -108,8 +109,9 @@ export default function DashboardLayout() {
   };
 
   return (
-    <>
+    <div className={styles.dashboardPage}>
       <DashboardNav activeSection={activeSection} setActiveSection={setActiveSection} />
+      <Navbar dashboardDesktopOnly />
 
       <div className={styles.userHeader}>
         <div className={styles.userAvatar}>
@@ -160,6 +162,6 @@ export default function DashboardLayout() {
       </div>
 
       <DashboardBottomNav activeSection={activeSection} setActiveSection={setActiveSection} />
-    </>
+    </div>
   );
 }

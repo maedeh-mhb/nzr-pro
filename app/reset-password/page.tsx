@@ -20,7 +20,7 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 
 // Create schema factory function for bilingual support
 const createResetPasswordSchema = (t: (en: string, fa: string) => string) => yup.object({
-  password: yup.string().min(6, t("Password must be at least 6 characters", "رمز عبور باید حداقل 6 کاراکتر باشد")).required(t("Password is required", "رمز عبور الزامی است")),
+  password: yup.string().min(8, t("Password must be at least 8 characters", "رمز عبور باید حداقل 8 کاراکتر باشد")).required(t("Password is required", "رمز عبور الزامی است")),
   confirmPassword: yup
     .string()
     .oneOf([yup.ref("password")], t("Passwords must match", "رمزهای عبور باید مطابقت داشته باشند"))
@@ -267,4 +267,3 @@ export default function ResetPasswordPage() {
     </>
   );
 }
-

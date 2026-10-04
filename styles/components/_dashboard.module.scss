@@ -14,6 +14,8 @@
   padding: $spacing-md;
   position: sticky;
   top: 0;
+  width: 100%;
+  box-sizing: border-box;
   z-index: $z-sticky;
   box-shadow: $shadow-md;
 }
@@ -74,6 +76,24 @@
 
 .navBrandText {
   line-height: 1.1;
+}
+
+@include desktop {
+  .topNav {
+    display: none;
+  }
+
+  .topNavContainer {
+    position: relative;
+    min-height: 2.5rem;
+  }
+
+  .navBrand {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 }
 
 .navIcons {
@@ -961,20 +981,6 @@
   }
 }
 
-.productInfoWrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: $spacing-xs;
-  flex: 1;
-  min-width: 0;
-  flex-wrap: nowrap;
-
-  @include tablet {
-    gap: $spacing-sm;
-  }
-}
-
 .itemCount {
   font-size: $font-xs;
   color: $text-tertiary;
@@ -1087,19 +1093,20 @@
   max-width: 100%;
   font-size: $font-xs;
   flex: 1;
-  min-width: 100px;
 
   [dir="rtl"] & {}
 
   @include tablet {
     font-size: $font-sm;
-    min-width: 150px;
   }
 
   @include desktop {
     font-size: $font-base;
-    min-width: 200px;
   }
+}
+
+.headerLine2 > .orderItemPreview {
+  min-width: 0;
 }
 
 .orderItemPrice {
@@ -1291,14 +1298,15 @@
 
 .accountInfoGrid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: $spacing-md;
 
-  @include tablet {
-    grid-template-columns: repeat(2, 1fr);
+  @include desktop {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .orderItem {
+    min-width: 0;
     padding: $spacing-md;
     flex-direction: row;
     align-items: center;
@@ -1331,10 +1339,13 @@
   }
 
   .orderDate {
+    min-width: 0;
     margin-bottom: 0;
     margin-top: 0;
     text-align: right;
     flex: 1;
+    flex-wrap: wrap;
+    overflow-wrap: anywhere;
 
     [dir="rtl"] & {
       text-align: left;
@@ -1352,8 +1363,34 @@
 }
 
 .joinedItem {
-  @include tablet {
+  @include desktop {
     grid-column: 1 / -1;
+  }
+}
+
+@include max-desktop {
+  .accountInfoGrid {
+    gap: $spacing-sm;
+
+    .orderItem {
+      align-items: stretch;
+      flex-direction: column;
+      gap: $spacing-xs;
+    }
+
+    .orderProduct {
+      width: auto;
+      min-width: 0;
+    }
+
+    .orderDate {
+      text-align: start;
+    }
+  }
+
+  .profileInput {
+    padding: 0.65rem 0.75rem;
+    font-size: $font-sm;
   }
 }
 
@@ -1414,6 +1451,8 @@
 
 .profileInput {
   width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 0.75rem 1rem; // Increased from $spacing-sm $spacing-md for better touch targets
   border: 1px solid #ddd;
   border-radius: $radius-lg;
@@ -2697,6 +2736,8 @@
 }
 
 .defaultBadge {
+  flex-basis: 100%;
+  width: fit-content;
   background: $primary;
   color: $text-light;
   padding: 0.2rem 0.6rem;
@@ -2722,9 +2763,16 @@
 
 .addressActions {
   display: flex;
+  flex-wrap: wrap;
   gap: $spacing-sm;
   margin-top: 0.8rem;
   align-items: center;
+}
+
+.addressDefaultBtn {
+  flex-basis: 100%;
+  order: 1;
+  width: fit-content;
 }
 
 .addressEditBtn {
@@ -2886,6 +2934,55 @@
 [dir="rtl"] .logoutItem {
   margin-left: 0;
   margin-right: auto;
+}
+
+@include max-tablet {
+  .dashboardPage {
+    box-sizing: border-box;
+    padding-right: 4.5rem;
+  }
+
+  .topNav {
+    width: calc(100% + 4.5rem);
+    margin-right: -4.5rem;
+    box-sizing: border-box;
+  }
+
+  .userHeader {
+    width: calc(100% + 4.5rem);
+    margin-right: -4.5rem;
+    box-sizing: border-box;
+  }
+
+  .bottomNavVertical {
+    top: 50%;
+    right: 0;
+    bottom: auto;
+    left: auto;
+    width: 4rem;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    transform: translateY(-50%);
+    border-radius: $radius-lg 0 0 $radius-lg;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+
+    .bottomNavContainer {
+      flex-direction: column;
+      align-items: stretch;
+      padding: $spacing-sm 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .navItem,
+    .logoutItem {
+      min-width: 0;
+      width: 100%;
+      margin: 0;
+      padding: $spacing-sm 0.2rem;
+      font-size: 0.6rem;
+    }
+  }
 }
 
 .section {

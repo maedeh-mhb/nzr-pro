@@ -241,7 +241,11 @@ export default function ProfileSection({ setActiveSection, onProfileUpdate }: Pr
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to update profile");
+        if (errorData.error === "Email already in use") {
+          toast.error(t("Email already in use", "این ایمیل قبلاً استفاده شده است"));
+          return;
+        }
+        throw new Error(errorData.error || t("Failed to update profile", "خطا در به‌روزرسانی پروفایل"));
       }
 
       const data = await response.json();

@@ -75,7 +75,10 @@ export async function PUT(request: NextRequest) {
         where: eq(users.email, email),
       });
       if (existingUser && existingUser.id !== userId) {
-        return NextResponse.json({ error: "Email already in use" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Email already in use", errorFa: "این ایمیل قبلاً استفاده شده است" },
+          { status: 400 }
+        );
       }
     }
 
@@ -180,4 +183,3 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
-

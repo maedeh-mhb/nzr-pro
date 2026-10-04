@@ -309,11 +309,9 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
                             </div>
                           </div>
                           <div className={styles.headerLine2}>
-                            <div className={styles.productInfoWrapper}>
-                              <span className={styles.labelSmall}>{language === "fa" ? "محصول:" : t("Product", "Product")}</span>
-                              <span className={styles.orderItemPreview}>{displayName}</span>
-                              <span className={styles.itemCount}>{(language === "fa" ? "تعداد" : t("Qty", "Qty"))}: {itemCount}</span>
-                            </div>
+                            <span className={styles.labelSmall}>{language === "fa" ? "محصول:" : t("Product", "Product")}</span>
+                            <span className={styles.orderItemPreview}>{displayName}</span>
+                            <span className={styles.itemCount}>{(language === "fa" ? "تعداد" : t("Qty", "Qty"))}: {itemCount}</span>
                             <div className={styles.priceWrapper}>
                               <span className={styles.labelSmall}>{language === "fa" ? "قیمت" : t("Total", "Total")}</span>
                               <span className={styles.orderItemPrice}>{formatPrice(totalPrice, language, currency || "toman")}</span>
@@ -385,11 +383,9 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
                             <span className={`${styles.statusBadge} ${getStatusBadgeClass(order.status)}`}>{getStatusLabel(order.status)}</span>
                           </div>
                           <div className={styles.headerLine2}>
-                            <div className={styles.productInfoWrapper}>
-                              <span className={styles.labelSmall}>{language === "fa" ? "محصول:" : t("Product", "Product")}</span>
-                              <span className={styles.orderItemPreview}>{displayName}</span>
-                              <span className={styles.itemCount}>{(language === "fa" ? "تعداد" : t("Qty", "Qty"))}: {itemCount}</span>
-                            </div>
+                            <span className={styles.labelSmall}>{language === "fa" ? "محصول:" : t("Product", "Product")}</span>
+                            <span className={styles.orderItemPreview}>{displayName}</span>
+                            <span className={styles.itemCount}>{(language === "fa" ? "تعداد" : t("Qty", "Qty"))}: {itemCount}</span>
                             <div className={styles.priceWrapper}>
                               <span className={styles.labelSmall}>{language === "fa" ? "قیمت" : t("Total", "Total")}</span>
                               <span className={styles.orderItemPrice}>{formatPrice(totalPrice, language, currency ?? "toman")}</span>
@@ -531,11 +527,9 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
                             <span className={`${styles.statusBadge} ${getStatusBadgeClass(order.status)}`}>{getStatusLabel(order.status)}</span>
                           </div>
                           <div className={styles.headerLine2}>
-                            <div className={styles.productInfoWrapper}>
-                              <span className={styles.labelSmall}>{language === "fa" ? "محصول:" : t("Product", "Product")}</span>
-                              <span className={styles.orderItemPreview}>{displayName}</span>
-                              <span className={styles.itemCount}>{(language === "fa" ? "تعداد" : t("Qty", "Qty"))}: {itemCount}</span>
-                            </div>
+                            <span className={styles.labelSmall}>{language === "fa" ? "محصول:" : t("Product", "Product")}</span>
+                            <span className={styles.orderItemPreview}>{displayName}</span>
+                            <span className={styles.itemCount}>{(language === "fa" ? "تعداد" : t("Qty", "Qty"))}: {itemCount}</span>
                             <div className={styles.priceWrapper}>
                               <span className={styles.labelSmall}>{language === "fa" ? "قیمت" : t("Total", "Total")}</span>
                               <span className={styles.orderItemPrice}>{formatPrice(totalPrice, language, currency ?? "toman")}</span>

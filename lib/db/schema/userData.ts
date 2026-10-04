@@ -36,6 +36,17 @@ export const otpCodes = pgTable("otp_codes", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const registrationOtpCodes = pgTable("registration_otp_codes", {
+  id: text("id").primaryKey().$defaultFn(() => createId()),
+  phone: text("phone").notNull(),
+  otpHash: text("otp_hash").notNull(),
+  verificationTokenHash: text("verification_token_hash"),
+  expiresAt: timestamp("expires_at").notNull(),
+  attempts: integer("attempts").default(0).notNull(),
+  used: boolean("used").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const emailOtpCodes = pgTable("email_otp_codes", {
   id: text("id").primaryKey().$defaultFn(() => createId()),
   userId: text("user_id")
@@ -160,4 +171,3 @@ export const inventoryReservations = pgTable("inventory_reservations", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
-

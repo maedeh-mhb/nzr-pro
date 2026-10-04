@@ -8,7 +8,6 @@ import {
   passwordSchema,
   phoneSchema,
   nameSchema,
-  optionalNameSchema,
   optionalTextSchema,
   urlSchema,
   positiveIntegerSchema,
@@ -17,10 +16,14 @@ import {
 
 // Signup schema
 export const signupSchema = z.object({
-  name: optionalNameSchema,
-  email: emailSchema,
+  name: z.string().trim().min(1, "Name is required").max(100, "Name is too long"),
+  surname: z.string().trim().min(1, "Family name is required").max(100, "Family name is too long"),
+  email: z
+    .union([emailSchema, z.literal("")])
+    .optional()
+    .transform((value) => (value === "" ? undefined : value)),
   password: passwordSchema,
-  phone: phoneSchema,
+  phone: z.string().regex(/^09\d{9}$/, "Phone must be 11 digits starting with 09"),
 });
 
 // Contact form schema
@@ -72,4 +75,3 @@ export const productSchema = z.object({
   minOrderQuantity: positiveIntegerSchema,
   maxOrderQuantity: positiveIntegerSchema,
 });
-

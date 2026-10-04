@@ -10,7 +10,7 @@ export const users = pgTable("users", {
   id: text("id").primaryKey().$defaultFn(() => createId()),
   name: text("name").notNull(),
   surname: text("surname"),
-  email: text("email").notNull().unique(),
+  email: text("email").unique(),
   phone: text("phone").unique(),
   emailVerified: timestamp("email_verified"),
   phoneVerified: timestamp("phone_verified"),
@@ -69,4 +69,3 @@ export const verificationTokens = pgTable("verification_tokens", {
   token: text("token").notNull(),
   expires: timestamp("expires").notNull(),
 });
-

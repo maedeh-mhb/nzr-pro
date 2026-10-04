@@ -3,8 +3,7 @@
 import { useLanguage } from "@/lib/utils/language";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
-import { FiHome, FiPackage, FiShoppingBag, FiUser, FiMessageCircle, FiLogOut } from "react-icons/fi";
+import { FiGrid, FiHome, FiPackage, FiShoppingBag, FiUser, FiMessageCircle, FiLogOut } from "react-icons/fi";
 import styles from "@/styles/components/_dashboard.module.scss";
 
 interface DashboardBottomNavProps {
@@ -16,7 +15,7 @@ export default function DashboardBottomNav({
   activeSection,
   setActiveSection,
 }: DashboardBottomNavProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -26,16 +25,28 @@ export default function DashboardBottomNav({
   };
 
   return (
-    <div className={styles.bottomNav}>
+    <div className={`${styles.bottomNav} ${styles.bottomNavVertical}`}>
       <div className={styles.bottomNavContainer}>
         <button
-          className={`${styles.navItem} ${activeSection === "home" ? styles.active : ""}`}
-          onClick={() => setActiveSection("home")}
+          className={styles.navItem}
+          onClick={() => {
+            router.push(`/${language}`);
+            router.refresh();
+          }}
         >
           <span className={styles.navItemIcon}>
             <FiHome />
           </span>
           <span>{t("Home", "خانه")}</span>
+        </button>
+        <button
+          className={`${styles.navItem} ${activeSection === "home" ? styles.active : ""}`}
+          onClick={() => setActiveSection("home")}
+        >
+          <span className={styles.navItemIcon}>
+            <FiGrid />
+          </span>
+          <span>{t("Dashboard", "داشبورد")}</span>
         </button>
         <button
           className={styles.navItem}

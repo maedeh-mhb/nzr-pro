@@ -33,9 +33,18 @@ const loginSchema = yup.object({
 
 // Signup Schema
 const signupSchema = yup.object({
-  email: yup.string().email("Invalid email").required("Email is required"),
-  phone: yup.string().optional(),
-  password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+  name: yup.string().trim().required("Name is required"),
+  surname: yup.string().trim().required("Family name is required"),
+  email: yup
+    .string()
+    .transform((value) => (value === "" ? undefined : value))
+    .email("Invalid email")
+    .optional(),
+  phone: yup
+    .string()
+    .matches(/^09\d{9}$/, "Phone must be 11 digits starting with 09")
+    .required("Phone is required"),
+  password: yup.string().min(8, "Password must be at least 8 characters").required("Password is required"),
   confirmPassword: yup
     .string()
     .oneOf([yup.ref("password")], "Passwords must match")
@@ -61,6 +70,11 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState<{ [key: string]: boolean }>({});
   const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>(null);
+  const [csrfToken, setCsrfToken] = useState("");
+  const [signupCodeSent, setSignupCodeSent] = useState(false);
+  const [signupCode, setSignupCode] = useState("");
+  const [phoneVerified, setPhoneVerified] = useState(false);
+  const [registrationToken, setRegistrationToken] = useState("");
 
   useEffect(() => {
     const error = new URLSearchParams(window.location.search).get("error");
@@ -74,6 +88,16 @@ export default function LoginPage() {
 
     toast.error(errorMessage);
     window.history.replaceState({}, document.title, window.location.pathname);
+  }, [t]);
+
+  useEffect(() => {
+    fetch("/api/csrf-token")
+      .then((response) => response.json())
+      .then((data) => setCsrfToken(data.csrfToken || ""))
+      .catch((error) => {
+        console.error("Error fetching CSRF token:", error);
+        toast.error(t("Could not start secure registration. Refresh the page and try again.", "شروع ثبت‌نام امن ممکن نشد. صفحه را تازه کنید و دوباره تلاش کنید."));
+      });
   }, [t]);
 
   // Redirect if already logged in
@@ -105,12 +129,14 @@ export default function LoginPage() {
     register: registerSignup,
     handleSubmit: handleSubmitSignup,
     watch: watchSignup,
+    trigger: triggerSignup,
     formState: { errors: signupErrors },
   } = useForm<SignupFormData>({
     resolver: yupResolver(signupSchema),
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
+  const signupPhoneRegistration = registerSignup("phone");
 
   // Forgot Password Form
   const {
@@ -212,15 +238,24 @@ export default function LoginPage() {
   };
 
   const onSignupSubmit = async (data: SignupFormData) => {
+    if (!phoneVerified || !registrationToken) {
+      toast.error(t("Verify your phone number before creating your account.", "پیش از ایجاد حساب، شماره تلفن خود را تأیید کنید."));
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-csrf-token": csrfToken },
         body: JSON.stringify({
-          email: data.email,
+          name: data.name,
+          surname: data.surname,
+          email: data.email || undefined,
           password: data.password,
-          phone: data.phone || undefined,
+          phone: data.phone,
+          verificationToken: registrationToken,
+          csrfToken,
         }),
       });
 
@@ -232,7 +267,7 @@ export default function LoginPage() {
         toast.success(t("Account created successfully!", "حساب با موفقیت ایجاد شد!"));
         // Auto login after signup
         const signInResult = await signIn("credentials", {
-          emailOrPhone: data.email,
+          emailOrPhone: data.email || data.phone,
           password: data.password,
           redirect: false,
         });
@@ -247,6 +282,72 @@ export default function LoginPage() {
     } catch (error) {
       console.error("Signup error:", error);
       toast.error(t("An error occurred", "خطایی رخ داد"));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onSendSignupCode = async () => {
+    if (!(await triggerSignup("phone"))) return;
+    if (!csrfToken) {
+      toast.error(t("Security token unavailable. Refresh the page and try again.", "توکن امنیتی در دسترس نیست. صفحه را تازه کنید و دوباره تلاش کنید."));
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/user/phone/send-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-csrf-token": csrfToken },
+        body: JSON.stringify({ registration: true, phone: watchSignup("phone"), csrfToken }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        const errorMessage = result.code === "PHONE_ALREADY_REGISTERED"
+          ? t("This phone number is already registered.", "این شماره تلفن قبلاً ثبت شده است.")
+          : result.error || t("Failed to send verification code.", "ارسال کد تأیید ناموفق بود.");
+        toast.error(errorMessage);
+        return;
+      }
+      setSignupCodeSent(true);
+      setSignupCode("");
+      toast.success(t("Verification code sent to your phone.", "کد تأیید به تلفن شما ارسال شد."));
+    } catch (error) {
+      console.error("Signup verification code error:", error);
+      toast.error(t("An error occurred while sending the code.", "هنگام ارسال کد خطایی رخ داد."));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onVerifySignupCode = async () => {
+    if (!/^\d{6}$/.test(signupCode)) {
+      toast.error(t("Enter the 6-digit code sent to your phone.", "کد ۶ رقمی ارسال‌شده به تلفن خود را وارد کنید."));
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/user/phone/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-csrf-token": csrfToken },
+        body: JSON.stringify({
+          registration: true,
+          phone: watchSignup("phone"),
+          code: signupCode,
+          csrfToken,
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        toast.error(result.error || t("Invalid verification code.", "کد تأیید نامعتبر است."));
+        return;
+      }
+      setRegistrationToken(result.verificationToken);
+      setPhoneVerified(true);
+      toast.success(t("Phone number verified. You can now create your account.", "شماره تلفن تأیید شد. اکنون می‌توانید حساب خود را ایجاد کنید."));
+    } catch (error) {
+      console.error("Signup phone verification error:", error);
+      toast.error(t("An error occurred while verifying the code.", "هنگام تأیید کد خطایی رخ داد."));
     } finally {
       setIsLoading(false);
     }
@@ -417,11 +518,11 @@ export default function LoginPage() {
                 {isLoading ? t("Loading...", "در حال بارگذاری...") : t("Sign In", "ورود")}
               </button>
 
-              <div className={styles.divider}>
+              {/* <div className={styles.divider}>
                 <span>{t("Or continue with", "یا ادامه دهید با")}</span>
-              </div>
+              </div> */}
 
-              <button type="button" className={styles.btnGoogle} onClick={handleGoogleSignIn}>
+              {/* <button type="button" className={styles.btnGoogle} onClick={handleGoogleSignIn}>
                 <svg className={styles.googleIcon} viewBox="0 0 24 24">
                   <path
                     fill="#4285F4"
@@ -441,7 +542,7 @@ export default function LoginPage() {
                   />
                 </svg>
                 <span>{t("Sign in with Google", "ورود با گوگل")}</span>
-              </button>
+              </button> */}
 
               <div className={styles.switchAuth}>
                 <span>{t("Don't have an account?", "حساب کاربری ندارید؟")}</span>
@@ -478,7 +579,42 @@ export default function LoginPage() {
               onSubmit={handleSubmitSignup(onSignupSubmit)}
             >
               <div className={styles.formGroup}>
-                <label className={styles.label}>{t("Email Address", "آدرس ایمیل")}</label>
+                <label className={styles.label}>{t("First Name", "نام")}</label>
+                <div className={styles.inputWrapper}>
+                  <input
+                    type="text"
+                    autoComplete="given-name"
+                    {...registerSignup("name")}
+                    placeholder={t("Enter your first name", "نام خود را وارد کنید")}
+                    className={signupErrors.name ? styles.inputError : ""}
+                    required
+                  />
+                  <span className={styles.inputIcon}>👤</span>
+                </div>
+                {signupErrors.name && <span className={styles.error}>{signupErrors.name.message}</span>}
+              </div>
+
+              <div className={styles.formGroup}>
+                <label className={styles.label}>{t("Family Name", "نام خانوادگی")}</label>
+                <div className={styles.inputWrapper}>
+                  <input
+                    type="text"
+                    autoComplete="family-name"
+                    {...registerSignup("surname")}
+                    placeholder={t("Enter your family name", "نام خانوادگی خود را وارد کنید")}
+                    className={signupErrors.surname ? styles.inputError : ""}
+                    required
+                  />
+                  <span className={styles.inputIcon}>👤</span>
+                </div>
+                {signupErrors.surname && <span className={styles.error}>{signupErrors.surname.message}</span>}
+              </div>
+
+              <div className={styles.formGroup}>
+                <label className={styles.label}>
+                  <span>{t("Email Address", "آدرس ایمیل")}</span>
+                  <span className={styles.optional}>{t("(Optional)", "(اختیاری)")}</span>
+                </label>
                 <div className={styles.inputWrapper}>
                   <input
                     type="email"
@@ -494,16 +630,58 @@ export default function LoginPage() {
               <div className={styles.formGroup}>
                 <label className={styles.label}>
                   <span>{t("Phone Number", "شماره تلفن")}</span>
-                  <span className={styles.optional}>{t("(Optional)", "(اختیاری)")}</span>
                 </label>
                 <div className={styles.inputWrapper}>
                   <input
                     type="tel"
-                    {...registerSignup("phone")}
+                    {...signupPhoneRegistration}
+                    onChange={(event) => {
+                      signupPhoneRegistration.onChange(event);
+                      setSignupCodeSent(false);
+                      setSignupCode("");
+                      setPhoneVerified(false);
+                      setRegistrationToken("");
+                    }}
                     placeholder={t("Enter phone number", "شماره تلفن را وارد کنید")}
+                    required
+                    className={signupErrors.phone ? styles.inputError : ""}
                   />
                   <span className={styles.inputIcon}>📱</span>
                 </div>
+                {signupErrors.phone && <span className={styles.error}>{signupErrors.phone.message}</span>}
+                {!phoneVerified && (
+                  <button type="button" className={styles.btnPrimary} onClick={onSendSignupCode} disabled={isLoading}>
+                    {isLoading
+                      ? t("Sending...", "در حال ارسال...")
+                      : signupCodeSent
+                        ? t("Resend Verification Code", "ارسال دوباره کد تأیید")
+                        : t("Send Verification Code", "ارسال کد تأیید")}
+                  </button>
+                )}
+                {signupCodeSent && !phoneVerified && (
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>{t("Confirmation Code", "کد تأیید")}</label>
+                    <div className={styles.inputWrapper}>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
+                        maxLength={6}
+                        value={signupCode}
+                        onChange={(event) => setSignupCode(event.target.value.replace(/\D/g, ""))}
+                        placeholder={t("Enter the 6-digit code", "کد ۶ رقمی را وارد کنید")}
+                      />
+                    </div>
+                    <button type="button" className={styles.btnPrimary} onClick={onVerifySignupCode} disabled={isLoading || signupCode.length !== 6}>
+                      {isLoading ? t("Verifying...", "در حال تأیید...") : t("Verify Code", "تأیید کد")}
+                    </button>
+                  </div>
+                )}
+                {phoneVerified && (
+                  <span className={styles.phoneVerified}>
+                    {t("Phone number verified", "شماره تلفن تأیید شده است")}
+                  </span>
+                )}
               </div>
 
               <div className={styles.formGroup}>
@@ -571,7 +749,7 @@ export default function LoginPage() {
                 )}
               </div>
 
-              <button type="submit" className={styles.btnPrimary} disabled={isLoading}>
+              <button type="submit" className={styles.btnPrimary} disabled={isLoading || !phoneVerified}>
                 {isLoading ? t("Loading...", "در حال بارگذاری...") : t("Create Account", "ایجاد حساب")}
               </button>
 

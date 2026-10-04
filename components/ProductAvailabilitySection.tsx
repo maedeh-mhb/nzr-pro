@@ -32,9 +32,8 @@ export default function ProductAvailabilitySection() {
 
   return (
     <section className={styles.section} dir={language === "fa" ? "rtl" : "ltr"}>
-      <div className={styles.content}>
-        <p className={styles.eyebrow}>{t("PRODUCT AVAILABILITY", "زمان عرضه محصولات")}</p>
-        <h2 className={styles.title}>{title || t("Products are available on these dates", "محصولات در تاریخ‌های زیر عرضه می‌شوند")}</h2>
+      <div className={styles.content}><p className={styles.eyebrow}>{t("PRODUCT AVAILABILITY", "زمان عرضه محصولات")}</p>
+        {/* <h2 className={styles.title}>{title || t("Products are available on these dates", "محصولات در تاریخ‌های زیر عرضه می‌شوند")}</h2> */}
         <div className={styles.dates}>
           {availability.availabilityDates.map((date) => (
             <span key={date} className={styles.date}>{date}</span>

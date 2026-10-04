@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { users, otpCodes } from "@/lib/db/schema";
-import { eq, and, gte } from "drizzle-orm";
-import { createHash } from "crypto";
+import { users, otpCodes, registrationOtpCodes } from "@/lib/db/schema";
+import { eq, and, gte, lt, sql } from "drizzle-orm";
+import { createHash, randomBytes } from "crypto";
 import { createActivity } from "@/lib/services/activities";
 import { validateCsrfToken } from "@/lib/utils/csrf";
 export const dynamic = "force-dynamic";
@@ -16,17 +16,8 @@ function hashOTP(otp: string): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Unauthorized", code: "UNAUTHORIZED" },
-        { status: 401 }
-      );
-    }
-
-    const userId = session.user.id;
     const body = await request.json();
-    const { code, csrfToken: bodyCsrf } = body;
+    const { code, csrfToken: bodyCsrf, registration, phone } = body;
 
     // CSRF validation (accept header or body token)
     const headerCsrf = request.headers.get("x-csrf-token");
@@ -38,6 +29,72 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       );
     }
+
+    if (registration === true) {
+      if (typeof phone !== "string" || !/^09\d{9}$/.test(phone)) {
+        return NextResponse.json(
+          { error: "Phone must be 11 digits starting with 09.", code: "INVALID_PHONE_FORMAT" },
+          { status: 400 }
+        );
+      }
+      if (typeof code !== "string" || !/^\d{6}$/.test(code)) {
+        return NextResponse.json(
+          { error: "Enter the 6-digit verification code.", code: "INVALID_CODE_FORMAT" },
+          { status: 400 }
+        );
+      }
+
+      const now = new Date();
+      const otpRecord = await db.query.registrationOtpCodes.findFirst({
+        where: and(
+          eq(registrationOtpCodes.phone, phone),
+          eq(registrationOtpCodes.otpHash, hashOTP(code)),
+          eq(registrationOtpCodes.used, false),
+          gte(registrationOtpCodes.expiresAt, now)
+        ),
+        orderBy: (records, { desc }) => [desc(records.createdAt)],
+      });
+
+      if (!otpRecord || otpRecord.attempts >= 5) {
+        const latestOtp = await db.query.registrationOtpCodes.findFirst({
+          where: and(
+            eq(registrationOtpCodes.phone, phone),
+            eq(registrationOtpCodes.used, false),
+            gte(registrationOtpCodes.expiresAt, now)
+          ),
+          orderBy: (records, { desc }) => [desc(records.createdAt)],
+        });
+        if (latestOtp && latestOtp.attempts < 5) {
+          await db.update(registrationOtpCodes)
+            .set({ attempts: sql`${registrationOtpCodes.attempts} + 1` })
+            .where(and(
+              eq(registrationOtpCodes.id, latestOtp.id),
+              lt(registrationOtpCodes.attempts, 5)
+            ));
+        }
+        return NextResponse.json(
+          { error: "Invalid or expired verification code.", code: "OTP_INVALID" },
+          { status: 400 }
+        );
+      }
+
+      const verificationToken = randomBytes(32).toString("hex");
+      await db.update(registrationOtpCodes)
+        .set({ used: true, verificationTokenHash: hashOTP(verificationToken) })
+        .where(eq(registrationOtpCodes.id, otpRecord.id));
+
+      return NextResponse.json({ success: true, verificationToken });
+    }
+
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized", code: "UNAUTHORIZED" },
+        { status: 401 }
+      );
+    }
+
+    const userId = session.user.id;
 
     // Validate code format
     if (!code || typeof code !== "string" || code.length !== 6 || !/^\d{6}$/.test(code)) {

@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BottomBar from "@/components/BottomBar";
 import MidPageBanner from "@/components/MidPageBanner";
+import ProductAvailabilitySection from "@/components/ProductAvailabilitySection";
 import ProductCard from "@/components/products/ProductCard";
 import Select, { SelectOption } from "@/components/ui/Select";
 import SkeletonLoader from "@/components/dashboard/SkeletonLoader";
@@ -215,6 +216,7 @@ export default function ProductsPage() {
     <>
       <Navbar />
       <MidPageBanner />
+      <ProductAvailabilitySection />
       
       <div className={styles.container}>
         <div className={styles.filters}>

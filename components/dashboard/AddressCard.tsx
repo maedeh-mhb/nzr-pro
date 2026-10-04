@@ -102,7 +102,7 @@ export default function AddressCard({ address, onEdit, onDelete, onSetDefault, t
             <FiEdit2 /> {t("Edit", "ویرایش")}
           </div>
           {!address.isDefault && onSetDefault && (
-            <div className={`${styles.btnPrimary} ${styles.btnSmall}`} onClick={onSetDefault} role="button" tabIndex={0}>
+            <div className={`${styles.btnPrimary} ${styles.btnSmall} ${styles.addressDefaultBtn}`} onClick={onSetDefault} role="button" tabIndex={0}>
               <FiCheck /> {t("Default", "پیش‌فرض")}
             </div>
           )}
@@ -114,4 +114,3 @@ export default function AddressCard({ address, onEdit, onDelete, onSetDefault, t
     </SwipeableItem>
   );
 }
-
