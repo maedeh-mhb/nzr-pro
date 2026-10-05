@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
         category: products.category,
         minOrderQuantity: products.minOrderQuantity,
         maxOrderQuantity: products.maxOrderQuantity,
+        stockQuantity: products.quantity,
         badge: products.badge, // Include badge to check availability
       })
       .from(cartItems)
@@ -50,7 +51,7 @@ export async function GET(request: NextRequest) {
     const validItems = dbItems.filter((item) => {
       // Product exists (guaranteed by INNER JOIN)
       // Check if product is available
-      if (item.badge === "Out of Stock" || item.badge === "Not Available") {
+      if (item.stockQuantity <= 0 || item.badge === "Out of Stock" || item.badge === "Not Available") {
         return false; // Filter out unavailable products
       }
       return true;
@@ -133,6 +134,7 @@ export async function POST(request: NextRequest) {
         .select({
           id: products.id,
           badge: products.badge,
+          quantity: products.quantity,
         })
         .from(products)
         .where(inArray(products.id, productIds));
@@ -143,7 +145,8 @@ export async function POST(request: NextRequest) {
           .filter(
             (product) =>
               product.badge !== "Out of Stock" &&
-              product.badge !== "Not Available"
+              product.badge !== "Not Available" &&
+              product.quantity > 0
           )
           .map((product) => product.id)
       );
@@ -185,4 +188,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

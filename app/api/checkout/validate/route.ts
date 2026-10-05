@@ -10,6 +10,16 @@ import { validateCsrfToken } from "@/lib/utils/csrf";
 import { sanitizeProductId, sanitizeCartItemId } from "@/lib/utils/sanitize";
 import { reserveInventory, releaseUserReservations, getActiveReservationsForProduct } from "@/lib/services/inventoryReservation";
 import { API_ERRORS } from "@/lib/utils/apiErrors";
+
+const normalizePriceValue = (value: unknown): number => {
+  if (value === null || value === undefined || value === "") {
+    return 0;
+  }
+
+  const numericValue = Number(String(value).replace(/,/g, "").replace(/[^0-9.\-]/g, ""));
+  return Number.isFinite(numericValue) ? numericValue : 0;
+};
+
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
@@ -197,9 +207,9 @@ export async function POST(request: NextRequest) {
           continue;
         }
 
-        // Check price changes with locked row
-        const currentPrice = parseFloat(String(product.price));
-        const cartPrice = parseFloat(String(item.price));
+        // Check price changes with locked row (normalize values to avoid false positives from formatted strings)
+        const currentPrice = normalizePriceValue(product.price);
+        const cartPrice = normalizePriceValue(item.price);
 
         if (Math.abs(currentPrice - cartPrice) > 0.01) {
           // Price changed
@@ -217,7 +227,7 @@ export async function POST(request: NextRequest) {
 
         // Get active reservations for this product (using transaction context)
         const now = new Date().toISOString();
-        const activeReservationsResult = await tx
+        const totalReservationsResult = await tx
           .select({
             totalReserved: sql<number>`COALESCE(SUM(${inventoryReservations.quantity}), 0)`,
           })
@@ -229,7 +239,46 @@ export async function POST(request: NextRequest) {
               sql`${inventoryReservations.expiresAt} > ${now}`
             )
           );
-        const activeReservations = parseInt(activeReservationsResult[0]?.totalReserved?.toString() || "0");
+
+        const totalReservations = parseInt(totalReservationsResult[0]?.totalReserved?.toString() || "0");
+
+        // Ignore the current user's/session's own active reservations during validation to avoid false positives
+        // when the same cart is re-validated after a failed or partially-completed checkout attempt.
+        let ownReservations = 0;
+        if (userId) {
+          const ownReservationsResult = await tx
+            .select({
+              totalReserved: sql<number>`COALESCE(SUM(${inventoryReservations.quantity}), 0)`,
+            })
+            .from(inventoryReservations)
+            .where(
+              and(
+                eq(inventoryReservations.productId, product.id),
+                eq(inventoryReservations.userId, userId),
+                isNull(inventoryReservations.orderId),
+                sql`${inventoryReservations.expiresAt} > ${now}`
+              )
+            );
+          ownReservations = parseInt(ownReservationsResult[0]?.totalReserved?.toString() || "0");
+        } else if (request.headers.get("x-session-id")) {
+          const sessionId = request.headers.get("x-session-id");
+          const ownReservationsResult = await tx
+            .select({
+              totalReserved: sql<number>`COALESCE(SUM(${inventoryReservations.quantity}), 0)`,
+            })
+            .from(inventoryReservations)
+            .where(
+              and(
+                eq(inventoryReservations.productId, product.id),
+                eq(inventoryReservations.sessionId, sessionId),
+                isNull(inventoryReservations.orderId),
+                sql`${inventoryReservations.expiresAt} > ${now}`
+              )
+            );
+          ownReservations = parseInt(ownReservationsResult[0]?.totalReserved?.toString() || "0");
+        }
+
+        const activeReservations = Math.max(0, totalReservations - ownReservations);
         const availableQuantity = totalQuantity - activeReservations;
 
         if (requestedQuantity > availableQuantity) {

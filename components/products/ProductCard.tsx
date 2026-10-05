@@ -52,7 +52,7 @@ export default function ProductCard({
   const { t, language, currency } = useLanguage();
   const { data: session } = useSession();
   const router = useRouter();
-  const { addItem, openCart } = useCart();
+  const { addItem, openCart, inventoryStatuses, registerProductForInventory } = useCart();
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -62,6 +62,11 @@ export default function ProductCard({
     language === "fa" && shortDescriptionFa
       ? shortDescriptionFa
       : shortDescription || "";
+  const inventoryStatus = inventoryStatuses[id];
+  const currentQuantity = inventoryStatus?.quantity ?? quantity;
+  const currentBadge = inventoryStatus?.badge ?? badge;
+
+  useEffect(() => registerProductForInventory(id), [id, registerProductForInventory]);
 
   // Check if product is in wishlist on mount
   useEffect(() => {
@@ -231,14 +236,15 @@ export default function ProductCard({
     return null;
   };
 
-  const badgeLabel = getBadgeLabel(badge);
-  const badgeColor = getBadgeColor(badge);
+  const isOutOfStock = currentBadge === "Out of Stock" || (currentQuantity !== null && currentQuantity !== undefined && currentQuantity <= 0);
+  const badgeLabel = getBadgeLabel(currentBadge) || (isOutOfStock ? t("Out of Stock", "ناموجود") : null);
+  const badgeColor = getBadgeColor(currentBadge);
   // Disable add to cart if product is out of stock, not available, or quantity is zero
   const isUnavailable =
-    badge === "Out of Stock" ||
-    badge === "Not Available" ||
-    quantity === 0;
-  const isCardUnavailable = badge === "Not Available" && quantity !== 0;
+    isOutOfStock ||
+    currentBadge === "Not Available" ||
+    inventoryStatus?.available === false;
+  const isCardUnavailable = isUnavailable;
 
   const handleBuyNow = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -359,7 +365,7 @@ export default function ProductCard({
               : t("Buy Now", "خرید")}
           </span>
         </button>
-        {badge === "Not Available" ? (
+        {currentBadge === "Not Available" ? (
           <div
             className={styles.btnView}
             aria-disabled="true"
@@ -379,4 +385,3 @@ export default function ProductCard({
     </div>
   );
 }
-

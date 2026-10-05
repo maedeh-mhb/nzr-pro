@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { products } from "@/lib/db/schema";
-import { eq, inArray, and, not, or } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 import { sanitizeProductId } from "@/lib/utils/sanitize";
 export const dynamic = "force-dynamic";
 
 // Validate multiple products by IDs
-// Returns list of valid product IDs (products that exist and are available)
+// Returns availability and stock for products used by the cart and visible product cards.
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -34,20 +34,26 @@ export async function GET(request: NextRequest) {
       .select({
         id: products.id,
         badge: products.badge,
+        quantity: products.quantity,
       })
       .from(products)
       .where(inArray(products.id, productIds));
 
     // Filter to only include available products (not out of stock or not available)
-    const validProductIds = dbProducts
-      .filter(
-        (product) =>
-          product.badge !== "Out of Stock" &&
-          product.badge !== "Not Available"
-      )
+    const productStatuses = dbProducts.map((product) => ({
+      id: product.id,
+      quantity: product.quantity,
+      badge: product.badge,
+      available:
+        product.quantity > 0 &&
+        product.badge !== "Out of Stock" &&
+        product.badge !== "Not Available",
+    }));
+    const validProductIds = productStatuses
+      .filter((product) => product.available)
       .map((product) => product.id);
 
-    return NextResponse.json({ validProductIds });
+    return NextResponse.json({ validProductIds, productStatuses });
   } catch (error) {
     console.error("Error validating products:", error);
     return NextResponse.json(
@@ -56,4 +62,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

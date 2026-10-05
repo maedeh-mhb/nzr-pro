@@ -1,7 +1,13 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { useSession } from "next-auth/react";
+
+export interface ProductInventoryStatus {
+  quantity: number;
+  badge: string | null;
+  available: boolean;
+}
 
 export interface CartItem {
   id: string;
@@ -24,6 +30,8 @@ interface GuestCart {
 
 interface CartContextType {
   items: CartItem[];
+  inventoryStatuses: Record<string, ProductInventoryStatus>;
+  registerProductForInventory: (productId: string) => () => void;
   isOpen: boolean;
   openCart: () => void;
   closeCart: () => void;
@@ -50,11 +58,31 @@ const GUEST_CART_EXPIRY_MS = GUEST_CART_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [inventoryStatuses, setInventoryStatuses] = useState<Record<string, ProductInventoryStatus>>({});
+  const [trackedProductIds, setTrackedProductIds] = useState<Set<string>>(new Set());
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [hasMergedGuestCart, setHasMergedGuestCart] = useState(false);
   const { data: session, status: sessionStatus } = useSession();
+  const trackedProductCounts = useRef(new Map<string, number>());
+  const isRefreshingInventory = useRef(false);
+
+  const registerProductForInventory = useCallback((productId: string) => {
+    const count = trackedProductCounts.current.get(productId) || 0;
+    trackedProductCounts.current.set(productId, count + 1);
+    setTrackedProductIds(new Set(trackedProductCounts.current.keys()));
+
+    return () => {
+      const currentCount = trackedProductCounts.current.get(productId) || 0;
+      if (currentCount <= 1) {
+        trackedProductCounts.current.delete(productId);
+      } else {
+        trackedProductCounts.current.set(productId, currentCount - 1);
+      }
+      setTrackedProductIds(new Set(trackedProductCounts.current.keys()));
+    };
+  }, []);
 
   // Save guest cart to localStorage
   const saveGuestCart = useCallback((items: CartItem[]) => {
@@ -205,6 +233,79 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [session, sessionStatus, hasMergedGuestCart, loadCart, loadGuestCart, mergeGuestCart]);
 
+  const refreshInventory = useCallback(async () => {
+    const productIds = Array.from(new Set([
+      ...trackedProductIds,
+      ...items.map((item) => item.productId),
+    ]));
+    if (productIds.length === 0 || isRefreshingInventory.current) return;
+
+    isRefreshingInventory.current = true;
+    try {
+      const response = await fetch(`/api/products/validate?ids=${productIds.join(",")}`, {
+        cache: "no-store",
+      });
+      if (!response.ok) {
+        throw new Error(`Inventory refresh failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      const statuses = (data.productStatuses || []) as Array<{
+        id: string;
+        quantity: number;
+        badge: string | null;
+        available: boolean;
+      }>;
+      setInventoryStatuses((current) => ({
+        ...current,
+        ...Object.fromEntries(statuses.map((status) => [status.id, status])),
+      }));
+
+      const validProductIds = new Set<string>(data.validProductIds || []);
+      const availableItems = items.filter((item) => validProductIds.has(item.productId));
+      if (availableItems.length !== items.length) {
+        setItems(availableItems);
+        if (session?.user?.id) {
+          const syncResponse = await fetch("/api/cart", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ items: availableItems }),
+          });
+          if (!syncResponse.ok) {
+            throw new Error(`Failed to remove unavailable items from cart (${syncResponse.status})`);
+          }
+          await loadCart();
+        } else {
+          saveGuestCart(availableItems);
+        }
+      }
+    } catch (error) {
+      console.error("Error refreshing product inventory:", error);
+    } finally {
+      isRefreshingInventory.current = false;
+    }
+  }, [trackedProductIds, items, session?.user?.id, loadCart, saveGuestCart]);
+
+  useEffect(() => {
+    void refreshInventory();
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === "visible") {
+        void refreshInventory();
+      }
+    }, 15000);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        void refreshInventory();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.clearInterval(intervalId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [refreshInventory]);
+
   // Sync cart changes to DB (for logged-in users) or localStorage (for guests)
   const syncCart = async (newItems: CartItem[]) => {
     try {
@@ -235,6 +336,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const toggleCart = () => setIsOpen((prev) => !prev);
 
   const addItem = async (item: Omit<CartItem, "quantity">, quantity: number = 1) => {
+    const inventoryStatus = inventoryStatuses[item.productId];
+    if (inventoryStatus && !inventoryStatus.available) {
+      throw new Error("Product is out of stock");
+    }
+
     const newItems = [...items];
     const existingIndex = newItems.findIndex((i) => i.productId === item.productId);
 
@@ -400,6 +506,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     <CartContext.Provider
       value={{
         items,
+        inventoryStatuses,
+        registerProductForInventory,
         isOpen,
         openCart,
         closeCart,
@@ -430,4 +538,3 @@ export function useCart() {
   }
   return context;
 }
-

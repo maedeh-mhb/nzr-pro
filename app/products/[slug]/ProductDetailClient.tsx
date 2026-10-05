@@ -82,8 +82,20 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
   const router = useRouter();
   const { data: session } = useSession();
   const { t, language, currency } = useLanguage();
-  const { addItem, openCart, updateQuantity, removeItem } = useCart();
+  const {
+    addItem,
+    openCart,
+    updateQuantity,
+    removeItem,
+    inventoryStatuses,
+    registerProductForInventory,
+  } = useCart();
   const [product] = useState<Product>(initialProduct);
+  const inventoryStatus = inventoryStatuses[product.id];
+  const currentQuantity = inventoryStatus?.quantity ?? product.quantity;
+  const currentBadge = inventoryStatus?.badge ?? product.badge;
+  const isOutOfStock = currentQuantity <= 0 || currentBadge === "Out of Stock";
+  const isUnavailable = isOutOfStock || currentBadge === "Not Available" || inventoryStatus?.available === false;
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isWishlistLoading, setIsWishlistLoading] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -101,6 +113,8 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
   const [isStickyBarExpanded, setIsStickyBarExpanded] = useState(false);
   const [hasAddedToCartOnce, setHasAddedToCartOnce] = useState(false); // Track if user has added to cart at least once (mobile only)
   const [showPlaceOrderBar, setShowPlaceOrderBar] = useState(false); // Show place order bar on mobile after adding to cart
+
+  useEffect(() => registerProductForInventory(product.id), [product.id, registerProductForInventory]);
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -363,7 +377,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     if (!product) return;
 
     // Check if product is available
-    if (product.quantity === 0) {
+    if (isUnavailable) {
       toast.error(t("Product is out of stock", "محصول موجود نیست"));
       return;
     }
@@ -448,7 +462,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     if (!product) return;
 
     // Check if product is available
-    if (product.quantity === 0) {
+    if (isUnavailable) {
       toast.error(t("Product is out of stock", "محصول موجود نیست"));
       return;
     }
@@ -851,7 +865,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 <button
                   className={styles.buyButton}
                   onClick={handleBuyNow}
-                  disabled={product.quantity === 0 || isAddingToCart}
+                  disabled={isUnavailable || isAddingToCart}
                 >
                   <FiShoppingCart />
                   <span>
@@ -863,7 +877,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 <button
                   className={styles.addToCartButton}
                   onClick={() => handleAddToCart(false)}
-                  disabled={product.quantity === 0 || isAddingToCart}
+                  disabled={isUnavailable || isAddingToCart}
                 >
                   <span>
                     {isAddingToCart
@@ -873,7 +887,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                 </button>
               </div>
 
-              {product.quantity === 0 && (
+              {isOutOfStock && (
                 <p className={styles.outOfStock}>
                   {t("Out of Stock", "ناموجود")}
                 </p>
@@ -1083,7 +1097,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                     // First click: Add to cart and show place order bar
                     await handleAddToCart(false);
                   }}
-                  disabled={product.quantity === 0 || isAddingToCart}
+                  disabled={isUnavailable || isAddingToCart}
                 >
                   {isAddingToCart
                     ? t("Adding...", "در حال افزودن...")
@@ -1147,7 +1161,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                   await handleAddToCart(false); // Don't open cart, just show place order bar
                   setIsStickyBarExpanded(false);
                 }}
-                disabled={product.quantity === 0 || isAddingToCart}
+                disabled={isUnavailable || isAddingToCart}
               >
                 {isAddingToCart
                   ? t("Adding...", "در حال افزودن...")
@@ -1217,4 +1231,3 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     </>
   );
 }
-
