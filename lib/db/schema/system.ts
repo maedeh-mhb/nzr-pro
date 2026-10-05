@@ -2,7 +2,7 @@
  * System settings and configuration schemas
  */
 
-import { pgTable, text, timestamp, decimal, integer, boolean, AnyPgColumn } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, decimal, integer, boolean, jsonb, AnyPgColumn } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 import { users } from "./users";
 import { categories } from "./products";
@@ -28,6 +28,9 @@ export const shippingSettings = pgTable("shipping_settings", {
   weight2Multiplier: decimal("weight_2_multiplier", { precision: 10, scale: 2 }),
   weight3: decimal("weight_3", { precision: 10, scale: 2 }),
   weight3Multiplier: decimal("weight_3_multiplier", { precision: 10, scale: 2 }),
+  weightRates: jsonb("weight_rates").$type<number[]>().notNull().default([
+    170000, 200000, 250000, 300000, 370000, 440000, 440000, 480000, 520000, 570000,
+  ]),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

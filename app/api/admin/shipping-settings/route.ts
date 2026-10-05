@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { shippingSettings } from "@/lib/db/schema";
 import { requireAdminWithPermissions } from "@/lib/middleware/auth";
 import { eq } from "drizzle-orm";
+import { DEFAULT_SHIPPING_WEIGHT_RATES, SHIPPING_WEIGHT_TIERS } from "@/lib/shipping/weightRates";
 export const dynamic = "force-dynamic";
 
 // Get shipping settings
@@ -25,15 +26,7 @@ export async function GET(request: NextRequest) {
       id: setting.id,
       adminProvince: setting.adminProvince,
       adminCity: setting.adminCity,
-      priceAdminProvince: setting.priceAdminProvince ? parseFloat(String(setting.priceAdminProvince)) : null,
-      priceNeighboringProvinces: setting.priceNeighboringProvinces ? parseFloat(String(setting.priceNeighboringProvinces)) : null,
-      priceOtherProvinces: setting.priceOtherProvinces ? parseFloat(String(setting.priceOtherProvinces)) : null,
-      weight1: setting.weight1 ? parseFloat(String(setting.weight1)) : null,
-      weight1Multiplier: setting.weight1Multiplier ? parseFloat(String(setting.weight1Multiplier)) : null,
-      weight2: setting.weight2 ? parseFloat(String(setting.weight2)) : null,
-      weight2Multiplier: setting.weight2Multiplier ? parseFloat(String(setting.weight2Multiplier)) : null,
-      weight3: setting.weight3 ? parseFloat(String(setting.weight3)) : null,
-      weight3Multiplier: setting.weight3Multiplier ? parseFloat(String(setting.weight3Multiplier)) : null,
+      weightRates: setting.weightRates || DEFAULT_SHIPPING_WEIGHT_RATES,
     });
   } catch (error) {
     console.error("Error fetching shipping settings:", error);
@@ -53,19 +46,20 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const {
-      adminProvince,
-      adminCity,
-      priceAdminProvince,
-      priceNeighboringProvinces,
-      priceOtherProvinces,
-      weight1,
-      weight1Multiplier,
-      weight2,
-      weight2Multiplier,
-      weight3,
-      weight3Multiplier,
-    } = body;
+    const { adminProvince, adminCity, weightRates } = body;
+
+    if (
+      typeof adminProvince !== "string" ||
+      !adminProvince.trim() ||
+      !Array.isArray(weightRates) ||
+      weightRates.length !== SHIPPING_WEIGHT_TIERS.length ||
+      weightRates.some((rate) => typeof rate !== "number" || !Number.isFinite(rate) || rate < 0)
+    ) {
+      return NextResponse.json(
+        { error: "A province and a valid price for every weight tier are required" },
+        { status: 400 }
+      );
+    }
 
     // Check if settings already exist
     const existing = await db.select().from(shippingSettings).limit(1);
@@ -77,15 +71,7 @@ export async function POST(request: NextRequest) {
         .set({
           adminProvince,
           adminCity: adminCity || null,
-          priceAdminProvince,
-          priceNeighboringProvinces,
-          priceOtherProvinces,
-          weight1,
-          weight1Multiplier,
-          weight2,
-          weight2Multiplier,
-          weight3,
-          weight3Multiplier,
+          weightRates,
           updatedAt: new Date(),
         })
         .where(eq(shippingSettings.id, existing[0].id));
@@ -96,15 +82,7 @@ export async function POST(request: NextRequest) {
       await db.insert(shippingSettings).values({
         adminProvince,
         adminCity: adminCity || null,
-        priceAdminProvince,
-        priceNeighboringProvinces,
-        priceOtherProvinces,
-        weight1,
-        weight1Multiplier,
-        weight2,
-        weight2Multiplier,
-        weight3,
-        weight3Multiplier,
+        weightRates,
       });
 
       return NextResponse.json({ success: true });
@@ -117,4 +95,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

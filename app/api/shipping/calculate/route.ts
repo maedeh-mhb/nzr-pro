@@ -2,21 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { shippingSettings, products } from "@/lib/db/schema";
 import { eq, inArray } from "drizzle-orm";
+import { calculateWeightBasedShippingCost, DEFAULT_SHIPPING_WEIGHT_RATES } from "@/lib/shipping/weightRates";
 import fs from "fs";
 import path from "path";
 export const dynamic = "force-dynamic";
-
-// Load neighboring provinces data
-function getNeighboringProvinces() {
-  try {
-    const filePath = path.join(process.cwd(), "public", "data", "neighborProvinces-en.json");
-    const fileContents = fs.readFileSync(filePath, "utf8");
-    return JSON.parse(fileContents);
-  } catch (error) {
-    console.error("Error loading neighboring provinces:", error);
-    return {};
-  }
-}
 
 // Get province name by ID (English)
 function getProvinceNameById(provinceId: number): string | null {
@@ -137,8 +126,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Determine shipping price tier
-    let basePrice = 0;
     const adminProvinceValue = shippingConfig.adminProvince?.trim() || "";
 
     // Compare with English name, Farsi name, or slug (case-insensitive)
@@ -147,52 +134,10 @@ export async function POST(request: NextRequest) {
       (provinceNameFa && provinceNameFa.trim().toLowerCase() === adminProvinceValue.toLowerCase()) ||
       (provinceSlug && provinceSlug.trim().toLowerCase() === adminProvinceValue.toLowerCase());
 
-    if (provinceMatches) {
-      // Same as admin province
-      basePrice = shippingConfig.priceAdminProvince
-        ? parseFloat(String(shippingConfig.priceAdminProvince))
-        : 0;
-    } else {
-      // Check if it's a neighboring province
-      // Neighboring provinces map uses English province names as keys
-      const neighboringProvinces = getNeighboringProvinces();
-      const neighbors = neighboringProvinces[adminProvinceValue] || [];
-      // Check against English name (neighboring provinces use English names)
-      const isNeighboring = provinceNameEn ? neighbors.includes(provinceNameEn) : false;
-
-      if (isNeighboring) {
-        basePrice = shippingConfig.priceNeighboringProvinces
-          ? parseFloat(String(shippingConfig.priceNeighboringProvinces))
-          : 0;
-      } else {
-        basePrice = shippingConfig.priceOtherProvinces
-          ? parseFloat(String(shippingConfig.priceOtherProvinces))
-          : 0;
-      }
-    }
-
-    // Apply weight multipliers
-    let shippingCost = basePrice;
-    const weight1 = shippingConfig.weight1 ? parseFloat(String(shippingConfig.weight1)) : null;
-    const weight1Multiplier = shippingConfig.weight1Multiplier
-      ? parseFloat(String(shippingConfig.weight1Multiplier))
-      : null;
-    const weight2 = shippingConfig.weight2 ? parseFloat(String(shippingConfig.weight2)) : null;
-    const weight2Multiplier = shippingConfig.weight2Multiplier
-      ? parseFloat(String(shippingConfig.weight2Multiplier))
-      : null;
-    const weight3 = shippingConfig.weight3 ? parseFloat(String(shippingConfig.weight3)) : null;
-    const weight3Multiplier = shippingConfig.weight3Multiplier
-      ? parseFloat(String(shippingConfig.weight3Multiplier))
-      : null;
-
-    if (weight3 && weight3Multiplier && totalWeight > weight3) {
-      shippingCost = basePrice * weight3Multiplier;
-    } else if (weight2 && weight2Multiplier && totalWeight > weight2) {
-      shippingCost = basePrice * weight2Multiplier;
-    } else if (weight1 && weight1Multiplier && totalWeight > weight1) {
-      shippingCost = basePrice * weight1Multiplier;
-    }
+    const shippingCost = calculateWeightBasedShippingCost(
+      totalWeight,
+      shippingConfig.weightRates || DEFAULT_SHIPPING_WEIGHT_RATES
+    );
 
     // Determine available shipping methods
     const availableMethods: Array<{ value: string; label: string; labelFa: string; cost: number }> = [];
@@ -254,4 +199,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

@@ -18,6 +18,7 @@ import formStyles from "@/styles/components/_adminForm.module.scss";
 import styles from "@/styles/components/_adminSettings.module.scss";
 import DiscountCodesSection from "./DiscountCodesSection";
 import InstructionsPageSection from "./InstructionsPageSection";
+import { DEFAULT_SHIPPING_WEIGHT_RATES, SHIPPING_WEIGHT_TIERS } from "@/lib/shipping/weightRates";
 
 interface Province {
   id: number;
@@ -33,25 +34,9 @@ interface Province {
 const shippingSchema = yup.object({
   adminProvince: yup.string().required("Province is required"),
   adminCity: yup.number().nullable(),
-  priceAdminProvince: yup.number().required("Price is required").min(0, "Price must be positive"),
-  priceNeighboringProvinces: yup.number().required("Price is required").min(0, "Price must be positive"),
-  priceOtherProvinces: yup.number().required("Price is required").min(0, "Price must be positive"),
-  weight1: yup.number().required("Weight is required").min(0, "Weight must be positive"),
-  weight1Multiplier: yup.number().required("Multiplier is required").min(0, "Multiplier must be positive"),
-  weight2: yup.number().required("Weight is required").min(0, "Weight must be positive"),
-  weight2Multiplier: yup.number().required("Multiplier is required").min(0, "Multiplier must be positive"),
-  weight3: yup.number().required("Weight is required").min(0, "Weight must be positive"),
-  weight3Multiplier: yup.number().required("Multiplier is required").min(0, "Multiplier must be positive"),
-}).test("weight-order", "Weight 2 must be larger than Weight 1", function (values) {
-  if (values.weight1 && values.weight2) {
-    return parseFloat(String(values.weight2)) > parseFloat(String(values.weight1));
-  }
-  return true;
-}).test("weight-order-2", "Weight 3 must be larger than Weight 2", function (values) {
-  if (values.weight2 && values.weight3) {
-    return parseFloat(String(values.weight3)) > parseFloat(String(values.weight2));
-  }
-  return true;
+  weightRates: yup.array().of(
+    yup.number().required("Price is required").min(0, "Price must be positive")
+  ).length(SHIPPING_WEIGHT_TIERS.length).required(),
 });
 
 type ShippingFormData = yup.InferType<typeof shippingSchema>;
@@ -228,6 +213,11 @@ export default function SettingsSection() {
     resolver: yupResolver(shippingSchema),
     mode: "onSubmit",
     reValidateMode: "onChange",
+    defaultValues: {
+      adminProvince: "",
+      adminCity: null,
+      weightRates: DEFAULT_SHIPPING_WEIGHT_RATES,
+    },
   });
 
   const {
@@ -528,15 +518,7 @@ export default function SettingsSection() {
           reset({
             adminProvince: data.adminProvince || "",
             adminCity: data.adminCity || null,
-            priceAdminProvince: data.priceAdminProvince || "",
-            priceNeighboringProvinces: data.priceNeighboringProvinces || "",
-            priceOtherProvinces: data.priceOtherProvinces || "",
-            weight1: data.weight1 || "",
-            weight1Multiplier: data.weight1Multiplier || "",
-            weight2: data.weight2 || "",
-            weight2Multiplier: data.weight2Multiplier || "",
-            weight3: data.weight3 || "",
-            weight3Multiplier: data.weight3Multiplier || "",
+            weightRates: data.weightRates || DEFAULT_SHIPPING_WEIGHT_RATES,
           });
           setSelectedAdminProvince(data.adminProvince || "");
           setAdminCityId(data.adminCity || null);
@@ -1600,7 +1582,7 @@ export default function SettingsSection() {
             ) : (
               <form onSubmit={handleSubmit(onShippingSubmit)}>
                 <div className={styles.shippingSection}>
-                  <h4 className={styles.sectionTitle}>{t("Province-Based Pricing", "قیمت‌گذاری بر اساس استان")}</h4>
+                  <h4 className={styles.sectionTitle}>{t("Shipping Origin", "مبدأ ارسال")}</h4>
                   <Select
                     label={t("Admin's Province", "استان ادمین")}
                     options={provinceOptions}
@@ -1627,79 +1609,24 @@ export default function SettingsSection() {
                     placeholder={t("Select city", "شهر را انتخاب کنید")}
                     disabled={!selectedAdminProvince || cities.length === 0}
                   />
-                  <Input
-                    label={t("Price for Admin's Province", "قیمت برای استان ادمین")}
-                    type="number"
-                    step="0.01"
-                    {...register("priceAdminProvince", { valueAsNumber: true })}
-                    error={errors.priceAdminProvince?.message}
-                  />
-                  <Input
-                    label={t("Price for Neighboring Provinces", "قیمت برای استان‌های همجوار")}
-                    type="number"
-                    step="0.01"
-                    {...register("priceNeighboringProvinces", { valueAsNumber: true })}
-                    error={errors.priceNeighboringProvinces?.message}
-                  />
-                  <Input
-                    label={t("Price for Other Provinces", "قیمت برای سایر استان‌ها")}
-                    type="number"
-                    step="0.01"
-                    {...register("priceOtherProvinces", { valueAsNumber: true })}
-                    error={errors.priceOtherProvinces?.message}
-                  />
                 </div>
 
                 <div className={styles.shippingSection}>
-                  <h4 className={styles.sectionTitle}>{t("Weight-Based Multipliers", "ضریب‌های بر اساس وزن")}</h4>
+                  <h4 className={styles.sectionTitle}>{t("Weight-Based Shipping Rates (Toman)", "هزینه ارسال بر اساس وزن (تومان)")}</h4>
                   <div className={formStyles.formGrid}>
-                    <Input
-                      label={t("Weight 1 (kg)", "وزن ۱ (کیلوگرم)")}
-                      type="number"
-                      step="0.01"
-                      {...register("weight1", { valueAsNumber: true })}
-                      error={errors.weight1?.message}
-                    />
-                    <Input
-                      label={t("Multiplier X", "ضریب X")}
-                      type="number"
-                      step="0.01"
-                      {...register("weight1Multiplier", { valueAsNumber: true })}
-                      error={errors.weight1Multiplier?.message}
-                    />
+                    {SHIPPING_WEIGHT_TIERS.map((tier, index) => (
+                      <Input
+                        key={tier.maxWeightKg}
+                        label={t(tier.labelEn, tier.labelFa)}
+                        type="number"
+                        min="0"
+                        step="1"
+                        {...register(`weightRates.${index}` as const, { valueAsNumber: true })}
+                        error={errors.weightRates?.[index]?.message}
+                      />
+                    ))}
                   </div>
-                  <div className={formStyles.formGrid}>
-                    <Input
-                      label={t("Weight 2 (kg)", "وزن ۲ (کیلوگرم)")}
-                      type="number"
-                      step="0.01"
-                      {...register("weight2", { valueAsNumber: true })}
-                      error={errors.weight2?.message}
-                    />
-                    <Input
-                      label={t("Multiplier Y", "ضریب Y")}
-                      type="number"
-                      step="0.01"
-                      {...register("weight2Multiplier", { valueAsNumber: true })}
-                      error={errors.weight2Multiplier?.message}
-                    />
-                  </div>
-                  <div className={formStyles.formGrid}>
-                    <Input
-                      label={t("Weight 3 (kg)", "وزن ۳ (کیلوگرم)")}
-                      type="number"
-                      step="0.01"
-                      {...register("weight3", { valueAsNumber: true })}
-                      error={errors.weight3?.message}
-                    />
-                    <Input
-                      label={t("Multiplier Z", "ضریب Z")}
-                      type="number"
-                      step="0.01"
-                      {...register("weight3Multiplier", { valueAsNumber: true })}
-                      error={errors.weight3Multiplier?.message}
-                    />
-                  </div>
+                  <p>{t("Orders over 9 kg use the 8–9 kg rate.", "برای سفارش‌های بیش از ۹ کیلوگرم، هزینه بازه ۸ تا ۹ کیلوگرم اعمال می‌شود.")}</p>
                 </div>
 
                 <div className={formStyles.formActions}>
@@ -3115,4 +3042,3 @@ export default function SettingsSection() {
     </>
   );
 }
-
