@@ -627,7 +627,7 @@ export default function LoginPage() {
                       setPhoneVerified(false);
                       setRegistrationToken("");
                     }}
-                    placeholder={t("Enter phone number", "شماره تلفن را وارد کنید")}
+                    placeholder={t("")}
                     required
                     className={signupErrors.phone ? styles.inputError : ""}
                   />
@@ -753,11 +753,11 @@ export default function LoginPage() {
                 {isLoading ? t("Loading...", "در حال بارگذاری...") : t("Create Account", "ایجاد حساب")}
               </button>
 
-              <div className={styles.divider}>
+              {/* <div className={styles.divider}>
                 <span>{t("Or sign up with", "یا ثبت‌نام با")}</span>
-              </div>
+              </div> */}
 
-              <button type="button" className={styles.btnGoogle} onClick={handleGoogleSignIn}>
+              {/* <button type="button" className={styles.btnGoogle} onClick={handleGoogleSignIn}>
                 <svg className={styles.googleIcon} viewBox="0 0 24 24">
                   <path
                     fill="#4285F4"
@@ -777,7 +777,7 @@ export default function LoginPage() {
                   />
                 </svg>
                 <span>{t("Sign up with Google", "ثبت‌نام با گوگل")}</span>
-              </button>
+              </button> */}
 
               <div className={styles.switchAuth}>
                 <span>{t("Already have an account?", "حساب کاربری دارید؟")}</span>
