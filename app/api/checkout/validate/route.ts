@@ -245,6 +245,7 @@ export async function POST(request: NextRequest) {
         // Ignore the current user's/session's own active reservations during validation to avoid false positives
         // when the same cart is re-validated after a failed or partially-completed checkout attempt.
         let ownReservations = 0;
+        const sessionId = request.headers.get("x-session-id");
         if (userId) {
           const ownReservationsResult = await tx
             .select({
@@ -260,8 +261,7 @@ export async function POST(request: NextRequest) {
               )
             );
           ownReservations = parseInt(ownReservationsResult[0]?.totalReserved?.toString() || "0");
-        } else if (request.headers.get("x-session-id")) {
-          const sessionId = request.headers.get("x-session-id");
+        } else if (sessionId) {
           const ownReservationsResult = await tx
             .select({
               totalReserved: sql<number>`COALESCE(SUM(${inventoryReservations.quantity}), 0)`,
@@ -370,6 +370,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
+
     // All items valid and reserved
     return NextResponse.json({
       valid: true,
@@ -385,4 +386,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

@@ -192,7 +192,7 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        toast.error(t("Invalid credentials", "اعتبارنامه نامعتبر"));
+        toast.error(t("Invalid credentials", "شما کاربر سایت نیستید،،ثبت نام کنید"));
       } else if (result?.ok) {
         const response = await fetch("/api/auth/user-role");
         const roleData = await response.json();

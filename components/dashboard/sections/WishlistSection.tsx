@@ -136,10 +136,10 @@ export default function WishlistSection({ setActiveSection }: WishlistSectionPro
                 <div className={styles.wishlistItem}>
                   <Link href={getProductUrl(item)} className={styles.wishlistItemImage}>
                     <img
-                      src={item.product.image || "/placeholder-product.jpg"}
+                      src={item.product.image || "/placeholder-product.svg"}
                       alt={getProductName(item)}
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = "/placeholder-product.jpg";
+                        (e.target as HTMLImageElement).src = "/placeholder-product.svg";
                       }}
                     />
                   </Link>
@@ -170,4 +170,3 @@ export default function WishlistSection({ setActiveSection }: WishlistSectionPro
     </>
   );
 }
-

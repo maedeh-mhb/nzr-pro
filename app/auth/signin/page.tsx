@@ -44,7 +44,7 @@ export default function SignInPage() {
       });
 
       if (result?.error) {
-        toast.error(t("Invalid credentials", "اعتبارنامه نامعتبر"));
+        toast.error(t("Invalid credentials", "شما کاربر سایت نیستید،،ثبت نام کنید"));
       } else {
         toast.success(t("Signed in successfully!", "با موفقیت وارد شدید!"));
         router.push("/dashboard");

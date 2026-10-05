@@ -9,12 +9,14 @@ interface ProductImageGalleryProps {
     image?: string | null;
     images?: string[] | null;
     altText?: string;
+    imageFit?: "cover" | "contain";
 }
 
 export default function ProductImageGallery({
     image,
     images,
     altText = "Product image",
+    imageFit = "cover",
 }: ProductImageGalleryProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -29,9 +31,9 @@ export default function ProductImageGallery({
 
     const displayImages = mergedImages.length > 0
         ? mergedImages
-        : ["/placeholder-product.jpg"];
+        : ["/placeholder-product.svg"];
 
-    const currentImage = displayImages[currentIndex] || "/placeholder-product.jpg";
+    const currentImage = displayImages[currentIndex] || "/placeholder-product.svg";
     const hasMultiple = displayImages.length > 1;
 
     const handlePrevious = (e: React.MouseEvent) => {
@@ -59,9 +61,9 @@ export default function ProductImageGallery({
                     fill
                     sizes="(max-width: 768px) 100vw, 50vw"
                     unoptimized
-                    className={styles.image}
+                    className={`${styles.image} ${imageFit === "contain" ? styles.imageContain : ""}`}
                     onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                        (e.currentTarget as HTMLImageElement).src = "/placeholder-product.jpg";
+                        (e.currentTarget as HTMLImageElement).src = "/placeholder-product.svg";
                     }}
                 />
 

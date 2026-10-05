@@ -124,7 +124,7 @@ export default function ProductCard({
   const formattedPrice = formatPrice(price || "0", language, normalizedCurrency);
 
   const productUrl = slug ? `/products/${slug}` : `/products/${id}`;
-  const productImage = image || "/placeholder-product.jpg";
+  const productImage = image || "/placeholder-product.svg";
 
   const handleWishlistToggle = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();

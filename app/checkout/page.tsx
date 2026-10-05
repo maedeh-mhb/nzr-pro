@@ -1705,7 +1705,7 @@ export default function CheckoutPage() {
                                   }}
                                 >
                                   <div className={styles.paymentMethodCardContent}>
-                                    <p className={styles.paymentMethodText}>{displayLabel}</p>
+                                    {/* <p className={styles.paymentMethodText}>{displayLabel}</p> */}
                                   </div>
                                 </div>
                               );

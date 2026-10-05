@@ -29,6 +29,10 @@ $border-light: #e0e0e0;
     display: block;
 }
 
+.imageContain {
+    object-fit: contain;
+}
+
 // Navigation Arrows — inside imageContainer (position: relative)
 .navButton {
     position: absolute;

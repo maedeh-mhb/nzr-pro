@@ -342,7 +342,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
   const normalizedCurrency = typeof currency === 'string' && currency.toLowerCase().replace(/s$/, "") === 'toman' ? 'toman' : currency;
   const formattedPrice = formatPrice(product.price || "0", language, normalizedCurrency);
 
-  const productImage = product.image || "/placeholder-product.jpg";
+  const productImage = product.image || "/placeholder-product.svg";
   const tags = product.tags ? product.tags.split(",").map((tag) => tag.trim()) : [];
 
 
@@ -667,6 +667,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                   image={product.image}
                   images={product.images}
                   altText={displayName}
+                  imageFit="contain"
                 />
                 <div style={{ position: "absolute", top: "16px", left: "16px", display: "flex", flexDirection: "column", gap: "0.5rem", zIndex: 10 }}>
                   {badgeLabel && product.badge && (
@@ -730,14 +731,6 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
 
               <div className={styles.priceSection}>
                 <span className={styles.price}>{formattedPrice}</span>
-                  {product.weight && (() => {
-                    const weightInGrams = parseFloat(product.weight) * 1000;
-                    return (
-                      <span className={styles.weight}>
-                        {t("Weight", "وزن")}: {language === "fa" ? weightInGrams.toFixed(0).replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[+d]) : weightInGrams.toFixed(0)} {t("g", "گرم")}
-                      </span>
-                    );
-                  })()}
                   {product.volume && (() => {
                     const volumeInMl = parseFloat(product.volume) * 1000;
                     return (
