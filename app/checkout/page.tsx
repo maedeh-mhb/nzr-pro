@@ -280,6 +280,12 @@ export default function CheckoutPage() {
   // Load Zibal trust seal when online payment is selected
   const paymentMethodValue = watch("paymentMethod");
   useEffect(() => {
+    if (!paymentMethodValue && paymentMethods.some((method) => method.value === "online_payment")) {
+      setValue("paymentMethod", "online_payment", { shouldValidate: true });
+    }
+  }, [paymentMethods, paymentMethodValue, setValue]);
+
+  useEffect(() => {
     if (paymentMethodValue !== "online_payment") return;
 
     const container = document.getElementById("zibal");
@@ -1909,6 +1915,5 @@ export default function CheckoutPage() {
     </>
   );
 }
-
 
 

@@ -161,8 +161,8 @@ export default function ProductsSection() {
     shortDescriptionFa: yup.string(),
     longDescription: yup.string(),
     longDescriptionFa: yup.string(),
-    ingredients: yup.string(),
-    ingredientsFa: yup.string(),
+    ingredients: yup.string().optional(),
+    ingredientsFa: yup.string().optional(),
     tags: yup.string(),
     price: yup.number().required(t("Price is required", "قیمت الزامی است")).min(0, t("Price must be positive", "قیمت باید عددی مثبت باشد")),
     quantity: yup.number().min(0, t("Quantity must be positive", "مقدار باید عددی مثبت باشد")),
@@ -1979,14 +1979,14 @@ const handleShowProduct = useCallback(async (productId: string) => {
 
             {/* Ingredients */}
             <Textarea
-              label={t("Ingredients (English)", "ترکیبات (انگلیسی)")}
+              label={t("Ingredients (English) (Optional)", "ترکیبات (انگلیسی) (اختیاری)")}
               placeholder={t("Enter ingredients", "وارد کردن ترکیبات انگلیسی")}
               rows={3}
               {...registerProduct("ingredients")}
               error={productErrors.ingredients?.message}
             />
             <Textarea
-              label={t("Ingredients (Farsi)", "ترکیبات (فارسی)")}
+              label={t("Ingredients (Farsi) (Optional)", "ترکیبات (فارسی) (اختیاری)")}
               placeholder={t("Enter ingredients in Farsi", "وارد کردن ترکیبات فارسی")}
               rows={3}
               {...registerProduct("ingredientsFa")}
@@ -2368,4 +2368,3 @@ const handleShowProduct = useCallback(async (productId: string) => {
     </>
   );
 }
-
