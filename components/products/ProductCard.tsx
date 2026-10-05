@@ -244,7 +244,6 @@ export default function ProductCard({
     isOutOfStock ||
     currentBadge === "Not Available" ||
     inventoryStatus?.available === false;
-  const isCardUnavailable = isUnavailable;
 
   const handleBuyNow = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -297,7 +296,7 @@ export default function ProductCard({
 
   return (
     <div
-      className={`${styles.productCard} ${isCardUnavailable ? styles.unavailable : ""} ${alignPriceAtBottom ? styles.alignPriceAtBottom : ""}`}
+      className={`${styles.productCard} ${alignPriceAtBottom ? styles.alignPriceAtBottom : ""}`}
     >
       <div className={styles.productImageContainer}>
         <ProductImageGallery

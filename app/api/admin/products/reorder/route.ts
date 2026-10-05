@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { products } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { cache } from "@/lib/utils/cache";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,7 @@ export async function POST(request: NextRequest) {
       return { updated };
     });
 
+    cache.clearPattern(/^products:list:/);
     return NextResponse.json({ success: true, updated: result.updated });
   } catch (error: any) {
     console.error('Error bulk reordering products:', error);

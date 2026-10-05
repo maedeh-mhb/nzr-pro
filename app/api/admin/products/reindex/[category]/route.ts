@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { products } from "@/lib/db/schema";
 import { eq, sql, desc, isNull } from "drizzle-orm";
+import { cache } from "@/lib/utils/cache";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +45,7 @@ export async function POST(request: NextRequest, { params }: { params: { categor
       return { updated, total: productList.length };
     });
 
+    cache.clearPattern(/^products:list:/);
     return NextResponse.json({ success: true, updated: result.updated, total: result.total });
   } catch (error: any) {
     console.error("Error reindexing products:", error);

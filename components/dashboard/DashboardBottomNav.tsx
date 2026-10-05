@@ -3,8 +3,9 @@
 import { useLanguage } from "@/lib/utils/language";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { FiGrid, FiHome, FiPackage, FiShoppingBag, FiUser, FiMessageCircle, FiLogOut } from "react-icons/fi";
+import { FiGrid, FiHome, FiPackage, FiShoppingBag, FiShoppingCart, FiUser, FiMessageCircle, FiLogOut } from "react-icons/fi";
 import styles from "@/styles/components/_dashboard.module.scss";
+import { useCart } from "@/lib/contexts/CartContext";
 
 interface DashboardBottomNavProps {
   activeSection: string;
@@ -17,6 +18,7 @@ export default function DashboardBottomNav({
 }: DashboardBottomNavProps) {
   const { t, language } = useLanguage();
   const router = useRouter();
+  const { openCart, isOpen, getTotalItems } = useCart();
 
   const handleLogout = async () => {
     await signOut({ redirect: true, callbackUrl: "/" });
@@ -59,6 +61,18 @@ export default function DashboardBottomNav({
             <FiShoppingBag />
           </span>
           <span>{t("Shop", "خرید")}</span>
+        </button>
+        <button
+          className={`${styles.navItem} ${isOpen ? styles.active : ""}`}
+          onClick={openCart}
+          aria-label={t("Shopping Cart", "سبد خرید")}
+          title={t("Shopping Cart", "سبد خرید")}
+        >
+          <span className={styles.navItemIcon}>
+            <FiShoppingCart />
+          </span>
+          <span>{t("Shopping Cart", "سبد خرید")}</span>
+          {getTotalItems() > 0 && <span>({getTotalItems()})</span>}
         </button>
         <button
           className={`${styles.navItem} ${activeSection === "orders" ? styles.active : ""}`}

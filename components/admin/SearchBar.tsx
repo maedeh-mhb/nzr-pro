@@ -8,9 +8,10 @@ interface SearchBarProps {
   placeholder?: string;
   value?: string;
   onChange?: (value: string) => void;
+  disabled?: boolean;
 }
 
-export default function SearchBar({ placeholder, value, onChange }: SearchBarProps) {
+export default function SearchBar({ placeholder, value, onChange, disabled }: SearchBarProps) {
   const { t } = useLanguage();
 
   return (
@@ -24,8 +25,8 @@ export default function SearchBar({ placeholder, value, onChange }: SearchBarPro
         placeholder={placeholder || t("Search...", "جستجو...")}
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
+        disabled={disabled}
       />
     </div>
   );
 }
-

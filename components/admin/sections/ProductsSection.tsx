@@ -136,6 +136,7 @@ export default function ProductsSection() {
   const [expandedProductId, setExpandedProductId] = useState<string | null>(null);
   const [reorderMode, setReorderMode] = useState(false);
   const [reorderList, setReorderList] = useState<string[]>([]);
+  const [isPreparingReorder, setIsPreparingReorder] = useState(false);
   const [isSavingOrder, setIsSavingOrder] = useState(false);
 
   // Multiple images state
@@ -1005,6 +1006,62 @@ const handleShowProduct = useCallback(async (productId: string) => {
   // Format products for table display
   const sortedProducts = useMemo(() => sortProductsByPosition(products), [products]);
 
+  const handleReorderToggle = async () => {
+    if (reorderMode) {
+      setReorderMode(false);
+      return;
+    }
+
+    if (searchQuery.trim() || debouncedSearchQuery) {
+      toast.error(t("Clear the search before reordering products", "برای مرتب‌سازی محصولات ابتدا جستجو را پاک کنید"));
+      return;
+    }
+
+    if (isFetchingProductsRef.current || isLoading || isLoadingMoreProducts) return;
+
+    setIsPreparingReorder(true);
+    isFetchingProductsRef.current = true;
+    try {
+      const allProducts: Product[] = [];
+      let page = 1;
+      let hasNext = true;
+
+      while (hasNext) {
+        const params = new URLSearchParams({ page: String(page), limit: "100" });
+        const response = await fetch(`/api/admin/products?${params.toString()}`);
+        if (!response.ok) {
+          throw new Error(t("Failed to load all products for reordering", "بارگذاری همه محصولات برای مرتب‌سازی ناموفق بود"));
+        }
+
+        const data = await response.json();
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        const pageProducts = data.data ?? data.products;
+        if (!Array.isArray(pageProducts)) {
+          throw new Error(t("Invalid products response", "پاسخ محصولات نامعتبر است"));
+        }
+
+        allProducts.push(...pageProducts);
+        hasNext = typeof data.pagination?.hasNext === "boolean"
+          ? data.pagination.hasNext
+          : pageProducts.length === 100;
+        page += 1;
+      }
+
+      setProducts(allProducts);
+      setHasMoreProducts(false);
+      setReorderList(sortProductsByPosition(allProducts).map((product) => product.id));
+      setReorderMode(true);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("Failed to load products", "بارگزاری محصولات ناموفق بود"));
+    } finally {
+      isFetchingProductsRef.current = false;
+      setIsPreparingReorder(false);
+    }
+  };
+
   const formattedProducts = useMemo(() => {
     const productsToRender = reorderMode && reorderList.length > 0
       ? reorderList
@@ -1477,15 +1534,14 @@ const handleShowProduct = useCallback(async (productId: string) => {
             <Button
               variant={reorderMode ? "primary" : "outline"}
               size="small"
-              onClick={() => {
-                if (!reorderMode) {
-                  // Enter reorder mode: build initial list from current products order
-                  setReorderList(sortedProducts.map((p) => p.id));
-                }
-                setReorderMode(!reorderMode);
-              }}
+              onClick={() => void handleReorderToggle()}
+              disabled={isLoading || isLoadingMoreProducts || isPreparingReorder || isSavingOrder}
             >
-              {reorderMode ? t("Exit Reorder", "خروج از ترتیب دهی") : t("Reorder", "مرتب سازی")}
+              {isPreparingReorder
+                ? t("Loading all products...", "در حال بارگذاری همه محصولات...")
+                : reorderMode
+                  ? t("Exit Reorder", "خروج از ترتیب دهی")
+                  : t("Reorder", "مرتب سازی")}
             </Button>
             {reorderMode && (
               <>
@@ -1623,6 +1679,7 @@ const handleShowProduct = useCallback(async (productId: string) => {
           placeholder={t("Search products...", "جست و جوی محصولات")}
           value={searchQuery}
           onChange={setSearchQuery}
+          disabled={reorderMode || isPreparingReorder}
         />
         {isLoading ? (
           <TableSkeleton rows={5} columns={5} />
