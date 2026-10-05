@@ -7,6 +7,32 @@ import fs from "fs";
 import path from "path";
 export const dynamic = "force-dynamic";
 
+function isMissingWeightRatesColumn(error: unknown): boolean {
+  let currentError = error;
+  const visited = new Set<object>();
+
+  while (currentError && typeof currentError === "object" && !visited.has(currentError)) {
+    visited.add(currentError);
+    const databaseError = currentError as {
+      code?: unknown;
+      message?: unknown;
+      cause?: unknown;
+    };
+
+    if (
+      databaseError.code === "42703" &&
+      typeof databaseError.message === "string" &&
+      databaseError.message.includes("weight_rates")
+    ) {
+      return true;
+    }
+
+    currentError = databaseError.cause;
+  }
+
+  return false;
+}
+
 // Get province name by ID (English)
 function getProvinceNameById(provinceId: number): string | null {
   try {
@@ -193,6 +219,14 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("Error calculating shipping cost:", error);
+    if (isMissingWeightRatesColumn(error)) {
+      return NextResponse.json(
+        {
+          error: "Shipping rates are not initialized. Run the database migrations and redeploy.",
+        },
+        { status: 503 }
+      );
+    }
     return NextResponse.json(
       { error: "Failed to calculate shipping cost" },
       { status: 500 }

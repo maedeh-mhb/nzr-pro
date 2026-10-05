@@ -21,6 +21,8 @@ interface OrderSummaryProps {
     items: OrderSummaryItem[];
     subtotal: number;
     shippingCost: number | null;
+    shippingError?: string | null;
+    isLoadingShipping?: boolean;
     discountAmount: number;
     total: number;
     isSticky?: boolean;
@@ -32,6 +34,8 @@ export default function OrderSummary({
     items,
     subtotal,
     shippingCost,
+    shippingError = null,
+    isLoadingShipping = false,
     discountAmount,
     total,
     isSticky = true,
@@ -140,10 +144,14 @@ export default function OrderSummary({
                             {t("Shipping", "هزینه ارسال")}
                         </span>
                         <span className={styles.costValue}>
-                            {!hasAddress
+                            {hasAddress && shippingError
+                                ? shippingError
+                                : !hasAddress
                                 ? t("Add your address", "آدرس خود را اضافه کنید")
-                                : shippingCost === null
-                                    ? t("Calculated at next step", "محاسبه در مرحله بعد")
+                                : shippingCost === null && isLoadingShipping
+                                    ? t("Calculating shipping...", "در حال محاسبه هزینه ارسال...")
+                                    : shippingCost === null
+                                        ? t("Unable to calculate shipping cost. Please check your address and try again.", "هزینه ارسال محاسبه نشد. لطفاً آدرس خود را بررسی و دوباره تلاش کنید.")
                                     : shippingCost === 0
                                         ? t("Free", "رایگان")
                                         : formatPrice(shippingCost, language, displayCurrency)}

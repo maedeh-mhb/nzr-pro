@@ -104,6 +104,7 @@ export default function CheckoutPage() {
   const [shippingCost, setShippingCost] = useState<number | null>(null);
   const [originalShippingCost, setOriginalShippingCost] = useState<number | null>(null); // Store original cost for Iranian Post
   const [isLoadingShipping, setIsLoadingShipping] = useState(false);
+  const [shippingError, setShippingError] = useState<string | null>(null);
   const [shippingMethods, setShippingMethods] = useState<Array<{ value: string; label: string; labelFa: string; cost: number }>>([]);
   const [selectedShippingMethod, setSelectedShippingMethod] = useState<string>("iranian_post");
   const [adminShippingSettings, setAdminShippingSettings] = useState<{ adminProvince: string | null; adminCity: number | null } | null>(null);
@@ -431,11 +432,16 @@ export default function CheckoutPage() {
     const calculateShipping = async () => {
       if (!provinceId || selectedItemsList.length === 0) {
         setShippingCost(null);
+        setOriginalShippingCost(null);
         setShippingMethods([]);
+        setShippingError(null);
         return;
       }
 
       setIsLoadingShipping(true);
+      setShippingCost(null);
+      setOriginalShippingCost(null);
+      setShippingError(null);
       try {
         const orderItems = selectedItemsList.map((item) => ({
           productId: item.productId,
@@ -455,9 +461,12 @@ export default function CheckoutPage() {
           }),
         });
 
+        const data = await response.json();
         if (response.ok) {
-          const data = await response.json();
           const calculatedCost = parseFloat(data.shippingCost);
+          if (!Number.isFinite(calculatedCost)) {
+            throw new Error("Shipping calculation returned an invalid cost");
+          }
           setShippingCost(calculatedCost);
           setOriginalShippingCost(calculatedCost); // Store original cost for Iranian Post
 
@@ -480,15 +489,28 @@ export default function CheckoutPage() {
             });
           }
         } else {
-          setShippingCost(null);
-          setOriginalShippingCost(null);
           setAdminShippingSettings(null);
           setShippingMethods([]);
+          setShippingError(
+            typeof data.error === "string"
+              ? data.error
+              : t(
+                  "Failed to calculate shipping cost. Please try again.",
+                  "محاسبه هزینه ارسال ناموفق بود. لطفاً دوباره تلاش کنید."
+                )
+          );
         }
       } catch (error) {
         console.error("Error calculating shipping:", error);
         setShippingCost(null);
+        setOriginalShippingCost(null);
         setShippingMethods([]);
+        setShippingError(
+          t(
+            "Unable to calculate shipping cost. Please check your connection and try again.",
+            "محاسبه هزینه ارسال ممکن نیست. اتصال اینترنت خود را بررسی و دوباره تلاش کنید."
+          )
+        );
       } finally {
         setIsLoadingShipping(false);
       }
@@ -501,7 +523,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (selectedShippingMethod === "courier") {
       // Courier: shipping cost is 0 (customer pays courier directly)
-      setShippingCost(0);
+      setShippingCost(originalShippingCost !== null ? 0 : null);
     } else if (selectedShippingMethod === "iranian_post" && originalShippingCost !== null) {
       // Iranian Post: restore original shipping cost
       setShippingCost(originalShippingCost);
@@ -755,6 +777,20 @@ export default function CheckoutPage() {
 
     if (selectedItemIds.length === 0) {
       toast.error(t("Please select items to checkout", "لطفاً آیتم‌هایی را برای تسویه حساب انتخاب کنید"));
+      return;
+    }
+
+    if (
+      orderRequirements.hasFullAddress &&
+      (isLoadingShipping || shippingCost === null || originalShippingCost === null)
+    ) {
+      toast.error(
+        shippingError ||
+          t(
+            "Shipping cost is not available yet. Please try again.",
+            "هزینه ارسال هنوز محاسبه نشده است. لطفاً دوباره تلاش کنید."
+          )
+      );
       return;
     }
 
@@ -1379,7 +1415,9 @@ export default function CheckoutPage() {
                         {isLoadingShipping ? (
                           <p>{t("Calculating shipping...", "در حال محاسبه هزینه ارسال...")}</p>
                         ) : shippingCost === null ? (
-                          <p className={styles.error}>{t("Please select address first", "لطفاً ابتدا آدرس را انتخاب کنید")}</p>
+                          <p className={styles.error}>
+                            {shippingError || t("Please select address first", "لطفاً ابتدا آدرس را انتخاب کنید")}
+                          </p>
                         ) : (
                           <div className={styles.paymentMethodCards}>
                             {/* Iranian Post - Always available */}
@@ -1476,6 +1514,8 @@ export default function CheckoutPage() {
                         }))}
                         subtotal={subtotalPrice}
                         shippingCost={shippingCost}
+                        shippingError={shippingError}
+                        isLoadingShipping={isLoadingShipping}
                         discountAmount={discountAmount}
                         total={totalPrice}
                         isSticky={true}
@@ -1530,7 +1570,13 @@ export default function CheckoutPage() {
                         <Button
                           type="submit"
                           variant="primary"
-                          disabled={isLoading || paymentMethods.length === 0 || !areAllMandatoryFieldsFilled()}
+                          disabled={
+                            isLoading ||
+                            paymentMethods.length === 0 ||
+                            !areAllMandatoryFieldsFilled() ||
+                            (orderRequirements.hasFullAddress &&
+                              (isLoadingShipping || shippingCost === null || originalShippingCost === null))
+                          }
                           className={styles.submitButton}
                         >
                           {isLoading
@@ -1728,7 +1774,9 @@ export default function CheckoutPage() {
                         {isLoadingShipping ? (
                           <p>{t("Calculating shipping...", "در حال محاسبه هزینه ارسال...")}</p>
                         ) : shippingCost === null ? (
-                          <p className={styles.error}>{t("Please select address first", "لطفاً ابتدا آدرس را انتخاب کنید")}</p>
+                          <p className={styles.error}>
+                            {shippingError || t("Please select address first", "لطفاً ابتدا آدرس را انتخاب کنید")}
+                          </p>
                         ) : (
                           <div className={styles.paymentMethodCards}>
                             {/* Iranian Post - Always available */}
@@ -1825,6 +1873,8 @@ export default function CheckoutPage() {
                         }))}
                         subtotal={subtotalPrice}
                         shippingCost={shippingCost}
+                        shippingError={shippingError}
+                        isLoadingShipping={isLoadingShipping}
                         discountAmount={discountAmount}
                         total={totalPrice}
                         isSticky={true}
@@ -1879,7 +1929,13 @@ export default function CheckoutPage() {
                         <Button
                           type="submit"
                           variant="primary"
-                          disabled={isLoading || paymentMethods.length === 0 || !areAllMandatoryFieldsFilled()}
+                          disabled={
+                            isLoading ||
+                            paymentMethods.length === 0 ||
+                            !areAllMandatoryFieldsFilled() ||
+                            (orderRequirements.hasFullAddress &&
+                              (isLoadingShipping || shippingCost === null || originalShippingCost === null))
+                          }
                           className={styles.submitButton}
                         >
                           {isLoading
@@ -1915,5 +1971,3 @@ export default function CheckoutPage() {
     </>
   );
 }
-
-
