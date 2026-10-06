@@ -7,6 +7,7 @@ import { eq, and, gte, sql } from "drizzle-orm";
 import { createHash } from "crypto";
 import { randomInt } from "crypto";
 import { validateCsrfToken } from "@/lib/utils/csrf";
+import { sendSmsTemplate } from "@/lib/services/sms";
 export const dynamic = "force-dynamic";
 
 // Generate 6-digit OTP (100000-999999)
@@ -23,68 +24,6 @@ function hashOTP(otp: string): string {
 function isValidPhoneFormat(phone: string): boolean {
   const phoneDigits = phone.replace(/\D/g, "");
   return phoneDigits.length === 11 && phoneDigits.startsWith("09");
-}
-
-// Send SMS via s.api.ir
-async function sendSMS(phone: string, code: string): Promise<{ success: boolean; error?: string; code?: string }> {
-  try {
-    const apiToken = process.env.SMS_API_TOKEN;
-    const apiBaseUrl = process.env.SMS_API_BASE_URL || "https://s.api.ir/api/sw1/SmsOTP";
-    const templateId = process.env.SMS_OTP_TEMPLATE_ID;
-
-    const missingSettings = [
-      !apiToken && "SMS_API_TOKEN",
-      !templateId && "SMS_OTP_TEMPLATE_ID",
-    ].filter(Boolean);
-    if (missingSettings.length > 0) {
-      console.error(`SMS API configuration missing: ${missingSettings.join(", ")}`);
-      return {
-        success: false,
-        error: "SMS service not configured",
-        code: "SMS_NOT_CONFIGURED",
-      };
-    }
-
-    const response = await fetch(apiBaseUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiToken}`,
-      },
-      body: JSON.stringify({
-        mobile: phone,
-        code: code,
-        template: templateId,
-      }),
-    });
-
-    // Check HTTP status
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("SMS API HTTP error:", response.status, errorText);
-      return { success: false, error: `SMS API returned status ${response.status}` };
-    }
-
-    // Parse and validate response
-    let responseData;
-    try {
-      responseData = await response.json();
-    } catch (parseError) {
-      console.error("SMS API response parse error:", parseError);
-      return { success: false, error: "Invalid response from SMS API" };
-    }
-
-    // Check success flag
-    if (responseData.success !== true) {
-      console.error("SMS API returned failure:", responseData);
-      return { success: false, error: responseData.error || "SMS sending failed" };
-    }
-
-    return { success: true };
-  } catch (error) {
-    console.error("SMS API request error:", error);
-    return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
-  }
 }
 
 export async function POST(request: NextRequest) {
@@ -163,7 +102,7 @@ export async function POST(request: NextRequest) {
         expiresAt: new Date(now.getTime() + 2 * 60 * 1000),
       }).returning({ id: registrationOtpCodes.id });
 
-      const smsResult = await sendSMS(phone, code);
+      const smsResult = await sendSmsTemplate(phone, code, process.env.SMS_OTP_TEMPLATE_ID, "SMS_OTP_TEMPLATE_ID");
       if (!smsResult.success) {
         await db.delete(registrationOtpCodes).where(eq(registrationOtpCodes.id, otpRecord.id));
         console.error("Registration SMS sending failed:", smsResult.error);
@@ -292,7 +231,12 @@ export async function POST(request: NextRequest) {
     });
 
     // Send SMS
-    const smsResult = await sendSMS(user.phone, otp);
+    const smsResult = await sendSmsTemplate(
+      user.phone,
+      otp,
+      process.env.SMS_OTP_TEMPLATE_ID,
+      "SMS_OTP_TEMPLATE_ID"
+    );
 
     if (!smsResult.success) {
       // Log error but don't expose internal details

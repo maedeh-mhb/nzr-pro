@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useLanguage } from "@/lib/utils/language";
-import { FiBarChart2, FiTrendingUp, FiDollarSign, FiPackage, FiShoppingBag, FiUsers, FiFilter } from "react-icons/fi";
+import { FiBarChart2, FiTrendingUp, FiDollarSign, FiPackage, FiShoppingBag, FiUsers, FiFilter, FiDownload } from "react-icons/fi";
 import AdminCard from "../AdminCard";
+import Button from "@/components/ui/Button";
 import Select, { SelectOption } from "@/components/ui/Select";
 import Input from "@/components/ui/Input";
 import { formatPrice } from "@/lib/utils/formatPrice";
@@ -39,6 +40,12 @@ interface AnalyticsData {
     totalQuantity: number;
     totalRevenue: number;
     orderCount: number;
+  }>;
+  productSales: Array<{
+    productId: string;
+    productName: string;
+    productNameFa: string | null;
+    totalQuantity: number;
   }>;
   orderStats: Array<{
     status: string;
@@ -152,6 +159,49 @@ export default function AnalyticsSection() {
   const maxProductRevenue = analytics?.productPerformance.length
     ? Math.max(...analytics.productPerformance.map((p) => p.totalRevenue))
     : 0;
+
+  const exportProductSales = () => {
+    if (!analytics) return;
+
+    try {
+      const escapeCsvCell = (value: string | number) => {
+        const safeValue = String(value).replace(/^[\s]*[=+\-@]/, (match) => `'${match}`);
+        return `"${safeValue.replace(/"/g, '""')}"`;
+      };
+      const rows = [
+        [t("Products Sold", "محصولات فروخته‌شده")],
+        [
+          t("Date range", "بازه زمانی"),
+          `${formatDate(analytics.dateRange.from)} - ${formatDate(analytics.dateRange.to)}`,
+        ],
+        [],
+        [t("Product", "محصول"), t("Quantity Sold", "تعداد فروش")],
+        ...analytics.productSales.map((product) => [
+          language === "fa" && product.productNameFa
+            ? product.productNameFa
+            : product.productName,
+          product.totalQuantity,
+        ]),
+      ];
+      const csv = `\uFEFF${rows
+        .map((row) => row.map((cell) => escapeCsvCell(cell ?? "")).join(","))
+        .join("\r\n")}`;
+      const blobUrl = window.URL.createObjectURL(
+        new Blob([csv], { type: "text/csv;charset=utf-8;" })
+      );
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `products-sold-${analytics.dateRange.from.slice(0, 10)}-to-${analytics.dateRange.to.slice(0, 10)}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => window.URL.revokeObjectURL(blobUrl), 0);
+      toast.success(t("Product sales report exported", "گزارش فروش محصولات دریافت شد"));
+    } catch (error) {
+      console.error("Error exporting product sales report:", error);
+      toast.error(t("Failed to export product sales report", "خطا در دریافت گزارش فروش محصولات"));
+    }
+  };
 
   return (
     <AdminCard>
@@ -434,6 +484,65 @@ export default function AnalyticsSection() {
             </div>
           )}
 
+          {/* Products Sold */}
+          <div className={styles.analyticsSection}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", flexWrap: "wrap", marginBottom: "1rem" }}>
+              <h4
+                style={{
+                  margin: 0,
+                  fontSize: language === "en" ? "1.1rem" : "1.25rem",
+                  fontWeight: 600,
+                }}
+              >
+                <FiShoppingBag style={{ marginLeft: "0.5rem" }} />
+                {t("Products Sold", "محصولات فروخته‌شده")}
+              </h4>
+              <Button
+                variant="primary"
+                size="small"
+                onClick={exportProductSales}
+                disabled={isLoading || !analytics}
+              >
+                <FiDownload />
+                <span>{t("Export CSV for Excel", "خروجی CSV برای اکسل")}</span>
+              </Button>
+            </div>
+            {analytics.productSales.length > 0 ? (
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr style={{ background: "#f8f9fa", borderBottom: "2px solid #dee2e6" }}>
+                      <th style={{ padding: "0.75rem", textAlign: "start", fontWeight: 600 }}>
+                        {t("Product", "محصول")}
+                      </th>
+                      <th style={{ padding: "0.75rem", textAlign: "center", fontWeight: 600 }}>
+                        {t("Quantity Sold", "تعداد فروش")}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {analytics.productSales.map((product) => (
+                      <tr key={product.productId} style={{ borderBottom: "1px solid #dee2e6" }}>
+                        <td style={{ padding: "0.75rem" }}>
+                          {language === "fa" && product.productNameFa
+                            ? product.productNameFa
+                            : product.productName}
+                        </td>
+                        <td style={{ padding: "0.75rem", textAlign: "center" }}>
+                          {product.totalQuantity.toLocaleString(language === "fa" ? "fa-IR" : "en-US")}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div style={{ padding: "1rem", textAlign: "center", color: "#666" }}>
+                {t("No products found", "محصولی یافت نشد")}
+              </div>
+            )}
+          </div>
+
           {/* Top Products */}
           {analytics.productPerformance.length > 0 && (
             <div className={styles.analyticsSection}>
@@ -579,4 +688,3 @@ export default function AnalyticsSection() {
     </AdminCard>
   );
 }
-

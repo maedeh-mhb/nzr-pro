@@ -35,6 +35,11 @@ const createGuestCheckoutSchema = (t: (en: string, fa: string) => string) => yup
     then: (schema) => schema.required(t("Name is required", "نام الزامی است")),
     otherwise: (schema) => schema.notRequired(),
   }),
+  guestSurname: yup.string().when("$isGuest", {
+    is: true,
+    then: (schema) => schema.required(t("Family name is required", "نام خانوادگی الزامی است")),
+    otherwise: (schema) => schema.notRequired(),
+  }),
   guestEmail: yup.string().when("$isGuest", {
     is: true,
     then: (schema) => schema.email(t("Invalid email", "ایمیل نامعتبر است")).notRequired(),
@@ -52,6 +57,16 @@ const createGuestCheckoutSchema = (t: (en: string, fa: string) => string) => yup
           t("Phone must be exactly 11 digits", "شماره تلفن باید دقیقا 11 رقم باشد"),
           (val) => val !== undefined && val.length === 11
         ),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  createAccount: yup.boolean().default(false),
+  accountPassword: yup.string().when("createAccount", {
+    is: true,
+    then: (schema) =>
+      schema
+        .required(t("Password is required", "رمز عبور الزامی است"))
+        .min(8, t("Password must be at least 8 characters", "رمز عبور باید حداقل ۸ کاراکتر باشد"))
+        .max(100, t("Password is too long", "رمز عبور بیش از حد طولانی است")),
     otherwise: (schema) => schema.notRequired(),
   }),
   provinceId: yup.number().required(t("Province is required", "استان الزامی است")),
@@ -133,7 +148,6 @@ export default function CheckoutPage() {
   const [honeypotCompany, setHoneypotCompany] = useState("");
   // Checkout experience
   const [currentStep, setCurrentStep] = useState<CheckoutStep>("cart");
-  const [createAccountAfterPurchase, setCreateAccountAfterPurchase] = useState(false);
 
   // Use ref to track if we're in the process of navigating after order success
   // This prevents the empty cart from triggering an unintended redirect
@@ -270,12 +284,14 @@ export default function CheckoutPage() {
     handleSubmit,
     watch,
     setValue,
+    trigger,
     formState: { errors },
   } = useForm<GuestCheckoutFormData>({
     resolver: yupResolver(guestCheckoutSchema),
     mode: "onChange",
     reValidateMode: "onChange",
     context: { isGuest },
+    defaultValues: { createAccount: false },
   });
 
   // Load Zibal trust seal when online payment is selected
@@ -765,7 +781,7 @@ export default function CheckoutPage() {
     watch("address"),
   ]);
 
-  const onSubmit = async (data: GuestCheckoutFormData) => {
+  const submitOrder = async (data: GuestCheckoutFormData) => {
     // Bot detection: Check honeypot fields
     if (honeypotWebsite !== "" || honeypotCompany !== "") {
       // Silent fail - don't reveal honeypot detection
@@ -897,16 +913,18 @@ export default function CheckoutPage() {
       // Add guest info only if not logged in
       if (!isAuthenticated) {
         requestBody.guestName = data.guestName;
+        requestBody.guestSurname = data.guestSurname;
         requestBody.guestEmail = data.guestEmail;
         requestBody.guestPhone = data.guestPhone;
+        requestBody.createAccount = data.createAccount;
+        if (data.createAccount) {
+          requestBody.accountPassword = data.accountPassword;
+        }
         requestBody.provinceId = data.provinceId;
         requestBody.cityId = data.cityId;
         requestBody.address = data.address;
         requestBody.postalCode = data.postalCode;
 
-        if (createAccountAfterPurchase) {
-          requestBody.createAccount = true;
-        }
       } else {
         // For registered users, use selected address or form data
         if (selectedAddressId && savedAddresses.length > 0) {
@@ -960,7 +978,11 @@ export default function CheckoutPage() {
             const paymentData = await paymentResponse.json();
 
             if (paymentResponse.ok && paymentData.paymentUrl) {
-              toast.success(t("Order placed successfully! Redirecting to payment...", "سفارش ثبت شد! در حال انتقال به درگاه پرداخت..."));
+              toast.success(
+                result.accountCreated
+                  ? t("Order placed and your account was created! Redirecting to payment...", "سفارش ثبت شد و حساب کاربری شما ایجاد شد! در حال انتقال به درگاه پرداخت...")
+                  : t("Order placed successfully! Redirecting to payment...", "سفارش ثبت شد! در حال انتقال به درگاه پرداخت...")
+              );
               setTimeout(() => { clearCart(); }, 0);
               window.location.href = paymentData.paymentUrl;
               return;
@@ -977,6 +999,9 @@ export default function CheckoutPage() {
           }
         }
 
+        if (result.accountCreated) {
+          toast.success(t("Your account has been created successfully.", "حساب کاربری شما با موفقیت ایجاد شد."));
+        }
         const successUrl = `/checkout/success?orderNumber=${result.order.orderNumber}`;
 
         // Navigate IMMEDIATELY without waiting for cart clear
@@ -1002,6 +1027,10 @@ export default function CheckoutPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const onSubmit = async (data: GuestCheckoutFormData) => {
+    await submitOrder(data);
   };
 
   // Show loading while session or cart is loading
@@ -1382,11 +1411,36 @@ export default function CheckoutPage() {
                               const displayLabel = language === "fa" ? method.labelFa : method.label;
                               const isSelected = watch("paymentMethod") === method.value;
 
+                              if (method.value === "online_payment") {
+                                return (
+                                  <label
+                                    key={method.value}
+                                    className={`${styles.paymentMethodCard} ${styles.checkboxLabel} ${isSelected ? styles.paymentMethodCardSelected : ""}`}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      className={styles.customCheckbox}
+                                      checked={isSelected}
+                                      onChange={(event) => {
+                                        const nextMethod = event.target.checked
+                                          ? method.value
+                                          : paymentMethods.find((option) => option.value !== method.value)?.value || "";
+                                        setValue("paymentMethod", nextMethod, { shouldValidate: true });
+                                      }}
+                                    />
+                                    <span className={styles.checkboxCustom} aria-hidden="true" />
+                                    <span className={styles.checkboxText}>{displayLabel}</span>
+                                  </label>
+                                );
+                              }
+
                               return (
-                                <div
+                                <button
+                                  type="button"
                                   key={method.value}
                                   className={`${styles.paymentMethodCard} ${isSelected ? styles.paymentMethodCardSelected : ""
                                     }`}
+                                  aria-pressed={isSelected}
                                   onClick={() => {
                                     setValue("paymentMethod", method.value, { shouldValidate: true });
                                   }}
@@ -1394,7 +1448,7 @@ export default function CheckoutPage() {
                                   <div className={styles.paymentMethodCardContent}>
                                     <p className={styles.paymentMethodText}>{displayLabel}</p>
                                   </div>
-                                </div>
+                                </button>
                               );
                             })}
                           </div>
@@ -1419,7 +1473,11 @@ export default function CheckoutPage() {
                             {shippingError || t("Please select address first", "لطفاً ابتدا آدرس را انتخاب کنید")}
                           </p>
                         ) : (
-                          <div className={styles.paymentMethodCards}>
+                          <div
+                            className={styles.paymentMethodCards}
+                            role="radiogroup"
+                            aria-label={t("Payment Method", "روش پرداخت")}
+                          >
                             {/* Iranian Post - Always available */}
                             <div
                               className={`${styles.paymentMethodCard} ${selectedShippingMethod === "iranian_post" ? styles.paymentMethodCardSelected : ""
@@ -1649,10 +1707,16 @@ export default function CheckoutPage() {
                         <div className={styles.section}>
                           <h2 className={styles.sectionTitle}>{t("Contact Information", "اطلاعات تماس")}</h2>
                           <Input
-                            label={t("Full Name", "نام کامل")}
+                            label={t("First Name", "نام")}
                             {...register("guestName")}
                             error={errors.guestName?.message}
-                            placeholder={t("Enter your full name", "نام کامل خود را وارد کنید")}
+                            placeholder={t("Enter your first name", "نام خود را وارد کنید")}
+                          />
+                          <Input
+                            label={t("Family Name", "نام خانوادگی")}
+                            {...register("guestSurname")}
+                            error={errors.guestSurname?.message}
+                            placeholder={t("Enter your family name", "نام خانوادگی خود را وارد کنید")}
                           />
                           <Input
                             type="email"
@@ -1668,30 +1732,29 @@ export default function CheckoutPage() {
                             error={errors.guestPhone?.message}
                             placeholder={t("09XXXXXXXXX", "09XXXXXXXXX")}
                           />
-
                           <div className={styles.createAccountSection}>
                             <label className={styles.checkboxLabel}>
+                              <span className={styles.checkboxText}>
+                                {t("Create an account for faster checkout", "برای تسویه حساب سریع‌تر یک حساب کاربری ایجاد کنید")}
+                              </span>
                               <input
                                 type="checkbox"
                                 className={styles.customCheckbox}
-                                checked={createAccountAfterPurchase}
-                                onChange={(e) => setCreateAccountAfterPurchase(e.target.checked)}
+                                {...register("createAccount")}
                               />
-                              <span className={styles.checkboxCustom}></span>
-                              <span className={styles.checkboxText}>
-                                {t(
-                                  "Create an account with this information to track orders and earn rewards",
-                                  "با این اطلاعات حساب کاربری ایجاد کنید تا سفارشات را ردیابی و امتیاز کسب کنید"
-                                )}
-                              </span>
+                              <span className={styles.checkboxCustom} aria-hidden="true" />
                             </label>
-                            {createAccountAfterPurchase && (
-                              <p className={styles.createAccountNote}>
-                                {t(
-                                  "A password will be sent to your email after purchase.",
-                                  "پس از خرید، رمز عبور به ایمیل شما ارسال خواهد شد."
-                                )}
-                              </p>
+                            {watch("createAccount") && (
+                              <div className={styles.accountPasswordField}>
+                                <Input
+                                  type="password"
+                                  label={t("Create a password", "یک رمز عبور ایجاد کنید")}
+                                  autoComplete="new-password"
+                                  {...register("accountPassword")}
+                                  error={errors.accountPassword?.message}
+                                  placeholder={t("At least 8 characters", "حداقل ۸ کاراکتر")}
+                                />
+                              </div>
                             )}
                           </div>
                         </div>
@@ -1741,19 +1804,44 @@ export default function CheckoutPage() {
                               const displayLabel = language === "fa" ? method.labelFa : method.label;
                               const isSelected = watch("paymentMethod") === method.value;
 
+                              if (method.value === "online_payment") {
+                                return (
+                                  <label
+                                    key={method.value}
+                                    className={`${styles.paymentMethodCard} ${styles.checkboxLabel} ${isSelected ? styles.paymentMethodCardSelected : ""}`}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      className={styles.customCheckbox}
+                                      checked={isSelected}
+                                      onChange={(event) => {
+                                        const nextMethod = event.target.checked
+                                          ? method.value
+                                          : paymentMethods.find((option) => option.value !== method.value)?.value || "";
+                                        setValue("paymentMethod", nextMethod, { shouldValidate: true });
+                                      }}
+                                    />
+                                    <span className={styles.checkboxCustom} aria-hidden="true" />
+                                    <span className={styles.checkboxText}>{displayLabel}</span>
+                                  </label>
+                                );
+                              }
+
                               return (
-                                <div
+                                <button
+                                  type="button"
                                   key={method.value}
                                   className={`${styles.paymentMethodCard} ${isSelected ? styles.paymentMethodCardSelected : ""
                                     }`}
+                                  aria-pressed={isSelected}
                                   onClick={() => {
                                     setValue("paymentMethod", method.value, { shouldValidate: true });
                                   }}
                                 >
                                   <div className={styles.paymentMethodCardContent}>
-                                    {/* <p className={styles.paymentMethodText}>{displayLabel}</p> */}
+                                    <p className={styles.paymentMethodText}>{displayLabel}</p>
                                   </div>
-                                </div>
+                                </button>
                               );
                             })}
                           </div>

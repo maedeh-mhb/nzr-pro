@@ -106,6 +106,43 @@ export async function GET(request: NextRequest) {
       .orderBy(desc(sql`SUM(CAST(${orderItems.price} AS DECIMAL) * CAST(${orderItems.quantity} AS INTEGER))`))
       .limit(20);
 
+    const [allProducts, productSalesStats] = await Promise.all([
+      db
+        .select({
+          productId: products.id,
+          productName: products.name,
+          productNameFa: products.nameFa,
+        })
+        .from(products),
+      db
+        .select({
+          productId: orderItems.productId,
+          totalQuantity: sum(sql<number>`CAST(${orderItems.quantity} AS INTEGER)`),
+        })
+        .from(orderItems)
+        .innerJoin(orders, eq(orderItems.orderId, orders.id))
+        .where(and(not(eq(orders.status, "cancelled")), ...dateConditions))
+        .groupBy(orderItems.productId),
+    ]);
+    const productSalesById = new Map(
+      productSalesStats.map((stat) => [
+        stat.productId,
+        parseInt(stat.totalQuantity?.toString() || "0", 10),
+      ])
+    );
+    const productSales = allProducts
+      .map((product) => ({
+        productId: product.productId,
+        productName: product.productName,
+        productNameFa: product.productNameFa,
+        totalQuantity: productSalesById.get(product.productId) || 0,
+      }))
+      .sort(
+        (a, b) =>
+          b.totalQuantity - a.totalQuantity ||
+          a.productName.localeCompare(b.productName)
+      );
+
     // 3. Order Statistics
     const orderStats = await db
       .select({
@@ -197,6 +234,7 @@ export async function GET(request: NextRequest) {
         totalRevenue: parseFloat(p.totalRevenue?.toString() || "0"),
         orderCount: parseInt(p.orderCount?.toString() || "0"),
       })),
+      productSales,
       orderStats: orderStats.map((s) => ({
         status: s.status,
         count: s.count || 0,
@@ -222,4 +260,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

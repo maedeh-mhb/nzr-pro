@@ -4,8 +4,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { orders, orderItems, guestOrders, products, paymentSettings, users, contactSettings, userActivities, notifications, discountCodeUsages, discountCodes, idempotencyKeys, orderStatusHistory } from "@/lib/db/schema";
-import { eq, sql, or } from "drizzle-orm";
+import { eq, or, sql } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
+import bcrypt from "bcryptjs";
 import { createActivity } from "@/lib/services/activities";
 import { createAdminActivity } from "@/lib/services/adminActivities";
 import { createNotification } from "@/lib/services/notifications";
@@ -30,8 +31,6 @@ import {
   sanitizeProvinceId,
   sanitizeCityId,
 } from "@/lib/utils/sanitize";
-import bcrypt from "bcryptjs";
-import { randomInt } from "crypto";
 export const dynamic = "force-dynamic";
 
 // Generate unique order number
@@ -137,16 +136,17 @@ export async function POST(request: NextRequest) {
       shippingMethod = "iranian_post", // Default to Iranian Post
       // Guest order fields (if guest checkout)
       guestName,
+      guestSurname,
       guestEmail,
       guestPhone,
+      createAccount,
+      accountPassword,
       provinceId,
       cityId,
       address,
       postalCode,
       // Invoice request
       invoiceRequested = false,
-      // Account creation for guests
-      createAccount = false,
     } = orderData;
 
     // Sanitize all inputs
@@ -169,10 +169,12 @@ export async function POST(request: NextRequest) {
     const sanitizedShippingCost = sanitizeNumber(shippingCost || shipping || 0);
     const sanitizedShippingMethod = sanitizeString(shippingMethod) || "iranian_post";
 
-    const createAccountRequested = Boolean(createAccount);
-
     // Guest fields
-    const sanitizedGuestName = guestName ? sanitizeName(guestName) : null;
+    const sanitizedGuestFirstName = guestName ? sanitizeName(guestName) : null;
+    const sanitizedGuestSurname = guestSurname ? sanitizeName(guestSurname) : null;
+    const sanitizedGuestName = [sanitizedGuestFirstName, sanitizedGuestSurname]
+      .filter(Boolean)
+      .join(" ") || null;
     const sanitizedGuestEmail = guestEmail ? sanitizeEmail(guestEmail) : null;
     const sanitizedGuestPhone = guestPhone ? sanitizePhone(guestPhone) : null;
     const sanitizedProvinceId = sanitizeProvinceId(provinceId);
@@ -231,105 +233,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // If the guest supplied an email or phone that already belongs to an account,
-    // reuse that account for order ownership instead of failing the checkout.
-    if (!userId && (sanitizedGuestEmail || sanitizedGuestPhone)) {
-      const conflictConditions = [] as Array<ReturnType<typeof eq>>;
-
-      if (sanitizedGuestEmail) {
-        conflictConditions.push(eq(users.email, sanitizedGuestEmail));
-      }
-      if (sanitizedGuestPhone) {
-        conflictConditions.push(eq(users.phone, sanitizedGuestPhone));
-      }
-
-      if (conflictConditions.length > 0) {
-        const existingUser = await db.query.users.findFirst({
-          where: conflictConditions.length === 1 ? conflictConditions[0] : or(...conflictConditions),
-        });
-
-        if (existingUser) {
-          userId = existingUser.id;
-          user = existingUser;
-          console.warn(`[${requestId}] Reusing existing user account for guest checkout: ${existingUser.id}`);
-        }
-      }
-    }
-
-    // Guest auto-account creation (createAccount flag)
-    let newlyCreatedUserPassword: string | null = null;
-    let newlyCreatedUser: typeof user | null = null;
-    if (!userId && createAccountRequested) {
-      if (!sanitizedGuestEmail) {
-        return NextResponse.json({
-          error: "Email is required when creating an account",
-          errorFa: "برای ایجاد حساب کاربری، ایمیل الزامی است",
-        }, { status: 400 });
-      }
-
-      // Build name parts
-      const nameParts = (sanitizedGuestName || "Guest User").trim().split(/\s+/);
-      const firstName = nameParts[0] || "Guest";
-      const surname = nameParts.slice(1).join(" ") || null;
-
-      // Generate an 8-digit temporary password
-      const plainPassword = randomInt(10000000, 99999999).toString();
-      const hashedPassword = await bcrypt.hash(plainPassword, 10);
-
-      const [createdUser] = await db.insert(users).values({
-        name: firstName,
-        surname,
-        email: sanitizedGuestEmail,
-        phone: sanitizedGuestPhone,
-        password: hashedPassword,
-        role: "user",
-        mustChangePassword: true,
-      }).returning();
-
-      userId = createdUser.id;
-      user = createdUser;
-      newlyCreatedUserPassword = plainPassword;
-      newlyCreatedUser = createdUser;
-
-      // Associate previous guest orders with this user if any exist for this email
-      try {
-        const guestOrdersToUpdate = await db.query.guestOrders.findMany({
-          where: eq(guestOrders.guestEmail, sanitizedGuestEmail),
-        });
-        if (guestOrdersToUpdate && guestOrdersToUpdate.length > 0) {
-          for (const guestOrder of guestOrdersToUpdate) {
-            // Update the order to link to the new user
-            await db.update(orders).set({ userId: createdUser.id }).where(eq(orders.id, guestOrder.orderId));
-          }
-        }
-      } catch (err) {
-        console.error("Failed to associate previous guest orders with new user:", err);
-      }
-    }
-    // Send temporary-password email to newly created guest user
-    if (newlyCreatedUser && sanitizedGuestEmail && newlyCreatedUserPassword) {
-      try {
-        const subject = "حساب کاربری شما ایجاد شد - Nazira";
-        const html = `
-          <div style="font-family: Arial, sans-serif; direction: rtl; text-align: right;">
-            <h2>حساب کاربری شما ایجاد شد</h2>
-            <p>سلام ${newlyCreatedUser.name || "کاربر"}،</p>
-            <p>حساب کاربری شما با ایمیل شما ایجاد شد. رمز عبور موقت شما:</p>
-            <p style="font-size: 24px; font-weight: bold; letter-spacing: 2px;">${newlyCreatedUserPassword}</p>
-            <p>لطفاً در اولین ورود، بلافاصله رمز عبور خود را تغییر دهید.</p>
-          </div>
-        `;
-
-        await sendEmail({
-          to: sanitizedGuestEmail,
-          subject,
-          html,
-        });
-      } catch (err) {
-        console.error("Failed to send temporary password email to new guest user:", err);
-      }
-    }
-
     // Check if payment method is enabled (considering user-specific overrides)
     let isPaymentEnabled = false;
     switch (sanitizedPaymentMethod) {
@@ -340,7 +243,7 @@ export async function POST(request: NextRequest) {
           : (payment.cardToCardEnabled || false);
         break;
       case "online_payment":
-        isPaymentEnabled = user && user.onlinePaymentEnabled !== null
+        isPaymentEnabled = session?.user && user && user.onlinePaymentEnabled !== null
           ? user.onlinePaymentEnabled
           : (payment.onlinePaymentEnabled || false);
         break;
@@ -367,10 +270,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const skipProfileRequirements = createAccountRequested && !!userId && !session?.user;
-
-    // Validate requirements for registered users (skip for newly created guest accounts)
-    if (userId && user && !skipProfileRequirements) {
+    // Profile requirements apply only to authenticated users, never to guests whose
+    // contact details happen to match an existing account.
+    if (session?.user && user) {
       // Check full name
       if (!user.name || !user.surname || user.name.trim() === "" || user.surname.trim() === "") {
         const error = API_ERRORS.FULL_NAME_REQUIRED;
@@ -399,18 +301,58 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // If guest checkout or guest-with-account-request, validate guest fields (using sanitized values)
-    const isGuestOrder = !userId;
-    const requiresGuestFields = isGuestOrder || createAccountRequested;
+    // Validate guest fields (using sanitized values)
+    const isGuestOrder = !session?.user;
 
-    if (requiresGuestFields) {
-      if (!sanitizedGuestName || !sanitizedGuestPhone || !sanitizedProvinceId || !sanitizedCityId || !sanitizedAddress) {
+    if (isGuestOrder) {
+      if (
+        !sanitizedGuestFirstName ||
+        !sanitizedGuestSurname ||
+        !sanitizedGuestPhone ||
+        !sanitizedProvinceId ||
+        !sanitizedCityId ||
+        !sanitizedAddress
+      ) {
         const error = API_ERRORS.GUEST_INFO_REQUIRED;
         return NextResponse.json(
           { error: error.error, errorFa: error.errorFa },
           { status: 400 }
         );
       }
+    }
+
+    const shouldCreateAccount = isGuestOrder && createAccount === true;
+    let hashedAccountPassword: string | null = null;
+    if (shouldCreateAccount) {
+      if (typeof accountPassword !== "string" || accountPassword.length < 8 || accountPassword.length > 100) {
+        return NextResponse.json(
+          {
+            error: "Password must be between 8 and 100 characters",
+            errorFa: "رمز عبور باید بین ۸ تا ۱۰۰ کاراکتر باشد",
+          },
+          { status: 400 }
+        );
+      }
+
+      const existingAccount = await db.query.users.findFirst({
+        where: sanitizedGuestEmail
+          ? or(eq(users.phone, sanitizedGuestPhone!), eq(users.email, sanitizedGuestEmail))
+          : eq(users.phone, sanitizedGuestPhone!),
+        columns: { id: true },
+      });
+
+      if (existingAccount) {
+        return NextResponse.json(
+          {
+            error: "An account already exists with this phone number or email. Sign in or continue without creating an account.",
+            errorFa: "با این شماره تلفن یا ایمیل قبلاً حسابی ایجاد شده است. وارد شوید یا بدون ایجاد حساب ادامه دهید.",
+            code: "ACCOUNT_ALREADY_EXISTS",
+          },
+          { status: 409 }
+        );
+      }
+
+      hashedAccountPassword = await bcrypt.hash(accountPassword, 10);
     }
 
     // Initial product validation (without locking) for early error detection and cart subtotal calculation
@@ -548,6 +490,18 @@ export async function POST(request: NextRequest) {
     // Wrap all database operations in a transaction to ensure atomicity
     // If any operation fails, all changes will be rolled back
     const newOrder = await db.transaction(async (tx) => {
+      let orderUserId = userId;
+      if (shouldCreateAccount) {
+        const [createdUser] = await tx.insert(users).values({
+          name: sanitizedGuestFirstName!,
+          surname: sanitizedGuestSurname!,
+          email: sanitizedGuestEmail,
+          phone: sanitizedGuestPhone!,
+          password: hashedAccountPassword!,
+        }).returning({ id: users.id });
+        orderUserId = createdUser.id;
+      }
+
       // CRITICAL: Validate products with row-level locking (SELECT FOR UPDATE) to prevent race conditions
       // This ensures that inventory is checked and updated atomically, preventing overselling
       const validatedItems = [];
@@ -601,7 +555,7 @@ export async function POST(request: NextRequest) {
       const [order] = await tx
         .insert(orders)
         .values({
-          userId: userId,
+          userId: orderUserId,
           orderNumber,
           total: sanitizedTotal.toString(),
           paymentMethod: sanitizedPaymentMethod,
@@ -652,7 +606,7 @@ export async function POST(request: NextRequest) {
         await tx.insert(discountCodeUsages).values({
           discountCodeId: finalDiscountCodeId,
           orderId: order.id,
-          userId: userId || null,
+          userId: orderUserId || null,
           discountAmount: finalDiscountAmount.toString(),
         });
 
@@ -680,8 +634,8 @@ export async function POST(request: NextRequest) {
           .where(eq(products.id, item.productId));
       }
 
-      // If guest order or guest-with-account, store shipping/contact snapshot
-      if (isGuestOrder || createAccountRequested) {
+      // Store the guest shipping/contact snapshot.
+      if (isGuestOrder) {
         await tx.insert(guestOrders).values({
           orderId: order.id,
           guestName: sanitizedGuestName!,
@@ -695,17 +649,17 @@ export async function POST(request: NextRequest) {
       }
 
       // Create activity and notification for registered users
-      if (userId) {
+      if (orderUserId) {
         // Create activity
         await tx.insert(userActivities).values({
-          userId,
+          userId: orderUserId,
           activityType: "order_placed",
           activityData: JSON.stringify({ orderNumber }),
         });
 
         // Create notification
         await tx.insert(notifications).values({
-          userId,
+          userId: orderUserId,
           type: "order_pending",
           title: "Order pending payment",
           titleFa: "سفارش در انتظار پرداخت",
@@ -722,8 +676,8 @@ export async function POST(request: NextRequest) {
         orderId: order.id,
         status: "pending",
         previousStatus: null,
-        changedBy: userId || null,
-        changedByType: userId ? "user" : "system",
+        changedBy: orderUserId || null,
+        changedByType: orderUserId ? "user" : "system",
         notes: null,
       });
 
@@ -805,9 +759,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // If guest order (or guest-created account), send email to guest (shipping snapshot stored)
+    // Send email to the guest (shipping snapshot stored).
     // Skip email for online payment - email will be sent after payment verification in callback
-    if ((isGuestOrder || createAccountRequested) && sanitizedPaymentMethod !== "online_payment") {
+    if (isGuestOrder && sanitizedPaymentMethod !== "online_payment") {
       // Send email to guest
       try {
         if (sanitizedGuestEmail) {
@@ -866,6 +820,7 @@ export async function POST(request: NextRequest) {
           orderNumber: newOrder.orderNumber,
           total: newOrder.total,
         },
+        accountCreated: shouldCreateAccount,
       },
       {
         status: 201,
@@ -902,4 +857,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

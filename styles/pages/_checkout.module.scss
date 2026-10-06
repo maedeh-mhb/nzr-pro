@@ -111,34 +111,6 @@
   font-size: $font-md;
 }
 
-// Create Account Section
-.createAccountSection {
-  margin-top: $spacing-lg;
-  padding: $spacing-md;
-  background: #0F7173;
-  color: #fff;
-  border-radius: $radius-md;
-  border: 1px solid $border-color;
-}
-
-.createAccountSection .checkboxText {
-  color: #fff !important;
-}
-
-.createAccountNote {
-  margin-top: $spacing-sm;
-  font-size: $font-sm;
-  color: #fef3c7;
-  font-style: italic;
-  font-weight: 600;
-  padding-left: 32px;
-  line-height: 1.6;
-
-  [dir="rtl"] & {
-    padding-left: 0;
-    padding-right: 32px;
-  }
-}
 
 // Discount Code Card
 .discountCodeCard {
@@ -644,6 +616,18 @@
   border: 1px solid rgba($primary, 0.1);
 }
 
+.createAccountSection {
+  margin-top: $spacing-md;
+  padding: $spacing-md;
+  background: $text-light;
+  border: 1px solid rgba($primary, 0.2);
+  border-radius: $radius-lg;
+}
+
+.accountPasswordField {
+  margin-top: $spacing-md;
+}
+
 .checkboxLabel {
   display: flex;
   align-items: center;
@@ -1042,6 +1026,9 @@
   padding: $spacing-md $spacing-lg;
   cursor: pointer;
   transition: all 0.2s ease;
+  width: 100%;
+  font: inherit;
+  text-align: start;
 
   &:hover {
     border-color: $primary;
