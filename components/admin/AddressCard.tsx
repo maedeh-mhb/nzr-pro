@@ -83,7 +83,9 @@ export default function AddressCard({ address, onEdit, onDelete, onSetDefault }:
         <div className={styles.addressDetails}>
           <span>{t("Province ID", "کد استان")}: {address.provinceId}</span>
           <span>{t("City ID", "کد شهر")}: {address.cityId}</span>
-          <span>{t("Postal Code", "کد پستی")}: {address.postalCode}</span>
+          {address.postalCode && (
+            <span>{t("Postal Code", "کد پستی")}: {address.postalCode}</span>
+          )}
           <span>{t("Country", "کشور")}: {address.country}</span>
         </div>
       </div>

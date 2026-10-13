@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { orders } from "@/lib/db/schema/orders";
+import { guestOrders, orders } from "@/lib/db/schema/orders";
+import { users } from "@/lib/db/schema/users";
+import { isPersianName } from "@/lib/utils/nameValidation";
 import { paymentSettings } from "@/lib/db/schema/payments";
 import { eq } from "drizzle-orm";
 
@@ -27,6 +29,41 @@ export async function POST(request: NextRequest) {
 
     if (order.status !== "payment_pending") {
       return NextResponse.json({ error: "Invalid order status for payment" }, { status: 400 });
+    }
+
+    const guestOrder = await db.query.guestOrders.findFirst({
+      where: eq(guestOrders.orderId, order.id),
+    });
+    if (guestOrder) {
+      const guestFirstName = guestOrder.guestName.trim().split(/[\s\u200c]+/)[0] || "";
+      if (!isPersianName(guestFirstName)) {
+        return NextResponse.json(
+          {
+            error: "Please enter your name in Persian",
+            errorFa: "نام خود را به فارسی وارد کنید",
+          },
+          { status: 400 }
+        );
+      }
+    } else if (order.userId) {
+      const user = await db.query.users.findFirst({
+        where: eq(users.id, order.userId),
+        columns: { name: true, surname: true },
+      });
+      if (!user || !isPersianName(user.name) || !isPersianName(user.surname || "")) {
+        return NextResponse.json(
+          {
+            error: "Please enter your first and family names in Persian",
+            errorFa: "نام و نام خانوادگی خود را به فارسی وارد کنید",
+          },
+          { status: 400 }
+        );
+      }
+    } else {
+      return NextResponse.json(
+        { error: "Customer name is required", errorFa: "نام مشتری الزامی است" },
+        { status: 400 }
+      );
     }
 
     // Fetch payment settings for merchant ID

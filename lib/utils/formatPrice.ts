@@ -6,24 +6,55 @@
  * @returns Formatted price string
  */
 
+function normalizePriceInput(value: number | string): number {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : NaN;
+  }
+
+  const normalized = String(value)
+    .trim()
+    .replace(/[,٬]/g, "")
+    .replace(/[۰-۹]/g, (digit) => ({
+      "۰": "0",
+      "۱": "1",
+      "۲": "2",
+      "۳": "3",
+      "۴": "4",
+      "۵": "5",
+      "۶": "6",
+      "۷": "7",
+      "۸": "8",
+      "۹": "9",
+    }[digit] ?? digit))
+    .replace(/[^0-9.\-]/g, "");
+
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : NaN;
+}
+
 export function formatPrice(
   price: number | string,
   language: string = "en",
   currency: string = "toman"
 ): string {
-  const numPrice = typeof price === "string" ? parseFloat(price) : price;
+  const numPrice = normalizePriceInput(price);
 
   if (isNaN(numPrice)) {
     return "0";
   }
 
-  // Normalize currency: treat any variant of 'toman' (case-insensitive, with/without s, Persian/English) as toman
   const normalizedCurrency = (() => {
     if (!currency) return "toman";
-    const c = currency.toLowerCase().replace(/s$/, "").trim();
-    if (["toman", "تومان", "tomans", "تومان ها", "tomaan", "تومانها"].includes(c) || c.startsWith("toman")) {
+    const c = String(currency)
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "")
+      .replace(/s$/, "");
+
+    if (["toman", "تومان", "tomans", "تومانها", "تومانها", "tomaan", "تومان‌ها"].includes(c) || c.startsWith("toman")) {
       return "toman";
     }
+
     return c;
   })();
 
@@ -36,19 +67,21 @@ export function formatPrice(
       }
     ).format(numPrice);
 
-    // If English language, use "Tomans" without sign
     if (language === "en") {
       return `${formattedNumber} Tomans`;
     }
-    // If Farsi, use "تومان"
+
     return `${formattedNumber} تومان`;
   }
 
-  // Standard currency formatting
   const currencyMap: Record<string, string> = {
     usd: "USD",
     eur: "EUR",
     gbp: "GBP",
+    irr: "IRR",
+    rial: "IRR",
+    rials: "IRR",
+    toman: "TOMAN",
   };
 
   const currencyCode = currencyMap[normalizedCurrency] || "USD";

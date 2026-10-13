@@ -172,6 +172,7 @@ export const homeNote = pgTable("home_note", {
   availabilityTitleFa: text("availability_title_fa"),
   availabilityDays: text("availability_days"),
   availabilityDates: text("availability_dates"),
+  availabilityAudioUrl: text("availability_audio_url"),
   availabilityIsEnabled: boolean("availability_is_enabled").default(true).notNull(),
   isEnabled: boolean("is_enabled").default(true).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

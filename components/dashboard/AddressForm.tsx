@@ -86,9 +86,7 @@ export default function AddressForm({
       newErrors.address = t("Address is required", "آدرس الزامی است");
     }
 
-    if (!postalCode.trim()) {
-      newErrors.postalCode = t("Postal code is required", "کد پستی الزامی است");
-    } else if (!/^\d{10}$/.test(postalCode.trim())) {
+    if (postalCode.trim() && !/^\d{10}$/.test(postalCode.trim())) {
       newErrors.postalCode = t("Postal code must be exactly 10 digits", "کد پستی باید دقیقاً 10 رقم باشد");
     }
 
@@ -201,6 +199,12 @@ export default function AddressForm({
           maxLength={10}
           error={errors.postalCode}
         />
+        <p className={styles.postalCodeHelperText}>
+          {t(
+            "If you don't have a postal code, leave this field blank.",
+            "اگر کدپستی ندارید، این فیلد را پر نکنید"
+          )}
+        </p>
 
         <div className={styles.checkboxGroup}>
           <input

@@ -8,7 +8,7 @@ export async function GET() {
     const note = await db.query.homeNote.findFirst();
 
     if (!note) {
-      return NextResponse.json({ contentEn: null, contentFa: null, availabilityDays: [], availabilityDates: [], availabilityIsEnabled: false, isEnabled: false });
+      return NextResponse.json({ contentEn: null, contentFa: null, availabilityDays: [], availabilityDates: [], availabilityAudioUrl: null, availabilityIsEnabled: false, isEnabled: false });
     }
 
     let availabilityDays: string[] = [];
@@ -17,7 +17,7 @@ export async function GET() {
     try { availabilityDates = note.availabilityDates ? JSON.parse(note.availabilityDates) : []; } catch { availabilityDates = []; }
 
     return NextResponse.json(
-      { contentEn: note.contentEn, contentFa: note.contentFa, availabilityTitleEn: note.availabilityTitleEn, availabilityTitleFa: note.availabilityTitleFa, availabilityDays, availabilityDates, availabilityIsEnabled: note.availabilityIsEnabled, isEnabled: note.isEnabled },
+      { contentEn: note.contentEn, contentFa: note.contentFa, availabilityTitleEn: note.availabilityTitleEn, availabilityTitleFa: note.availabilityTitleFa, availabilityDays, availabilityDates, availabilityAudioUrl: note.availabilityAudioUrl, availabilityIsEnabled: note.availabilityIsEnabled, isEnabled: note.isEnabled },
       {
         headers: {
           "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
@@ -28,6 +28,6 @@ export async function GET() {
     );
   } catch (error) {
     console.error("Error fetching home note:", error);
-    return NextResponse.json({ contentEn: null, contentFa: null, availabilityDays: [], availabilityDates: [], availabilityIsEnabled: false, isEnabled: false });
+    return NextResponse.json({ contentEn: null, contentFa: null, availabilityDays: [], availabilityDates: [], availabilityAudioUrl: null, availabilityIsEnabled: false, isEnabled: false });
   }
 }

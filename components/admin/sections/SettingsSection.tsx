@@ -31,6 +31,15 @@ interface Province {
   };
 }
 
+interface RewardGrantUser {
+  id: string;
+  name: string;
+  surname: string | null;
+  email: string | null;
+  phone: string | null;
+  totalPoints: number;
+}
+
 const shippingSchema = yup.object({
   adminProvince: yup.string().required("Province is required"),
   adminCity: yup.number().nullable(),
@@ -123,6 +132,13 @@ export default function SettingsSection() {
     { value: "", discount: "" },
     { value: "", discount: "" },
   ]);
+  const [rewardUserSearch, setRewardUserSearch] = useState("");
+  const [rewardUsers, setRewardUsers] = useState<RewardGrantUser[]>([]);
+  const [selectedRewardUser, setSelectedRewardUser] = useState<RewardGrantUser | null>(null);
+  const [manualRewardPoints, setManualRewardPoints] = useState("");
+  const [manualRewardReason, setManualRewardReason] = useState("");
+  const [isSearchingRewardUsers, setIsSearchingRewardUsers] = useState(false);
+  const [isGrantingReward, setIsGrantingReward] = useState(false);
   const [isLoadingShipping, setIsLoadingShipping] = useState(false);
   const [isLoadingHero, setIsLoadingHero] = useState(false);
   const [isLoadingSocialLinks, setIsLoadingSocialLinks] = useState(false);
@@ -410,6 +426,41 @@ export default function SettingsSection() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRewardManagementExpanded]);
+
+  useEffect(() => {
+    const search = rewardUserSearch.trim();
+    if (!isRewardManagementExpanded || search.length < 2 || selectedRewardUser) {
+      setRewardUsers([]);
+      return;
+    }
+
+    let cancelled = false;
+    const timeout = setTimeout(async () => {
+      setIsSearchingRewardUsers(true);
+      try {
+        const response = await fetch(
+          `/api/admin/rewards/grant?search=${encodeURIComponent(search)}`
+        );
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to search users");
+        }
+        if (!cancelled) setRewardUsers(data.users || []);
+      } catch (error) {
+        if (!cancelled) {
+          console.error("Error searching users for reward grant:", error);
+          toast.error(t("Failed to search users", "جستجوی کاربران ناموفق بود"));
+        }
+      } finally {
+        if (!cancelled) setIsSearchingRewardUsers(false);
+      }
+    }, 300);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
+  }, [rewardUserSearch, isRewardManagementExpanded, selectedRewardUser, t]);
 
   useEffect(() => {
     // Load About Us content when section is expanded
@@ -702,6 +753,53 @@ export default function SettingsSection() {
     } catch (error) {
       console.error("Error updating reward settings:", error);
       toast.error(t("Failed to update reward settings", "خطا در به‌روزرسانی تنظیمات پاداش"));
+    }
+  };
+
+  const onManualRewardGrant = async () => {
+    const points = Number(manualRewardPoints);
+    if (!selectedRewardUser) {
+      toast.error(t("Select a user", "یک کاربر انتخاب کنید"));
+      return;
+    }
+    if (!Number.isSafeInteger(points) || points < 1 || points > 1000000) {
+      toast.error(t("Enter points between 1 and 1,000,000", "تعداد امتیاز باید بین ۱ تا ۱٬۰۰۰٬۰۰۰ باشد"));
+      return;
+    }
+
+    setIsGrantingReward(true);
+    try {
+      const response = await fetch("/api/admin/rewards/grant", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: selectedRewardUser.id,
+          points,
+          reason: manualRewardReason,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to grant reward points");
+      }
+
+      const updatedUser = { ...selectedRewardUser, totalPoints: data.totalPoints };
+      setSelectedRewardUser(updatedUser);
+      setRewardUsers((current) =>
+        current.map((user) => user.id === updatedUser.id ? updatedUser : user)
+      );
+      setManualRewardPoints("");
+      setManualRewardReason("");
+      toast.success(t("Reward points added successfully", "امتیاز پاداش با موفقیت اضافه شد"));
+    } catch (error) {
+      console.error("Error granting reward points:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : t("Failed to grant reward points", "افزودن امتیاز پاداش ناموفق بود")
+      );
+    } finally {
+      setIsGrantingReward(false);
     }
   };
 
@@ -2778,9 +2876,104 @@ export default function SettingsSection() {
             ) : (
               <div className={formStyles.formContainer}>
                 <div className={formStyles.formFields}>
+                <div style={{ marginBottom: "2rem", padding: "1rem", border: "1px solid #e0e0e0", borderRadius: "8px" }}>
+                  <h4 style={{ fontSize: "1rem", fontWeight: 600, marginBottom: "0.5rem", color: "#333" }}>
+                    {t("Manually Add Reward Points", "افزودن دستی امتیاز پاداش")}
+                  </h4>
                   <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "1rem" }}>
-                    {t("Configure up to 3 reward thresholds. Users can convert points to discount codes when they reach each threshold.", "حداکثر 3 آستانه پاداش را تنظیم کنید. کاربران می‌توانند امتیازهای خود را به کدهای تخفیف تبدیل کنند وقتی به هر آستانه برسند.")}
+                    {t("Search for a user, choose an amount of points, and optionally add a reason.", "کاربر را جستجو کنید، تعداد امتیاز را وارد کنید و در صورت تمایل دلیل را بنویسید.")}
                   </p>
+                  <Input
+                    label={t("Search user by name, email, or phone", "جستجوی کاربر با نام، ایمیل یا شماره تلفن")}
+                    value={selectedRewardUser
+                      ? `${selectedRewardUser.name} ${selectedRewardUser.surname || ""} — ${selectedRewardUser.email || selectedRewardUser.phone || selectedRewardUser.id}`
+                      : rewardUserSearch}
+                    onChange={(event) => {
+                      setSelectedRewardUser(null);
+                      setRewardUserSearch(event.target.value);
+                    }}
+                    placeholder={t("Enter at least 2 characters", "حداقل ۲ حرف وارد کنید")}
+                  />
+                  {isSearchingRewardUsers && (
+                    <p style={{ color: "#666", fontSize: "0.875rem" }}>
+                      {t("Searching users...", "در حال جستجوی کاربران...")}
+                    </p>
+                  )}
+                  {!selectedRewardUser && rewardUsers.length > 0 && (
+                    <div style={{ display: "grid", gap: "0.5rem", marginBottom: "1rem" }}>
+                      {rewardUsers.map((user) => (
+                        <button
+                          key={user.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedRewardUser(user);
+                            setRewardUserSearch("");
+                            setRewardUsers([]);
+                          }}
+                          style={{
+                            padding: "0.75rem",
+                            border: "1px solid #ddd",
+                            borderRadius: "6px",
+                            background: "#fff",
+                            textAlign: "start",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <strong>{user.name} {user.surname || ""}</strong>
+                          <span style={{ display: "block", color: "#666", fontSize: "0.875rem" }}>
+                            {[user.email, user.phone].filter(Boolean).join(" · ")}
+                            {" — "}
+                            {t("Current points", "امتیاز فعلی")}: {user.totalPoints}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {!selectedRewardUser && rewardUserSearch.trim().length >= 2 && !isSearchingRewardUsers && rewardUsers.length === 0 && (
+                    <p style={{ color: "#666", fontSize: "0.875rem" }}>
+                      {t("No users found", "کاربری پیدا نشد")}
+                    </p>
+                  )}
+                  {selectedRewardUser && (
+                    <>
+                      <p style={{ margin: "0 0 1rem", color: "#333" }}>
+                        {t("Current points", "امتیاز فعلی")}: <strong>{selectedRewardUser.totalPoints}</strong>
+                      </p>
+                      <Input
+                        label={t("Points to add", "امتیاز برای افزودن")}
+                        type="number"
+                        min="1"
+                        max="1000000"
+                        step="1"
+                        value={manualRewardPoints}
+                        onChange={(event) => setManualRewardPoints(event.target.value)}
+                        placeholder={t("Enter points", "تعداد امتیاز را وارد کنید")}
+                      />
+                      <Input
+                        label={t("Reason (optional)", "دلیل (اختیاری)")}
+                        value={manualRewardReason}
+                        onChange={(event) => setManualRewardReason(event.target.value)}
+                        placeholder={t("Reason for this reward", "دلیل این پاداش")}
+                        maxLength={300}
+                      />
+                      <div className={formStyles.formActions}>
+                        <Button
+                          variant="save"
+                          type="button"
+                          onClick={onManualRewardGrant}
+                          disabled={isGrantingReward}
+                        >
+                          {isGrantingReward
+                            ? t("Adding...", "در حال افزودن...")
+                            : t("Add Reward Points", "افزودن امتیاز پاداش")}
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                </div>
+                <p style={{ fontSize: "0.875rem", color: "#666", marginBottom: "1rem" }}>
+                  {t("Configure up to 3 reward thresholds. Users can convert points to discount codes when they reach each threshold.", "حداکثر 3 آستانه پاداش را تنظیم کنید. کاربران می‌توانند امتیازهای خود را به کدهای تخفیف تبدیل کنند وقتی به هر آستانه برسند.")}
+                </p>
 
                   {[0, 1, 2].map((index) => (
                     <div key={index} style={{ marginBottom: "1.5rem", padding: "1rem", border: "1px solid #e0e0e0", borderRadius: "8px" }}>

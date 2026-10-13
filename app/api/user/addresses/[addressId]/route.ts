@@ -50,12 +50,11 @@ export async function PUT(
     }
 
     if (postalCode !== undefined) {
-      if (postalCode.trim() === "") {
-        return NextResponse.json({ error: "Postal code is required" }, { status: 400 });
+      if (postalCode !== null && typeof postalCode !== "string") {
+        return NextResponse.json({ error: "Postal code must be a string" }, { status: 400 });
       }
-      // Validate postal code: exactly 10 digits
-      const postalCodeRegex = /^\d{10}$/;
-      if (!postalCodeRegex.test(postalCode.trim())) {
+      const normalizedPostalCode = typeof postalCode === "string" ? postalCode.trim() : "";
+      if (normalizedPostalCode && !/^\d{10}$/.test(normalizedPostalCode)) {
         return NextResponse.json(
           { error: "Postal code must be exactly 10 digits" },
           { status: 400 }
@@ -72,7 +71,9 @@ export async function PUT(
     if (provinceId !== undefined) updateData.provinceId = parseInt(provinceId);
     if (cityId !== undefined) updateData.cityId = parseInt(cityId);
     if (address !== undefined) updateData.address = address.trim();
-    if (postalCode !== undefined) updateData.postalCode = postalCode.trim();
+    if (postalCode !== undefined) {
+      updateData.postalCode = typeof postalCode === "string" ? postalCode.trim() : "";
+    }
 
     // Handle default address
     if (isDefault === true) {
@@ -155,11 +156,11 @@ export async function PATCH(
     }
 
     if (postalCode !== undefined) {
-      if (postalCode.trim() === "") {
-        return NextResponse.json({ error: "Postal code is required" }, { status: 400 });
+      if (postalCode !== null && typeof postalCode !== "string") {
+        return NextResponse.json({ error: "Postal code must be a string" }, { status: 400 });
       }
-      const postalCodeRegex = /^\d{10}$/;
-      if (!postalCodeRegex.test(postalCode.trim())) {
+      const normalizedPostalCode = typeof postalCode === "string" ? postalCode.trim() : "";
+      if (normalizedPostalCode && !/^\d{10}$/.test(normalizedPostalCode)) {
         return NextResponse.json(
           { error: "Postal code must be exactly 10 digits" },
           { status: 400 }
@@ -175,7 +176,9 @@ export async function PATCH(
     if (provinceId !== undefined) updateData.provinceId = parseInt(provinceId);
     if (cityId !== undefined) updateData.cityId = parseInt(cityId);
     if (address !== undefined) updateData.address = address.trim();
-    if (postalCode !== undefined) updateData.postalCode = postalCode.trim();
+    if (postalCode !== undefined) {
+      updateData.postalCode = typeof postalCode === "string" ? postalCode.trim() : "";
+    }
 
     if (isDefault === true) {
       await db
@@ -252,4 +255,3 @@ export async function DELETE(
     );
   }
 }
-

@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
-import Script from "next/script";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -9,6 +8,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import toast from "react-hot-toast";
 import { useLanguage } from "@/lib/utils/language";
+import { firstNameMatchesEmail, isPersianName } from "@/lib/utils/nameValidation";
 import { useCart } from "@/lib/contexts/CartContext";
 import { formatPrice } from "@/lib/utils/formatPrice";
 import Navbar from "@/components/Navbar";
@@ -34,15 +34,36 @@ const createGuestCheckoutSchema = (t: (en: string, fa: string) => string) => yup
     is: true,
     then: (schema) => schema.required(t("Name is required", "نام الزامی است")),
     otherwise: (schema) => schema.notRequired(),
-  }),
+  })
+    .test(
+      "persian-name",
+      t("Please enter your name in Persian", "نام خود را به فارسی وارد کنید"),
+      (value) => !value || isPersianName(value)
+    )
+    .test(
+      "name-not-in-email",
+      t("Please enter your name in Persian", "نام خود را به فارسی وارد کنید"),
+      function (value) {
+        const email = this.parent?.guestEmail;
+        return !value || !email || !firstNameMatchesEmail(value, email);
+      }
+    ),
   guestSurname: yup.string().when("$isGuest", {
     is: true,
     then: (schema) => schema.required(t("Family name is required", "نام خانوادگی الزامی است")),
     otherwise: (schema) => schema.notRequired(),
-  }),
+  }).test(
+    "persian-family-name",
+    t("Please enter your family name in Persian", "نام خانوادگی خود را به فارسی وارد کنید"),
+    (value) => !value || isPersianName(value)
+  ),
   guestEmail: yup.string().when("$isGuest", {
     is: true,
-    then: (schema) => schema.email(t("Invalid email", "ایمیل نامعتبر است")).notRequired(),
+    then: (schema) =>
+      schema
+        .transform((value) => (value === "" ? undefined : value))
+        .email(t("Invalid email", "ایمیل نامعتبر است"))
+        .notRequired(),
     otherwise: (schema) => schema.notRequired(),
   }),
   guestPhone: yup.string().when("$isGuest", {
@@ -75,8 +96,13 @@ const createGuestCheckoutSchema = (t: (en: string, fa: string) => string) => yup
   postalCode: yup.string().when("$isGuest", {
     is: true,
     then: (schema) => schema
-      .required(t("Postal code is required", "کد پستی الزامی است"))
-      .matches(/^\d{10}$/, t("Postal code must be 10 digits", "کد پستی باید 10 رقم باشد")),
+      .transform((value) => (value === "" ? undefined : value))
+      .test(
+        "postal-code",
+        t("Postal code must be 10 digits", "کد پستی باید 10 رقم باشد"),
+        (value) => !value || /^\d{10}$/.test(value)
+      )
+      .notRequired(),
     otherwise: (schema) => schema.notRequired(),
   }),
   paymentMethod: yup.string().required(t("Payment method is required", "روش پرداخت الزامی است")),
@@ -88,6 +114,15 @@ interface PaymentMethod {
   value: string;
   label: string;
   labelFa: string;
+}
+
+interface CheckoutAddressEdit {
+  id: string;
+  name: string;
+  provinceId: number | null;
+  cityId: number | null;
+  address: string;
+  postalCode: string;
 }
 
 export default function CheckoutPage() {
@@ -115,6 +150,8 @@ export default function CheckoutPage() {
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
   const [isLoadingAddresses, setIsLoadingAddresses] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  const [editingAddress, setEditingAddress] = useState<CheckoutAddressEdit | null>(null);
+  const [isUpdatingAddress, setIsUpdatingAddress] = useState(false);
   const [showNewAddressForm, setShowNewAddressForm] = useState(false);
   const [shippingCost, setShippingCost] = useState<number | null>(null);
   const [originalShippingCost, setOriginalShippingCost] = useState<number | null>(null); // Store original cost for Iranian Post
@@ -294,28 +331,12 @@ export default function CheckoutPage() {
     defaultValues: { createAccount: false },
   });
 
-  // Load Zibal trust seal when online payment is selected
   const paymentMethodValue = watch("paymentMethod");
   useEffect(() => {
     if (!paymentMethodValue && paymentMethods.some((method) => method.value === "online_payment")) {
       setValue("paymentMethod", "online_payment", { shouldValidate: true });
     }
   }, [paymentMethods, paymentMethodValue, setValue]);
-
-  useEffect(() => {
-    if (paymentMethodValue !== "online_payment") return;
-
-    const container = document.getElementById("zibal");
-    if (!container) return;
-
-    // Don't load if already loaded
-    if (document.querySelector('script[src="https://zibal.ir/trust/scripts/zibal-trust-v4.js"]')) return;
-
-    const script = document.createElement("script");
-    script.src = "https://zibal.ir/trust/scripts/zibal-trust-v4.js";
-    script.type = "text/javascript";
-    container.appendChild(script);
-  }, [paymentMethodValue]);
 
   // Load provinces and cities data for address display
   useEffect(() => {
@@ -570,7 +591,9 @@ export default function CheckoutPage() {
     if (!isAuthenticated) return true; // Guest checkout doesn't have these requirements
 
     // Check full name
-    const hasFullName = userProfile?.name && userProfile?.surname;
+    const hasFullName =
+      isPersianName(userProfile?.name || "") &&
+      isPersianName(userProfile?.surname || "");
 
     // Check verified phone
     const hasVerifiedPhone = userProfile?.phoneVerified;
@@ -639,7 +662,7 @@ export default function CheckoutPage() {
 
       // If using new address form, also check postal code
       if (showNewAddressForm || savedAddresses.length === 0) {
-        return !!(newAddressPostalCode && newAddressPostalCode.length === 10);
+        return !newAddressPostalCode || newAddressPostalCode.length === 10;
       }
 
       return false;
@@ -656,14 +679,16 @@ export default function CheckoutPage() {
         provinceId &&
         cityId &&
         addressValue &&
-        postalCodeValue &&
-        postalCodeValue.length === 10
+        (!postalCodeValue || postalCodeValue.length === 10)
       );
     }
   };
 
   const orderRequirements = {
     hasFullName: userProfile?.name && userProfile?.surname,
+    hasPersianFullName:
+      isPersianName(userProfile?.name || "") &&
+      isPersianName(userProfile?.surname || ""),
     hasVerifiedPhone: userProfile?.phoneVerified,
     hasFullAddress: Boolean((selectedAddressId && savedAddresses.length > 0) || (provinceId && cityId && watch("address"))),
   };
@@ -734,6 +759,8 @@ export default function CheckoutPage() {
   const missingRequirements = [];
   if (!orderRequirements.hasFullName) {
     missingRequirements.push(t("Full name (name and surname)", "نام کامل (نام و نام خانوادگی)"));
+  } else if (!orderRequirements.hasPersianFullName) {
+    missingRequirements.push(t("Persian first and family names", "نام و نام خانوادگی فارسی"));
   }
   if (!orderRequirements.hasVerifiedPhone) {
     missingRequirements.push(t("Verified phone number", "شماره تلفن تایید شده"));
@@ -780,6 +807,82 @@ export default function CheckoutPage() {
     cityId,
     watch("address"),
   ]);
+
+  const handleEditAddressProvinceChange = useCallback((nextProvinceId: number | null) => {
+    setEditingAddress((current) =>
+      current ? { ...current, provinceId: nextProvinceId, cityId: null } : current
+    );
+  }, []);
+
+  const handleEditAddressCityChange = useCallback((nextCityId: number | null) => {
+    setEditingAddress((current) =>
+      current ? { ...current, cityId: nextCityId } : current
+    );
+  }, []);
+
+  const handleUpdateSavedAddress = async () => {
+    if (!editingAddress) return;
+    if (!editingAddress.name.trim()) {
+      toast.error(t("Address name is required", "نام آدرس الزامی است"));
+      return;
+    }
+    if (!editingAddress.provinceId || !editingAddress.cityId) {
+      toast.error(t("Province and city are required", "استان و شهر الزامی هستند"));
+      return;
+    }
+    if (!editingAddress.address.trim()) {
+      toast.error(t("Address is required", "آدرس الزامی است"));
+      return;
+    }
+    if (editingAddress.postalCode && !/^\d{10}$/.test(editingAddress.postalCode)) {
+      toast.error(t("Postal code must be 10 digits", "کد پستی باید ۱۰ رقمی باشد"));
+      return;
+    }
+
+    setIsUpdatingAddress(true);
+    try {
+      const response = await fetch(`/api/user/addresses/${editingAddress.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: editingAddress.name.trim(),
+          provinceId: editingAddress.provinceId,
+          cityId: editingAddress.cityId,
+          address: editingAddress.address.trim(),
+          postalCode: editingAddress.postalCode,
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error || t("Failed to update address", "خطا در به‌روزرسانی آدرس"));
+      }
+
+      const updatedAddress = result.address;
+      setSavedAddresses((currentAddresses) =>
+        currentAddresses.map((address) =>
+          address.id === updatedAddress.id ? updatedAddress : address
+        )
+      );
+      setSelectedAddressId(updatedAddress.id);
+      setProvinceId(updatedAddress.provinceId);
+      setCityId(updatedAddress.cityId);
+      setValue("address", updatedAddress.address);
+      setValue("provinceId", updatedAddress.provinceId);
+      setValue("cityId", updatedAddress.cityId);
+      setValue("postalCode", updatedAddress.postalCode || "");
+      setEditingAddress(null);
+      toast.success(t("Address updated successfully", "آدرس با موفقیت به‌روزرسانی شد"));
+    } catch (error) {
+      console.error("Error updating checkout address:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : t("Failed to update address", "خطا در به‌روزرسانی آدرس")
+      );
+    } finally {
+      setIsUpdatingAddress(false);
+    }
+  };
 
   const submitOrder = async (data: GuestCheckoutFormData) => {
     // Bot detection: Check honeypot fields
@@ -902,6 +1005,10 @@ export default function CheckoutPage() {
         invoiceRequested,
         csrfToken,
       };
+      if (!isAuthenticated) {
+        const guestEditToken = sessionStorage.getItem("guest-order-edit-token");
+        if (guestEditToken) requestBody.editToken = guestEditToken;
+      }
 
       // Add discount code if applied
       if (appliedDiscount) {
@@ -965,6 +1072,13 @@ export default function CheckoutPage() {
       // Set flag BEFORE clearing cart to prevent auto-redirect
       if (result.order && result.order.orderNumber) {
         isNavigatingAfterOrderRef.current = true;
+        if (result.guestEditToken) {
+          sessionStorage.setItem("guest-order-edit-token", result.guestEditToken);
+          sessionStorage.setItem(
+            `guest-order-edit:${result.order.orderNumber}`,
+            result.guestEditToken
+          );
+        }
 
         // For online payment, redirect to Zibal gateway
         if (data.paymentMethod === "online_payment") {
@@ -1180,9 +1294,8 @@ export default function CheckoutPage() {
                                 const city = cities.find((c) => c.id === addr.cityId);
                                 const provinceName = province?.name || "";
                                 const cityName = city?.name || "";
-                                const isDefault = addr.isDefault;
-
                                 const isSelected = selectedAddressId === addr.id;
+                                const isEditingAddress = editingAddress?.id === addr.id;
 
                                 return (
                                   <div
@@ -1190,33 +1303,115 @@ export default function CheckoutPage() {
                                     className={`${styles.addressCardWrapper} ${isSelected ? styles.addressCardWrapperSelected : ""
                                       }`}
                                   >
-                                    <div
-                                      className={`${styles.addressCard} ${isSelected ? styles.addressCardSelected : ""
-                                        }`}
-                                      onClick={() => {
-                                        setSelectedAddressId(addr.id);
-                                        setShowNewAddressForm(false);
-                                      }}
-                                    >
-                                      <div className={styles.addressCardContent}>
-                                        {provinceName && cityName ? (
-                                          <p className={styles.addressText}>
-                                            {provinceName} - {cityName} - {addr.address} - {addr.postalCode}
-                                          </p>
-                                        ) : (
-                                          <p className={styles.addressText}>
-                                            {addr.address} - {addr.postalCode}
-                                          </p>
-                                        )}
+                                    {isEditingAddress && editingAddress ? (
+                                      <div className={`${styles.addressCard} ${styles.addressEditForm}`}>
+                                        <Input
+                                          label={t("Address Name", "نام آدرس")}
+                                          value={editingAddress.name}
+                                          onChange={(event) =>
+                                            setEditingAddress({ ...editingAddress, name: event.target.value })
+                                          }
+                                        />
+                                        <ProvinceCitySelector
+                                          provinceId={editingAddress.provinceId}
+                                          cityId={editingAddress.cityId}
+                                          onProvinceChange={handleEditAddressProvinceChange}
+                                          onCityChange={handleEditAddressCityChange}
+                                        />
+                                        <Input
+                                          label={t("Complete Address", "آدرس کامل")}
+                                          value={editingAddress.address}
+                                          onChange={(event) =>
+                                            setEditingAddress({ ...editingAddress, address: event.target.value })
+                                          }
+                                        />
+                                        <Input
+                                          label={t("Postal Code", "کد پستی")}
+                                          value={editingAddress.postalCode}
+                                          onChange={(event) =>
+                                            setEditingAddress({
+                                              ...editingAddress,
+                                              postalCode: event.target.value.replace(/\D/g, "").slice(0, 10),
+                                            })
+                                          }
+                                          placeholder={t("10-digit postal code", "کد پستی ۱۰ رقمی")}
+                                          error={
+                                            editingAddress.postalCode && editingAddress.postalCode.length !== 10
+                                              ? t("Postal code must be 10 digits", "کد پستی باید ۱۰ رقمی باشد")
+                                              : undefined
+                                          }
+                                        />
+                                        <p className={styles.postalCodeHelperText}>
+                                          {t(
+                                            "If you don't have a postal code, leave this field blank.",
+                                            "اگر کدپستی ندارید، این فیلد را پر نکنید"
+                                          )}
+                                        </p>
+                                        <div className={styles.addressEditActions}>
+                                          <Button
+                                            type="button"
+                                            variant="primary"
+                                            onClick={handleUpdateSavedAddress}
+                                            disabled={isUpdatingAddress}
+                                          >
+                                            {isUpdatingAddress
+                                              ? t("Saving...", "در حال ذخیره...")
+                                              : t("Save Address", "ذخیره آدرس")}
+                                          </Button>
+                                          <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={() => setEditingAddress(null)}
+                                            disabled={isUpdatingAddress}
+                                          >
+                                            {t("Cancel", "لغو")}
+                                          </Button>
+                                        </div>
                                       </div>
-                                    </div>
-                                    <Link
-                                      href="/dashboard?section=profile"
-                                      className={styles.editAddressTab}
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      {t("Edit", "ویرایش")}
-                                    </Link>
+                                    ) : (
+                                      <>
+                                        <div
+                                          className={`${styles.addressCard} ${isSelected ? styles.addressCardSelected : ""
+                                            }`}
+                                          onClick={() => {
+                                            setSelectedAddressId(addr.id);
+                                            setShowNewAddressForm(false);
+                                          }}
+                                        >
+                                          <div className={styles.addressCardContent}>
+                                            {provinceName && cityName ? (
+                                              <p className={styles.addressText}>
+                                                {provinceName} - {cityName} - {addr.address}
+                                                {addr.postalCode ? ` - ${addr.postalCode}` : ""}
+                                              </p>
+                                            ) : (
+                                              <p className={styles.addressText}>
+                                                {addr.address}
+                                                {addr.postalCode ? ` - ${addr.postalCode}` : ""}
+                                              </p>
+                                            )}
+                                          </div>
+                                        </div>
+                                        <button
+                                          type="button"
+                                          className={styles.editAddressTab}
+                                          onClick={() => {
+                                            setEditingAddress({
+                                              id: addr.id,
+                                              name: addr.name || "",
+                                              provinceId: addr.provinceId,
+                                              cityId: addr.cityId,
+                                              address: addr.address || "",
+                                              postalCode: addr.postalCode || "",
+                                            });
+                                            setSelectedAddressId(addr.id);
+                                            setShowNewAddressForm(false);
+                                          }}
+                                        >
+                                          {t("Edit", "ویرایش")}
+                                        </button>
+                                      </>
+                                    )}
                                   </div>
                                 );
                               })}
@@ -1288,11 +1483,15 @@ export default function CheckoutPage() {
                               error={
                                 newAddressPostalCode && newAddressPostalCode.length !== 10
                                   ? t("Postal code must be 10 digits", "کد پستی باید ۱۰ رقمی باشد")
-                                  : !newAddressPostalCode && showNewAddressForm
-                                    ? t("Postal code is required", "کد پستی الزامی است")
-                                    : undefined
+                                  : undefined
                               }
                             />
+                            <p className={styles.postalCodeHelperText}>
+                              {t(
+                                "If you don't have a postal code, leave this field blank.",
+                                "اگر کدپستی ندارید، این فیلد را پر نکنید"
+                              )}
+                            </p>
 
                             <div className={styles.newAddressActions}>
                               <Button
@@ -1312,7 +1511,7 @@ export default function CheckoutPage() {
                                     toast.error(t("Address is required", "آدرس الزامی است"));
                                     return;
                                   }
-                                  if (!newAddressPostalCode || newAddressPostalCode.length !== 10) {
+                                  if (newAddressPostalCode && newAddressPostalCode.length !== 10) {
                                     toast.error(t("Postal code must be 10 digits", "کد پستی باید ۱۰ رقمی باشد"));
                                     return;
                                   }
@@ -1415,20 +1614,20 @@ export default function CheckoutPage() {
                                 return (
                                   <label
                                     key={method.value}
-                                    className={`${styles.paymentMethodCard} ${styles.checkboxLabel} ${isSelected ? styles.paymentMethodCardSelected : ""}`}
+                                    className={`${styles.paymentMethodCard} ${styles.onlinePaymentMethodCard} ${isSelected ? styles.paymentMethodCardSelected : ""}`}
                                   >
                                     <input
-                                      type="checkbox"
-                                      className={styles.customCheckbox}
+                                      type="radio"
+                                      name="checkout-payment-method"
+                                      className={styles.paymentMethodRadio}
                                       checked={isSelected}
                                       onChange={(event) => {
-                                        const nextMethod = event.target.checked
-                                          ? method.value
-                                          : paymentMethods.find((option) => option.value !== method.value)?.value || "";
-                                        setValue("paymentMethod", nextMethod, { shouldValidate: true });
+                                        if (event.target.checked) {
+                                          setValue("paymentMethod", method.value, { shouldValidate: true });
+                                        }
                                       }}
                                     />
-                                    <span className={styles.checkboxCustom} aria-hidden="true" />
+                                    <span className={styles.paymentMethodRadioCustom} aria-hidden="true" />
                                     <span className={styles.checkboxText}>{displayLabel}</span>
                                   </label>
                                 );
@@ -1455,11 +1654,6 @@ export default function CheckoutPage() {
                         )}
                         {errors.paymentMethod && (
                           <p className={styles.error}>{errors.paymentMethod.message}</p>
-                        )}
-                        {watch("paymentMethod") === "online_payment" && (
-                          <div style={{ marginTop: "1rem" }}>
-                            <div id="zibal" />
-                          </div>
                         )}
                       </div>
 
@@ -1725,6 +1919,12 @@ export default function CheckoutPage() {
                             error={errors.guestEmail?.message}
                             placeholder={t("Optional", "اختیاری")}
                           />
+                          <p className={styles.emailHelperText}>
+                            {t(
+                              "Email is not required to place an order, but you will need it to reset your password.",
+                              "وارد کردن ایمیل برای ثبت سفارش الزامی نیست، اما برای بازگردانی رمز عبور خود به آن نیاز دارید"
+                            )}
+                          </p>
                           <Input
                             type="tel"
                             label={t("Phone Number", "شماره تلفن")}
@@ -1788,6 +1988,12 @@ export default function CheckoutPage() {
                               setValue("postalCode", value);
                             }}
                           />
+                          <p className={styles.postalCodeHelperText}>
+                            {t(
+                              "If you don't have a postal code, leave this field blank.",
+                              "اگر کدپستی ندارید، این فیلد را پر نکنید"
+                            )}
+                          </p>
                         </div>
                       )}
 
@@ -1808,20 +2014,20 @@ export default function CheckoutPage() {
                                 return (
                                   <label
                                     key={method.value}
-                                    className={`${styles.paymentMethodCard} ${styles.checkboxLabel} ${isSelected ? styles.paymentMethodCardSelected : ""}`}
+                                    className={`${styles.paymentMethodCard} ${styles.onlinePaymentMethodCard} ${isSelected ? styles.paymentMethodCardSelected : ""}`}
                                   >
                                     <input
-                                      type="checkbox"
-                                      className={styles.customCheckbox}
+                                      type="radio"
+                                      name="checkout-payment-method"
+                                      className={styles.paymentMethodRadio}
                                       checked={isSelected}
                                       onChange={(event) => {
-                                        const nextMethod = event.target.checked
-                                          ? method.value
-                                          : paymentMethods.find((option) => option.value !== method.value)?.value || "";
-                                        setValue("paymentMethod", nextMethod, { shouldValidate: true });
+                                        if (event.target.checked) {
+                                          setValue("paymentMethod", method.value, { shouldValidate: true });
+                                        }
                                       }}
                                     />
-                                    <span className={styles.checkboxCustom} aria-hidden="true" />
+                                    <span className={styles.paymentMethodRadioCustom} aria-hidden="true" />
                                     <span className={styles.checkboxText}>{displayLabel}</span>
                                   </label>
                                 );
@@ -1848,11 +2054,6 @@ export default function CheckoutPage() {
                         )}
                         {errors.paymentMethod && (
                           <p className={styles.error}>{errors.paymentMethod.message}</p>
-                        )}
-                        {watch("paymentMethod") === "online_payment" && (
-                          <div style={{ marginTop: "1rem" }}>
-                            <div id="zibal" />
-                          </div>
                         )}
                       </div>
 

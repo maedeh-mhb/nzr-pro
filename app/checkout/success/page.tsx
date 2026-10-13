@@ -11,6 +11,7 @@ import BackButton from "@/components/ui/BackButton";
 import CheckoutProgressBar from "@/components/checkout/CheckoutProgressBar";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
+import OrderEditor from "@/components/orders/OrderEditor";
 import { FaTelegram, FaInstagram, FaWhatsapp } from "react-icons/fa";
 import { FiCheckCircle, FiCreditCard, FiSend, FiCopy, FiMessageCircle } from "react-icons/fi";
 import { formatPrice } from "@/lib/utils/formatPrice";
@@ -18,6 +19,7 @@ import toast from "react-hot-toast";
 import styles from "@/styles/pages/_checkoutSuccess.module.scss";
 
 interface OrderItem {
+  productId: string;
   productName: string;
   productNameFa?: string | null;
   quantity: number;
@@ -33,6 +35,9 @@ interface Order {
   shippingMethod: string | null;
   discountAmount: string | null;
   createdAt: Date | string;
+  isGuest: boolean;
+  canEdit: boolean;
+  editExpiresAt: string;
 }
 
 interface BankCard {
@@ -63,6 +68,7 @@ export default function CheckoutSuccessPage() {
   const [error, setError] = useState<string | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
   const [trackId, setTrackId] = useState<string | null>(null);
+  const [editToken, setEditToken] = useState<string | null>(null);
 
   useEffect(() => {
     const orderNum = searchParams.get("orderNumber");
@@ -83,6 +89,7 @@ export default function CheckoutSuccessPage() {
       }, 2000);
       return () => clearTimeout(timer);
     }
+    setEditToken(sessionStorage.getItem(`guest-order-edit:${orderNum}`));
     setOrderNumber(orderNum);
   }, [searchParams, router]);
 
@@ -290,6 +297,30 @@ export default function CheckoutSuccessPage() {
                   </div>
                 </div>
               </div>
+
+              {order.canEdit && order.editExpiresAt && (!order.isGuest || editToken) && (
+                <OrderEditor
+                  orderId={order.id}
+                  items={orderItems}
+                  editExpiresAt={order.editExpiresAt}
+                  editToken={order.isGuest ? editToken : null}
+                  onSaved={(updatedTotal, updatedItems, _shippingCost, updatedDiscount) => {
+                    setOrderItems(updatedItems);
+                    setOrder((current) => current
+                      ? {
+                          ...current,
+                          total: updatedTotal,
+                          discountAmount: updatedDiscount,
+                          status: updatedItems.length ? current.status : "cancelled",
+                          canEdit: updatedItems.length > 0,
+                        }
+                      : current);
+                    if (!updatedItems.length) {
+                      toast.success(t("Order canceled", "سفارش لغو شد"));
+                    }
+                  }}
+                />
+              )}
 
               {/* Bank Card Details */}
               {bankCard && (

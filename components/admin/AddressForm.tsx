@@ -34,7 +34,10 @@ const addressSchema = yup.object({
   address: yup.string().required("Address is required"),
   provinceId: yup.number().required("Province is required").positive(),
   cityId: yup.number().required("City is required").positive(),
-  postalCode: yup.string().required("Postal code is required").matches(/^\d{10}$/, "Postal code must be 10 digits"),
+  postalCode: yup.string().matches(/^\d{10}$/, {
+    message: "Postal code must be 10 digits",
+    excludeEmptyString: true,
+  }),
   country: yup.string().required("Country is required"),
   isDefault: yup.boolean(),
 });
@@ -149,6 +152,12 @@ export default function AddressForm({ address, onSave, onCancel, isLoading }: Ad
               {...register("postalCode")}
               error={errors.postalCode?.message}
             />
+            <p style={{ gridColumn: "1 / -1", margin: "-0.5rem 0 0", color: "#666", fontSize: "0.875rem" }}>
+              {t(
+                "If you don't have a postal code, leave this field blank.",
+                "اگر کدپستی ندارید، این فیلد را پر نکنید"
+              )}
+            </p>
             
             <Input
               label={t("Country", "کشور")}

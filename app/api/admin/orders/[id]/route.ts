@@ -45,6 +45,15 @@ export async function GET(
     // Fetch guest order if exists
     const guestOrder = await db.query.guestOrders.findFirst({
       where: eq(guestOrders.orderId, order.id),
+      columns: {
+        guestName: true,
+        guestEmail: true,
+        guestPhone: true,
+        provinceId: true,
+        cityId: true,
+        address: true,
+        postalCode: true,
+      },
     });
 
     // Fetch user if registered order
@@ -628,6 +637,14 @@ export async function PATCH(
 
     const guestOrder = await db.query.guestOrders.findFirst({
       where: eq(guestOrders.orderId, updatedOrder.id),
+      columns: {
+        guestName: true,
+        guestEmail: true,
+        guestPhone: true,
+        provinceId: true,
+        cityId: true,
+        address: true,
+      },
     });
 
     let user = null;
@@ -720,4 +737,3 @@ export async function DELETE(
     );
   }
 }
-

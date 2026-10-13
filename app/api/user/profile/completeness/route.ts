@@ -38,15 +38,13 @@ export async function GET() {
       where: eq(addresses.userId, userId),
     });
 
-    // An address is complete if it has provinceId, cityId, address, and postalCode
+    // A complete address does not require a postal code.
     checks.completeAddress = userAddresses.some(
       (addr) =>
         addr.provinceId &&
         addr.cityId &&
         addr.address &&
-        addr.address.trim() !== "" &&
-        addr.postalCode &&
-        addr.postalCode.trim() !== ""
+        addr.address.trim() !== ""
     );
 
     // Calculate percentage (5 criteria = 20% each)
@@ -87,4 +85,3 @@ export async function GET() {
     );
   }
 }
-

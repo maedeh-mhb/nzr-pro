@@ -3,13 +3,21 @@
  * @param text - The text to convert to a slug
  * @returns A URL-friendly slug
  */
-export function slugify(text: string): string {
-  return text
-    .toLowerCase()
+export function slugify(text: string | number | null | undefined): string {
+  const source = String(text ?? "")
     .trim()
-    .replace(/[^\p{L}\p{N}\s-]/gu, "") // Remove special characters while preserving Persian text
-    .replace(/[\s_-]+/g, "-") // Replace spaces, underscores, and multiple hyphens with single hyphen
-    .replace(/^-+|-+$/g, ""); // Remove leading/trailing hyphens
+    .toLowerCase();
+
+  if (!source) {
+    return "";
+  }
+
+  return source
+    .replace(/\s+/g, "-")
+    .replace(/[_-]+/g, "-")
+    .replace(/[^\p{L}\p{N}\u0600-\u06FF-]/gu, "")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 /**
@@ -22,7 +30,7 @@ export async function generateUniqueSlug(
   baseSlug: string,
   checkExists: (slug: string) => Promise<boolean>
 ): Promise<string> {
-  let slug = slugify(baseSlug);
+  let slug = slugify(baseSlug) || "item";
   let counter = 1;
   let uniqueSlug = slug;
 

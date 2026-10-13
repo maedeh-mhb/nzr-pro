@@ -4,9 +4,10 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import { db } from "./db";
-import { users, accounts } from "./db/schema";
-import { eq, and } from "drizzle-orm";
+import { users, accounts, phoneLoginOtpCodes } from "./db/schema";
+import { eq, and, gte, lt, sql } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+import { createHash } from "crypto";
 
 const useSecureCookies = process.env.NEXTAUTH_URL?.startsWith("https://") ?? process.env.NODE_ENV === "production";
 const authCookiePrefix = useSecureCookies ? "__Secure-" : "";
@@ -86,6 +87,87 @@ export const authOptions: NextAuthOptions = {
         };
       },
     }),
+    CredentialsProvider({
+      id: "phone-code",
+      name: "Phone Code",
+      credentials: {
+        phone: { label: "Phone", type: "text" },
+        code: { label: "Code", type: "text" },
+      },
+      async authorize(credentials) {
+        const phone = credentials?.phone?.replace(/\D/g, "");
+        const code = credentials?.code;
+        if (!phone || !/^09\d{9}$/.test(phone) || !code || !/^\d{6}$/.test(code)) {
+          return null;
+        }
+
+        const now = new Date();
+        const otpHash = createHash("sha256").update(code).digest("hex");
+        const otpRecord = await db.query.phoneLoginOtpCodes.findFirst({
+          where: and(
+            eq(phoneLoginOtpCodes.phone, phone),
+            eq(phoneLoginOtpCodes.otpHash, otpHash),
+            eq(phoneLoginOtpCodes.used, false),
+            gte(phoneLoginOtpCodes.expiresAt, now),
+            lt(phoneLoginOtpCodes.attempts, 5)
+          ),
+          orderBy: (records, { desc }) => [desc(records.createdAt)],
+        });
+
+        if (!otpRecord) {
+          const activeOtp = await db.query.phoneLoginOtpCodes.findFirst({
+            where: and(
+              eq(phoneLoginOtpCodes.phone, phone),
+              eq(phoneLoginOtpCodes.used, false),
+              gte(phoneLoginOtpCodes.expiresAt, now),
+              lt(phoneLoginOtpCodes.attempts, 5)
+            ),
+            orderBy: (records, { desc }) => [desc(records.createdAt)],
+          });
+
+          if (activeOtp) {
+            await db
+              .update(phoneLoginOtpCodes)
+              .set({ attempts: sql`${phoneLoginOtpCodes.attempts} + 1` })
+              .where(and(
+                eq(phoneLoginOtpCodes.id, activeOtp.id),
+                lt(phoneLoginOtpCodes.attempts, 5)
+              ));
+          }
+          return null;
+        }
+
+        const [consumedOtp] = await db
+          .update(phoneLoginOtpCodes)
+          .set({ used: true })
+          .where(and(
+            eq(phoneLoginOtpCodes.id, otpRecord.id),
+            eq(phoneLoginOtpCodes.used, false),
+            gte(phoneLoginOtpCodes.expiresAt, now),
+            lt(phoneLoginOtpCodes.attempts, 5)
+          ))
+          .returning({ userId: phoneLoginOtpCodes.userId });
+
+        if (!consumedOtp) {
+          return null;
+        }
+
+        const user = await db.query.users.findFirst({
+          where: eq(users.id, consumedOtp.userId),
+        });
+        if (!user || user.phone !== phone || user.mustChangePassword) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+          role: user.role,
+        };
+      },
+    }),
 
     ...(googleProvider ? [googleProvider] : []),
 
@@ -139,7 +221,7 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async signIn({ user, account, profile }) {
-      if (account?.provider === "credentials") {
+      if (account?.provider === "credentials" || account?.provider === "phone-code") {
         return true;
       }
 
@@ -190,10 +272,7 @@ export const authOptions: NextAuthOptions = {
             }
           }
 
-          // Fallback: if still no name, use email username or "User"
-          if (!firstName || firstName.trim() === "") {
-            firstName = user.email.split("@")[0] || "User";
-          }
+          const providerFirstName = firstName.trim();
 
           // Check if user already exists
           let dbUser = await db.query.users.findFirst({
@@ -206,7 +285,7 @@ export const authOptions: NextAuthOptions = {
               .insert(users)
               .values({
                 email: user.email,
-                name: firstName.trim(),
+                name: providerFirstName || "User",
                 surname: surname?.trim() || null,
                 image: user.image || null,
                 emailVerified: new Date(),
@@ -219,8 +298,8 @@ export const authOptions: NextAuthOptions = {
               updatedAt: new Date(),
             };
 
-            if (!dbUser.name || dbUser.name.trim() === "" || dbUser.name !== firstName.trim()) {
-              updateData.name = firstName.trim();
+            if (providerFirstName && dbUser.name !== providerFirstName) {
+              updateData.name = providerFirstName;
             }
 
             if ((!dbUser.surname || dbUser.surname.trim() === "") && surname) {

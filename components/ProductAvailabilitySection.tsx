@@ -8,6 +8,7 @@ interface AvailabilityData {
   availabilityTitleEn: string | null;
   availabilityTitleFa: string | null;
   availabilityDates: string[];
+  availabilityAudioUrl: string | null;
   availabilityIsEnabled: boolean;
 }
 
@@ -39,6 +40,11 @@ export default function ProductAvailabilitySection() {
             <span key={date} className={styles.date}>{date}</span>
           ))}
         </div>
+        {availability.availabilityAudioUrl && (
+          <audio className={styles.audio} controls preload="metadata" src={availability.availabilityAudioUrl}>
+            {t("Your browser does not support audio playback.", "مرورگر شما از پخش صوت پشتیبانی نمی‌کند.")}
+          </audio>
+        )}
       </div>
     </section>
   );

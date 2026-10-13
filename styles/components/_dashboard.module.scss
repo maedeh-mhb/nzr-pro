@@ -1362,6 +1362,33 @@
   }
 }
 
+.profileNameHint {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: $text-tertiary;
+  font-size: $font-sm;
+  text-align: start;
+  color: red;
+}
+
+.profileFieldInput {
+  flex: 1;
+  min-width: 0;
+}
+
+.profileNameError {
+  margin: $spacing-xs 0 0;
+  color: $danger;
+  font-size: $font-xs;
+}
+
+.postalCodeHelperText {
+  margin: -$spacing-sm 0 $spacing-md;
+  color: $text-tertiary;
+  font-size: $font-sm;
+  line-height: 1.6;
+}
+
 .joinedItem {
   @include desktop {
     grid-column: 1 / -1;

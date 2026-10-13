@@ -251,8 +251,8 @@ export default function HomeSection({ setActiveSection, refetchTrigger }: HomeSe
                     {completeness.missingItems.includes("completeAddress") && (
                       <li>
                         {t(
-                          "Add a complete address (province, city, address, postal code)",
-                          "یک آدرس کامل اضافه کنید (استان، شهر، آدرس، کد پستی)"
+                          "Add a complete address (province, city, and street address)",
+                          "یک آدرس کامل اضافه کنید (استان، شهر و نشانی)"
                         )}
                       </li>
                     )}
@@ -274,7 +274,7 @@ export default function HomeSection({ setActiveSection, refetchTrigger }: HomeSe
               <strong>{t("Important:", "مهم:")}</strong>{" "}
               {t(
                 "If you don't verify your email, you will not be able to recover your forgotten password.",
-                "اگر ایمیل خود را تأیید نکنید، نمی‌توانید رمز عبور فراموش شده خود را بازیابی کنید."
+                "وارد کردن ایمیل برای ثبت سفارش الزامی نمی‌باشد، اما اگر ایمیل خود را وارد نکنید نمی‌توانید رمز عبور خود را بازیابی کنید."
               )}
             </div>
           )}

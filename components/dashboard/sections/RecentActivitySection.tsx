@@ -125,6 +125,12 @@ export default function RecentActivitySection({ setActiveSection }: RecentActivi
 
       case "reward_earned":
         const rewardPoints = activity.activityData.points || 0;
+        if (activity.activityData.source === "admin_grant") {
+          const rewardReason = activity.activityData.reason;
+          return language === "fa"
+            ? `مدیر ${rewardPoints} امتیاز پاداش به حساب شما اضافه کرد${rewardReason ? ` (${rewardReason})` : ""} در ${date}`
+            : `An administrator added ${rewardPoints} reward points to your account${rewardReason ? ` (${rewardReason})` : ""} on ${date}`;
+        }
         const rewardProductName = activity.activityData.productName || "";
         const rewardQuantity = activity.activityData.quantity || 0;
         const rewardOrderNumber = activity.activityData.orderNumber || "";
@@ -207,4 +213,3 @@ export default function RecentActivitySection({ setActiveSection }: RecentActivi
     </div>
   );
 }
-

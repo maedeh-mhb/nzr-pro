@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { contentEn, contentFa, availabilityTitleEn, availabilityTitleFa, availabilityDays, availabilityDates, availabilityIsEnabled, isEnabled } = body;
+    const { contentEn, contentFa, availabilityTitleEn, availabilityTitleFa, availabilityDays, availabilityDates, availabilityAudioUrl, availabilityIsEnabled, isEnabled } = body;
 
     const existing = await db.query.homeNote.findFirst();
 
@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
         availabilityTitleFa: availabilityTitleFa || null,
         availabilityDays: JSON.stringify(Array.isArray(availabilityDays) ? availabilityDays : []),
         availabilityDates: JSON.stringify(Array.isArray(availabilityDates) ? availabilityDates : []),
+        availabilityAudioUrl: availabilityAudioUrl || null,
         availabilityIsEnabled: availabilityIsEnabled ?? true,
         isEnabled: isEnabled ?? true,
         updatedAt: new Date(),
@@ -60,6 +61,7 @@ export async function POST(request: NextRequest) {
         availabilityTitleFa: availabilityTitleFa || null,
         availabilityDays: JSON.stringify(Array.isArray(availabilityDays) ? availabilityDays : []),
         availabilityDates: JSON.stringify(Array.isArray(availabilityDates) ? availabilityDates : []),
+        availabilityAudioUrl: availabilityAudioUrl || null,
         availabilityIsEnabled: availabilityIsEnabled ?? true,
         isEnabled: isEnabled ?? true,
       });

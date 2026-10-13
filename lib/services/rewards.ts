@@ -225,15 +225,7 @@ export async function convertPointsToDiscountCode(
       };
     }
 
-    // SECURITY CHECK 1: User must have verified email
-    if (!user.emailVerified) {
-      return {
-        success: false,
-        error: "You must verify your email address before generating discount codes",
-      };
-    }
-
-    // SECURITY CHECK 2: User must have at least one verified purchase
+    // User must have at least one verified purchase
     // Check if user has any orders with verified payment
     const verifiedOrders = await db.query.orders.findMany({
       where: and(
@@ -441,4 +433,3 @@ async function generateDiscountCodeFromPoints(userId: string, pointsUsed: number
     throw error;
   }
 }
-

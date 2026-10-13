@@ -1,8 +1,8 @@
 // app/api/admin/orders/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { orders, orderItems, products } from "@/lib/db/schema";
-import { eq, desc, and, gte, lte, count, inArray, ne } from "drizzle-orm";
+import { orders, orderItems, guestOrders, products } from "@/lib/db/schema";
+import { eq, desc, and, gte, lte, count, inArray, ne, exists, notExists } from "drizzle-orm";
 import { requireAdminWithPermissions } from "@/lib/middleware/auth";
 import { paginatedResponse } from "@/lib/utils/apiResponse";
 import { handleApiError } from "@/lib/utils/errorHandler";
@@ -59,19 +59,24 @@ export async function GET(request: NextRequest) {
 
     // Apply seller filter to the raw order query before pagination
     if (sellerId) {
-      const matchingOrderItems = await db
-        .select({ orderId: orderItems.orderId })
-        .from(orderItems)
-        .innerJoin(products, eq(orderItems.productId, products.id))
-        .where(eq(products.sellerId, sellerId));
+      conditions.push(inArray(
+        orders.id,
+        db
+          .select({ orderId: orderItems.orderId })
+          .from(orderItems)
+          .innerJoin(products, eq(orderItems.productId, products.id))
+          .where(eq(products.sellerId, sellerId))
+      ));
+    }
 
-      const matchingOrderIds = Array.from(new Set(matchingOrderItems.map((item) => item.orderId)));
-
-      if (matchingOrderIds.length === 0) {
-        return paginatedResponse([], page, limit, 0);
-      }
-
-      conditions.push(inArray(orders.id, matchingOrderIds));
+    if (orderType === "guest") {
+      conditions.push(exists(
+        db.select({ id: guestOrders.id }).from(guestOrders).where(eq(guestOrders.orderId, orders.id))
+      ));
+    } else if (orderType === "registered") {
+      conditions.push(notExists(
+        db.select({ id: guestOrders.id }).from(guestOrders).where(eq(guestOrders.orderId, orders.id))
+      ));
     }
 
     // Build where clause
@@ -79,41 +84,33 @@ export async function GET(request: NextRequest) {
       ? (conditions.length === 1 ? conditions[0] : and(...conditions))
       : undefined;
 
-    // Get total count
-    let countQuery = db.select({ count: count() }).from(orders);
-    if (whereClause) {
-      countQuery = countQuery.where(whereClause) as any;
-    }
-    const totalResult = await countQuery;
-    const total = totalResult[0]?.count || 0;
-
-    // Fetch all matching orders first so search and order-type filters are applied across the full result set.
+    // Search includes related customer, product, and seller fields, so it must be applied after hydration.
     let query = db.select().from(orders).orderBy(desc(orders.createdAt));
     if (whereClause) {
       query = query.where(whereClause) as any;
     }
 
-    const ordersData = await query;
+    if (!search) {
+      let countQuery = db.select({ count: count() }).from(orders);
+      if (whereClause) {
+        countQuery = countQuery.where(whereClause) as any;
+      }
+      const [totalResult, ordersData] = await Promise.all([
+        countQuery,
+        query.limit(limit).offset(offset),
+      ]);
+      const total = totalResult[0]?.count || 0;
+      const ordersWithDetails = await fetchOrderDetails(ordersData);
 
-    // Fetch order details using helper function (now includes seller info)
-    let ordersWithDetails = await fetchOrderDetails(ordersData);
-
-    // Apply order type filter (guest/registered)
-    if (orderType === "guest") {
-      ordersWithDetails = ordersWithDetails.filter((o) => o.isGuest);
-    } else if (orderType === "registered") {
-      ordersWithDetails = ordersWithDetails.filter((o) => !o.isGuest);
+      return paginatedResponse(ordersWithDetails, page, limit, total);
     }
 
-    // Apply search filter on the full filtered dataset before pagination.
-    const finalOrders = search
-      ? ordersWithDetails.filter((order) => matchesOrderSearch(order, search))
-      : ordersWithDetails;
+    const ordersData = await query;
+    const ordersWithDetails = await fetchOrderDetails(ordersData);
+    const filteredOrders = ordersWithDetails.filter((order) => matchesOrderSearch(order, search));
+    const paginatedOrders = filteredOrders.slice(offset, offset + limit);
 
-    const paginatedOrders = finalOrders.slice(offset, offset + limit);
-    const totalFiltered = finalOrders.length;
-
-    return paginatedResponse(paginatedOrders, page, limit, totalFiltered);
+    return paginatedResponse(paginatedOrders, page, limit, filteredOrders.length);
   } catch (error) {
     return handleApiError(error, "Failed to fetch orders", "خطا در دریافت سفارشات");
   }

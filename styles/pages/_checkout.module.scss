@@ -727,14 +727,14 @@
     margin-top: 0; // Ensure no top margin on large viewports
   }
 
-  color: #856404;
+  color: red;
 }
 
 .warningTitle {
   font-size: $font-sm;
   font-weight: 600;
   margin-bottom: $spacing-sm;
-  color: #856404;
+  color: red;
 }
 
 .requirementsList {
@@ -884,6 +884,20 @@
   }
 }
 
+.postalCodeHelperText {
+  margin: -$spacing-sm 0 $spacing-md;
+  color: $text-secondary;
+  font-size: $font-sm;
+  line-height: 1.6;
+}
+
+.emailHelperText {
+  margin: -$spacing-sm 0 $spacing-md;
+  color: $text-secondary;
+  font-size: $font-sm;
+  line-height: 1.6;
+}
+
 // Address Cards
 .addressCards {
   display: flex;
@@ -927,6 +941,19 @@
   align-items: center;
 }
 
+.addressEditForm {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  cursor: default;
+}
+
+.addressEditActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
 .addressText {
   margin: 0;
   font-size: $font-sm;
@@ -954,6 +981,8 @@
   border-bottom-right-radius: $radius-md;
   transition: all 0.2s ease;
   display: inline-block;
+  font: inherit;
+  cursor: pointer;
 
   // RTL (Farsi) styling - align to right side
   [dir="rtl"] & {
@@ -1040,6 +1069,71 @@
   border-color: $primary;
   background: rgba($primary, 0.05);
   box-shadow: $shadow-md;
+}
+
+.onlinePaymentMethodCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  direction: ltr;
+
+  .checkboxText {
+    order: 1;
+    direction: inherit;
+    text-align: start;
+  }
+
+  [dir="rtl"] & .checkboxText {
+    direction: rtl;
+    text-align: right;
+  }
+}
+
+.paymentMethodRadio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+
+  &:checked + .paymentMethodRadioCustom {
+    border-color: $primary;
+
+    &::after {
+      transform: scale(1);
+    }
+  }
+
+  &:focus-visible + .paymentMethodRadioCustom {
+    outline: 2px solid $primary;
+    outline-offset: 3px;
+  }
+}
+
+.paymentMethodRadioCustom {
+  position: relative;
+  order: 2;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border: 2px solid rgba($text-dark, 0.3);
+  border-radius: 50%;
+  background: $text-light;
+  transition: border-color 0.2s ease;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: $primary;
+    transform: scale(0);
+    transition: transform 0.2s ease;
+  }
 }
 
 .paymentMethodCardContent {

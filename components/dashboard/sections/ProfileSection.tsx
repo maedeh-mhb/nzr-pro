@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useLanguage } from "@/lib/utils/language";
+import { isPersianName } from "@/lib/utils/nameValidation";
 import toast from "react-hot-toast";
 import { FiUser, FiMapPin, FiHome, FiBriefcase, FiArrowLeft, FiCheck, FiX, FiEdit2, FiTrash2 } from "react-icons/fi";
 import Button from "@/components/ui/Button";
@@ -206,8 +207,20 @@ export default function ProfileSection({ setActiveSection, onProfileUpdate }: Pr
       return;
     }
 
-    if (!formData.email.trim()) {
-      toast.error(t("Email is required", "ایمیل الزامی است"));
+    if (!isPersianName(formData.name)) {
+      toast.error(t("Please enter your name in Persian", "نام خود را به فارسی وارد کنید"));
+      return;
+    }
+
+    if (!formData.surname.trim()) {
+      toast.error(t("Family name is required", "نام خانوادگی الزامی است"));
+      return;
+    }
+
+    if (!isPersianName(formData.surname)) {
+      toast.error(
+        t("Please enter your family name in Persian", "نام خانوادگی خود را به فارسی وارد کنید")
+      );
       return;
     }
 
@@ -217,11 +230,13 @@ export default function ProfileSection({ setActiveSection, onProfileUpdate }: Pr
       return;
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      toast.error(t("Invalid email format", "فرمت ایمیل نامعتبر است"));
-      return;
+    // Email is optional, but validate it when provided.
+    if (formData.email.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email.trim())) {
+        toast.error(t("Invalid email format", "فرمت ایمیل نامعتبر است"));
+        return;
+      }
     }
 
     setSaving(true);
@@ -252,7 +267,7 @@ export default function ProfileSection({ setActiveSection, onProfileUpdate }: Pr
       setProfile({
         name: data.name,
         surname: data.surname,
-        email: data.email,
+        email: data.email || "",
         phone: data.phone,
         emailVerified: data.emailVerified,
         phoneVerified: data.phoneVerified,
@@ -297,13 +312,21 @@ export default function ProfileSection({ setActiveSection, onProfileUpdate }: Pr
             <div className={styles.orderItem}>
               <div className={styles.orderProduct}>{t("Name", "نام")}</div>
               {isEditing ? (
-                <input
-                  type="text"
-                  className={styles.profileInput}
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder={t("Name", "نام")}
-                />
+                <div className={styles.profileFieldInput}>
+                  <input
+                    type="text"
+                    className={styles.profileInput}
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder={t("Name", "نام")}
+                    aria-invalid={!!formData.name && !isPersianName(formData.name)}
+                  />
+                  {!!formData.name && !isPersianName(formData.name) && (
+                    <p className={styles.profileNameError}>
+                      {t("Please enter your name in Persian", "نام خود را به فارسی وارد کنید")}
+                    </p>
+                  )}
+                </div>
               ) : (
                 <div className={styles.orderDate}>{profile?.name || "N/A"}</div>
               )}
@@ -311,17 +334,33 @@ export default function ProfileSection({ setActiveSection, onProfileUpdate }: Pr
             <div className={styles.orderItem}>
               <div className={styles.orderProduct}>{t("Surname", "نام خانوادگی")}</div>
               {isEditing ? (
-                <input
-                  type="text"
-                  className={styles.profileInput}
-                  value={formData.surname}
-                  onChange={(e) => setFormData({ ...formData, surname: e.target.value })}
-                  placeholder={t("Surname", "نام خانوادگی")}
-                />
+                <div className={styles.profileFieldInput}>
+                  <input
+                    type="text"
+                    className={styles.profileInput}
+                    value={formData.surname}
+                    onChange={(e) => setFormData({ ...formData, surname: e.target.value })}
+                    placeholder={t("Surname", "نام خانوادگی")}
+                    aria-invalid={!!formData.surname && !isPersianName(formData.surname)}
+                  />
+                  {!!formData.surname && !isPersianName(formData.surname) && (
+                    <p className={styles.profileNameError}>
+                      {t("Please enter your family name in Persian", "نام خانوادگی خود را به فارسی وارد کنید")}
+                    </p>
+                  )}
+                </div>
               ) : (
                 <div className={styles.orderDate}>{profile?.surname || "N/A"}</div>
               )}
             </div>
+            {isEditing && (
+              <p className={styles.profileNameHint}>
+                {t(
+                  "Please write your full first and family names in Persian",
+                  "نام و نام خانوادگی خود را به صورت کامل و به فارسی بنویسید"
+                )}
+              </p>
+            )}
             <div className={styles.orderItem}>
               <div className={styles.orderProduct}>{t("Email", "ایمیل")}</div>
               {isEditing ? (

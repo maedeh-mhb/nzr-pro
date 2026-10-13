@@ -47,6 +47,19 @@ export const registrationOtpCodes = pgTable("registration_otp_codes", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const phoneLoginOtpCodes = pgTable("phone_login_otp_codes", {
+  id: text("id").primaryKey().$defaultFn(() => createId()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  phone: text("phone").notNull(),
+  otpHash: text("otp_hash").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  attempts: integer("attempts").default(0).notNull(),
+  used: boolean("used").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const emailOtpCodes = pgTable("email_otp_codes", {
   id: text("id").primaryKey().$defaultFn(() => createId()),
   userId: text("user_id")

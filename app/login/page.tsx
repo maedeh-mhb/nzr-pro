@@ -1,7 +1,7 @@
 ﻿"use client";
 
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -10,6 +10,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import toast from "react-hot-toast";
 import { useLanguage } from "@/lib/utils/language";
+import { isPersianName } from "@/lib/utils/nameValidation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BottomBar from "@/components/BottomBar";
@@ -32,9 +33,23 @@ const loginSchema = yup.object({
 });
 
 // Signup Schema
-const signupSchema = yup.object({
-  name: yup.string().trim().required("Name is required"),
-  surname: yup.string().trim().required("Family name is required"),
+const createSignupSchema = (t: (en: string, fa: string) => string) => yup.object({
+  name: yup
+    .string()
+    .trim()
+    .required(t("Name is required", "نام الزامی است"))
+    .test("persian-name", t("Please enter your name in Persian", "نام خود را به فارسی وارد کنید"), (value) =>
+      !value || isPersianName(value)
+    ),
+  surname: yup
+    .string()
+    .trim()
+    .required(t("Family name is required", "نام خانوادگی الزامی است"))
+    .test(
+      "persian-family-name",
+      t("Please enter your family name in Persian", "نام خانوادگی خود را به فارسی وارد کنید"),
+      (value) => !value || isPersianName(value)
+    ),
   email: yup
     .string()
     .transform((value) => (value === "" ? undefined : value))
@@ -57,17 +72,23 @@ const forgotPasswordSchema = yup.object({
 });
 
 type LoginFormData = yup.InferType<typeof loginSchema>;
-type SignupFormData = yup.InferType<typeof signupSchema>;
+type SignupFormData = yup.InferType<ReturnType<typeof createSignupSchema>>;
 type ForgotPasswordFormData = yup.InferType<typeof forgotPasswordSchema>;
 
 type PasswordStrength = "weak" | "medium" | "strong" | null;
 
 export default function LoginPage() {
   const { t, language } = useLanguage();
+  const signupSchema = useMemo(() => createSignupSchema(t), [t]);
   const router = useRouter();
   const { data: session, status } = useSession();
   const [activeForm, setActiveForm] = useState<"login" | "signup" | "forgot">("login");
   const [isLoading, setIsLoading] = useState(false);
+  const [loginMethod, setLoginMethod] = useState<"password" | "phone-code">("password");
+  const [loginPhone, setLoginPhone] = useState("");
+  const [loginCode, setLoginCode] = useState("");
+  const [loginCodeSent, setLoginCodeSent] = useState(false);
+  const [loginCodeCountdown, setLoginCodeCountdown] = useState(0);
   const [showPassword, setShowPassword] = useState<{ [key: string]: boolean }>({});
   const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>(null);
   const [csrfToken, setCsrfToken] = useState("");
@@ -117,6 +138,7 @@ export default function LoginPage() {
   const {
     register: registerLogin,
     handleSubmit: handleSubmitLogin,
+    getValues: getLoginValues,
     formState: { errors: loginErrors },
   } = useForm<LoginFormData>({
     resolver: yupResolver(loginSchema),
@@ -130,13 +152,20 @@ export default function LoginPage() {
     handleSubmit: handleSubmitSignup,
     watch: watchSignup,
     trigger: triggerSignup,
-    formState: { errors: signupErrors },
+    formState: {
+      errors: signupErrors,
+      dirtyFields: dirtySignupFields,
+      touchedFields: touchedSignupFields,
+      isSubmitted: isSignupSubmitted,
+    },
   } = useForm<SignupFormData>({
     resolver: yupResolver(signupSchema),
-    mode: "onSubmit",
+    mode: "onChange",
     reValidateMode: "onChange",
   });
   const signupPhoneRegistration = registerSignup("phone");
+  const showSignupNameError = (field: "name" | "surname") =>
+    dirtySignupFields[field] || touchedSignupFields[field] || isSignupSubmitted;
 
   // Forgot Password Form
   const {
@@ -162,6 +191,15 @@ export default function LoginPage() {
     }
   }, [signupPassword, activeForm]);
 
+  useEffect(() => {
+    if (!loginCodeSent || loginCodeCountdown === 0) return;
+
+    const timer = window.setTimeout(() => {
+      setLoginCodeCountdown((countdown) => Math.max(0, countdown - 1));
+    }, 1000);
+    return () => window.clearTimeout(timer);
+  }, [loginCodeSent, loginCodeCountdown]);
+
   const checkPasswordStrength = (password: string) => {
     let strength = 0;
     if (password.length >= 8) strength++;
@@ -182,6 +220,43 @@ export default function LoginPage() {
     setShowPassword((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
+  const completeLogin = async (identifier: string) => {
+    const response = await fetch("/api/auth/user-role");
+    const roleData = await response.json();
+
+    if (roleData.role === "admin" || roleData.role === "superadmin") {
+      toast.success(t("Signed in successfully!", "با موفقیت وارد شدید!"));
+      setTimeout(() => {
+        router.push("/admin");
+        router.refresh();
+      }, 100);
+      return;
+    }
+
+    const userResponse = await fetch("/api/auth/me");
+    const userData = await userResponse.json();
+    const shouldChangePassword = Boolean(userData?.user?.mustChangePassword);
+
+    if (shouldChangePassword) {
+      toast.success(
+        t(
+          "You signed in with your temporary password. Please change it immediately.",
+          "شما با رمز عبور موقت وارد شدید. لطفاً فوراً آن را تغییر دهید."
+        )
+      );
+      setTimeout(() => {
+        router.push(`/reset-password?email=${encodeURIComponent(identifier)}`);
+        router.refresh();
+      }, 100);
+    } else {
+      toast.success(t("Signed in successfully!", "با موفقیت وارد شدید!"));
+      setTimeout(() => {
+        router.push("/dashboard");
+        router.refresh();
+      }, 100);
+    }
+  };
+
   const onLoginSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
@@ -194,44 +269,78 @@ export default function LoginPage() {
       if (result?.error) {
         toast.error(t("Invalid credentials", "شما کاربر سایت نیستید،،ثبت نام کنید"));
       } else if (result?.ok) {
-        const response = await fetch("/api/auth/user-role");
-        const roleData = await response.json();
-
-        if (roleData.role === "admin" || roleData.role === "superadmin") {
-          toast.success(t("Signed in successfully!", "با موفقیت وارد شدید!"));
-          setTimeout(() => {
-            router.push("/admin");
-            router.refresh();
-          }, 100);
-          return;
-        }
-
-        const userResponse = await fetch("/api/auth/me");
-        const userData = await userResponse.json();
-        const shouldChangePassword = Boolean(userData?.user?.mustChangePassword);
-
-        if (shouldChangePassword) {
-          toast.success(
-            t(
-              "You signed in with your temporary password. Please change it immediately.",
-              "شما با رمز عبور موقت وارد شدید. لطفاً فوراً آن را تغییر دهید."
-            )
-          );
-          setTimeout(() => {
-            router.push(`/reset-password?email=${encodeURIComponent(data.emailOrPhone)}`);
-            router.refresh();
-          }, 100);
-        } else {
-          toast.success(t("Signed in successfully!", "با موفقیت وارد شدید!"));
-          setTimeout(() => {
-            router.push("/dashboard");
-            router.refresh();
-          }, 100);
-        }
+        await completeLogin(data.emailOrPhone);
       }
     } catch (error) {
       console.error("Sign in error:", error);
       toast.error(t("An error occurred", "خطایی رخ داد"));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onSendLoginCode = async () => {
+    const phone = loginPhone.replace(/\D/g, "");
+    if (!/^09\d{9}$/.test(phone)) {
+      toast.error(t("Enter a valid phone number.", "شماره تلفن معتبر وارد کنید."));
+      return;
+    }
+    if (!csrfToken) {
+      toast.error(t("Security token unavailable. Refresh the page and try again.", "توکن امنیتی در دسترس نیست. صفحه را تازه کنید و دوباره تلاش کنید."));
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/auth/phone-login/send-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-csrf-token": csrfToken },
+        body: JSON.stringify({ phone, csrfToken }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        toast.error(result.error || t("Failed to send the code.", "ارسال کد ناموفق بود."));
+        return;
+      }
+      setLoginCodeSent(true);
+      setLoginCode("");
+      setLoginCodeCountdown(120);
+      toast.success(
+        t(
+          "If an account exists for this phone number, a code has been sent.",
+          "اگر حسابی با این شماره تلفن وجود داشته باشد، کد ورود برای آن ارسال شده است."
+        )
+      );
+    } catch (error) {
+      console.error("Phone login code request error:", error);
+      toast.error(t("An error occurred while sending the code.", "هنگام ارسال کد خطایی رخ داد."));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onLoginWithCode = async () => {
+    const phone = loginPhone.replace(/\D/g, "");
+    if (!/^09\d{9}$/.test(phone) || !/^\d{6}$/.test(loginCode)) {
+      toast.error(t("Enter your phone number and the 6-digit code.", "شماره تلفن و کد ۶ رقمی را وارد کنید."));
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const result = await signIn("phone-code", {
+        phone,
+        code: loginCode,
+        redirect: false,
+      });
+      if (result?.error || !result?.ok) {
+        toast.error(t("The code is invalid or expired.", "کد نامعتبر است یا مهلت آن به پایان رسیده است."));
+        return;
+      }
+      await completeLogin(phone);
+    } catch (error) {
+      console.error("Phone code sign-in error:", error);
+      toast.error(t("An error occurred while signing in.", "هنگام ورود خطایی رخ داد."));
     } finally {
       setIsLoading(false);
     }
@@ -458,66 +567,152 @@ export default function LoginPage() {
             {/* Login Form */}
             <form
               className={`${styles.authForm} ${activeForm === "login" ? styles.active : ""}`}
-              onSubmit={handleSubmitLogin(onLoginSubmit)}
+              onSubmit={loginMethod === "password"
+                ? handleSubmitLogin(onLoginSubmit)
+                : (event) => event.preventDefault()}
             >
-              <div className={styles.formGroup}>
-                <label className={styles.label}>{t("Email or Phone", "ایمیل یا تلفن")}</label>
-                <div className={styles.inputWrapper}>
-                  <input
-                    type="text"
-                    dir="ltr"
-                    {...registerLogin("emailOrPhone")}
-                    placeholder={t("", "")}
-                    className={loginErrors.emailOrPhone ? styles.inputError : ""}
-                  />
-                  <span className={styles.inputIcon}>👤</span>
-                </div>
-                {loginErrors.emailOrPhone && (
-                  <span className={styles.error}>{loginErrors.emailOrPhone.message}</span>
-                )}
-              </div>
+              {loginMethod === "password" ? (
+                <>
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>{t("Email or Phone", "ایمیل یا تلفن")}</label>
+                    <div className={styles.inputWrapper}>
+                      <input
+                        type="text"
+                        dir="ltr"
+                        {...registerLogin("emailOrPhone")}
+                        placeholder={t("", "")}
+                        className={loginErrors.emailOrPhone ? styles.inputError : ""}
+                      />
+                      <span className={styles.inputIcon}>👤</span>
+                    </div>
+                    {loginErrors.emailOrPhone && (
+                      <span className={styles.error}>{loginErrors.emailOrPhone.message}</span>
+                    )}
+                  </div>
 
-              <div className={styles.formGroup}>
-                <label className={styles.label}>{t("Password", "رمز عبور")}</label>
-                <div className={styles.inputWrapper}>
-                  <input
-                    type={showPassword.loginPassword ? "text" : "password"}
-                    {...registerLogin("password")}
-                    placeholder={t("", "")}
-                    className={loginErrors.password ? styles.inputError : ""}
-                  />
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>{t("Password", "رمز عبور")}</label>
+                    <div className={styles.inputWrapper}>
+                      <input
+                        type={showPassword.loginPassword ? "text" : "password"}
+                        {...registerLogin("password")}
+                        placeholder={t("", "")}
+                        className={loginErrors.password ? styles.inputError : ""}
+                      />
+                      <button
+                        type="button"
+                        className={styles.passwordToggle}
+                        onClick={() => togglePasswordVisibility("loginPassword")}
+                        aria-label={showPassword.loginPassword ? t("Hide password", "رمز عبور را پنهان کن") : t("Show password", "رمز عبور را نمایش بده")}
+                      >
+                        {showPassword.loginPassword ? <FiEyeOff /> : <FiEye />}
+                      </button>
+                    </div>
+                    {loginErrors.password && <span className={styles.error}>{loginErrors.password.message}</span>}
+                  </div>
+
+                  <div className={styles.checkboxGroup}>
+                    <input type="checkbox" id="keepSignedIn" />
+                    <label htmlFor="keepSignedIn">{t("Keep me signed in", "من را به خاطر بسپار")}</label>
+                  </div>
+
+                  <div className={styles.forgotPassword}>
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveForm("forgot");
+                      }}
+                    >
+                      {t("Forgot Password?", "رمز عبور را فراموش کرده‌اید؟")}
+                    </a>
+                  </div>
+
+                  <button type="submit" className={styles.btnPrimary} disabled={isLoading}>
+                    {isLoading ? t("Loading...", "در حال بارگذاری...") : t("Sign In", "ورود")}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>{t("Phone Number", "شماره تلفن")}</label>
+                    <div className={styles.inputWrapper}>
+                      <input
+                        type="tel"
+                        inputMode="tel"
+                        autoComplete="tel"
+                        dir="ltr"
+                        value={loginPhone}
+                        onChange={(event) => {
+                          setLoginPhone(event.target.value);
+                          setLoginCodeSent(false);
+                          setLoginCode("");
+                          setLoginCodeCountdown(0);
+                        }}
+                        placeholder="09123456789"
+                      />
+                      <span className={styles.inputIcon}>📱</span>
+                    </div>
+                  </div>
                   <button
                     type="button"
-                    className={styles.passwordToggle}
-                    onClick={() => togglePasswordVisibility("loginPassword")}
-                    aria-label={showPassword.loginPassword ? t("Hide password", "رمز عبور را پنهان کن") : t("Show password", "رمز عبور را نمایش بده")}
+                    className={styles.btnPrimary}
+                    onClick={onSendLoginCode}
+                    disabled={isLoading || loginCodeCountdown > 0}
                   >
-                    {showPassword.loginPassword ? <FiEyeOff /> : <FiEye />}
+                    {isLoading
+                      ? t("Sending...", "در حال ارسال...")
+                      : loginCodeSent
+                        ? loginCodeCountdown > 0
+                          ? `${t("Resend in", "ارسال دوباره تا")} ${Math.floor(loginCodeCountdown / 60)}:${String(loginCodeCountdown % 60).padStart(2, "0")}`
+                          : t("Resend Code", "ارسال دوباره کد")
+                        : t("Send Login Code", "ارسال کد ورود")}
                   </button>
-                </div>
-                {loginErrors.password && <span className={styles.error}>{loginErrors.password.message}</span>}
-              </div>
+                  {loginCodeSent && (
+                    <>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>{t("6-digit code", "کد ۶ رقمی")}</label>
+                        <div className={styles.inputWrapper}>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            autoComplete="one-time-code"
+                            maxLength={6}
+                            dir="ltr"
+                            value={loginCode}
+                            onChange={(event) => setLoginCode(event.target.value.replace(/\D/g, ""))}
+                          />
+                        </div>
+                      </div>
+                      <button type="button" className={styles.btnPrimary} onClick={onLoginWithCode} disabled={isLoading || loginCode.length !== 6}>
+                        {isLoading ? t("Signing in...", "در حال ورود...") : t("Sign In", "ورود")}
+                      </button>
+                    </>
+                  )}
+                </>
+              )}
 
-              <div className={styles.checkboxGroup}>
-                <input type="checkbox" id="keepSignedIn" />
-                <label htmlFor="keepSignedIn">{t("Keep me signed in", "من را به خاطر بسپار")}</label>
-              </div>
-
-              <div className={styles.forgotPassword}>
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setActiveForm("forgot");
+              <div className={styles.loginMethodToggle}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (loginMethod === "password") {
+                      const currentIdentifier = getLoginValues("emailOrPhone");
+                      setLoginPhone(/^\d[\d\s\-()]*$/.test(currentIdentifier || "") ? currentIdentifier : "");
+                      setLoginMethod("phone-code");
+                    } else {
+                      setLoginCodeSent(false);
+                      setLoginCode("");
+                      setLoginCodeCountdown(0);
+                      setLoginMethod("password");
+                    }
                   }}
                 >
-                  {t("Forgot Password?", "رمز عبور را فراموش کرده‌اید؟")}
-                </a>
+                  {loginMethod === "password"
+                    ? t("Sign in with a code sent to your phone", "ورود با کد ارسال‌شده به تلفن")
+                    : t("Sign in with password", "ورود با رمز عبور")}
+                </button>
               </div>
-
-              <button type="submit" className={styles.btnPrimary} disabled={isLoading}>
-                {isLoading ? t("Loading...", "در حال بارگذاری...") : t("Sign In", "ورود")}
-              </button>
 
               {/* <div className={styles.divider}>
                 <span>{t("Or continue with", "یا ادامه دهید با")}</span>
@@ -587,12 +782,14 @@ export default function LoginPage() {
                     autoComplete="given-name"
                     {...registerSignup("name")}
                     placeholder={t("")}
-                    className={signupErrors.name ? styles.inputError : ""}
+                    className={signupErrors.name && showSignupNameError("name") ? styles.inputError : ""}
                     required
                   />
                   <span className={styles.inputIcon}>👤</span>
                 </div>
-                {signupErrors.name && <span className={styles.error}>{signupErrors.name.message}</span>}
+                {signupErrors.name && showSignupNameError("name") && (
+                  <span className={styles.error}>{signupErrors.name.message}</span>
+                )}
               </div>
 
               <div className={styles.formGroup}>
@@ -603,12 +800,14 @@ export default function LoginPage() {
                     autoComplete="family-name"
                     {...registerSignup("surname")}
                     placeholder={t("")}
-                    className={signupErrors.surname ? styles.inputError : ""}
+                    className={signupErrors.surname && showSignupNameError("surname") ? styles.inputError : ""}
                     required
                   />
                   <span className={styles.inputIcon}>👤</span>
                 </div>
-                {signupErrors.surname && <span className={styles.error}>{signupErrors.surname.message}</span>}
+                {signupErrors.surname && showSignupNameError("surname") && (
+                  <span className={styles.error}>{signupErrors.surname.message}</span>
+                )}
               </div>
 
     

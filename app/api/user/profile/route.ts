@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { createActivity } from "@/lib/services/activities";
+import { isPersianName } from "@/lib/utils/nameValidation";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
@@ -55,24 +56,50 @@ export async function PUT(request: NextRequest) {
     const userId = session.user.id;
     const body = await request.json();
     const { name, surname, email, phone } = body;
+    const normalizedEmail =
+      typeof email === "string" ? email.trim() || null : email;
+
+    if (email !== undefined && email !== null && typeof email !== "string") {
+      return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
+    }
 
     // Validate required fields
-    if (!name || name.trim() === "") {
+    if (typeof name !== "string" || name.trim() === "") {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
+    if (!isPersianName(name)) {
+      return NextResponse.json(
+        {
+          error: "Please enter your name in Persian",
+          errorFa: "نام خود را به فارسی وارد کنید",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (typeof surname !== "string" || !isPersianName(surname)) {
+      return NextResponse.json(
+        {
+          error: "Please enter your family name in Persian",
+          errorFa: "نام خانوادگی خود را به فارسی وارد کنید",
+        },
+        { status: 400 }
+      );
+    }
+
     // Validate email format
-    if (email) {
+    if (normalizedEmail && typeof normalizedEmail === "string") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
+      if (!emailRegex.test(normalizedEmail)) {
         return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
       }
     }
 
     // Check if email is already taken by another user
-    if (email) {
+    if (normalizedEmail) {
       const existingUser = await db.query.users.findFirst({
-        where: eq(users.email, email),
+        where: eq(users.email, normalizedEmail),
       });
       if (existingUser && existingUser.id !== userId) {
         return NextResponse.json(
@@ -99,7 +126,7 @@ export async function PUT(request: NextRequest) {
 
     if (name !== undefined) updateData.name = name.trim();
     if (surname !== undefined) updateData.surname = surname?.trim() || null;
-    if (email !== undefined) updateData.email = email.trim();
+    if (email !== undefined) updateData.email = normalizedEmail;
     if (phone !== undefined) updateData.phone = phone?.trim() || null;
 
     // Fetch current user to check verification status
@@ -108,7 +135,7 @@ export async function PUT(request: NextRequest) {
     });
 
     // If email changed, prevent change if already verified
-    if (email && email !== currentUser?.email) {
+    if (normalizedEmail !== undefined && normalizedEmail !== currentUser?.email) {
       // Check if email is already verified - if so, prevent change
       if (currentUser?.emailVerified) {
         return NextResponse.json(
@@ -153,7 +180,7 @@ export async function PUT(request: NextRequest) {
     const hasChanges = 
       (name !== undefined && name !== currentUser?.name) ||
       (surname !== undefined && surname !== currentUser?.surname) ||
-      (email !== undefined && email !== currentUser?.email) ||
+      (email !== undefined && normalizedEmail !== currentUser?.email) ||
       (phone !== undefined && phone !== currentUser?.phone);
 
     if (hasChanges) {

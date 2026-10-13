@@ -35,6 +35,7 @@ interface Order {
     address: string;
   } | null;
   status: string;
+  shippingStatus: string | null;
   total: string;
   shippingCost: number;
   paymentMethod: string | null;
@@ -54,6 +55,7 @@ export default function OrdersSection() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMoreOrders, setIsLoadingMoreOrders] = useState(false);
+  const [isPreparingPaidOrders, setIsPreparingPaidOrders] = useState(false);
   const [ordersPage, setOrdersPage] = useState(1);
   const [hasMoreOrders, setHasMoreOrders] = useState(true);
   const ORDERS_LIMIT = 20;
@@ -186,7 +188,10 @@ export default function OrdersSection() {
     }).format(d);
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, shippingStatus?: string | null) => {
+    if (shippingStatus === "preparing") {
+      return <StatusBadge status="pending" label={t("Preparing", "آماده‌سازی")} />;
+    }
     const statusMap: Record<string, { type: "active" | "pending" | "inactive" | "info"; label: string }> = {
       pending: { type: "pending", label: t("Pending", "در انتظار") },
       processing: { type: "info", label: t("Processing", "در حال پردازش") },
@@ -242,6 +247,55 @@ export default function OrdersSection() {
       t("Confirm", "تایید"),
       t("Cancel", "لغو"),
       () => deleteOrder(orderId, orderNumber)
+    );
+  };
+
+  const preparePaidOrders = async () => {
+    setIsPreparingPaidOrders(true);
+    try {
+      const response = await fetch("/api/admin/orders/prepare-paid", {
+        method: "POST",
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to prepare paid orders");
+      }
+
+      if (data.updatedCount === 0) {
+        toast.success(t("No paid orders are waiting to be prepared", "سفارش پرداخت‌شده‌ای برای آماده‌سازی وجود ندارد"));
+      } else {
+        toast.success(
+          t(
+            `${data.updatedCount} paid orders are now being prepared`,
+            `${data.updatedCount} سفارش پرداخت‌شده برای آماده‌سازی ثبت شد`
+          )
+        );
+        setOrders([]);
+        setOrdersPage(1);
+        setHasMoreOrders(true);
+        await fetchOrders(1, true);
+      }
+    } catch (error) {
+      console.error("Error preparing paid orders:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : t("Failed to prepare paid orders", "آماده‌سازی سفارشات پرداخت‌شده ناموفق بود")
+      );
+    } finally {
+      setIsPreparingPaidOrders(false);
+    }
+  };
+
+  const confirmPreparePaidOrders = () => {
+    showConfirmationToast(
+      t(
+        "Mark all successfully paid orders currently processing as being prepared?",
+        "همه سفارش‌های پرداخت‌شده و در حال پردازش به وضعیت آماده‌سازی تغییر کنند؟"
+      ),
+      t("Confirm", "تایید"),
+      t("Cancel", "لغو"),
+      preparePaidOrders
     );
   };
 
@@ -319,7 +373,7 @@ export default function OrdersSection() {
     {
       key: "status",
       label: t("Status", "وضعیت"),
-      render: (value: string) => getStatusBadge(value),
+      render: (value: string, row: Order) => getStatusBadge(value, row.shippingStatus),
     },
     {
       key: "actions",
@@ -419,6 +473,18 @@ export default function OrdersSection() {
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1rem" }}>
           {/* Order Type Filter */}
           <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
+            <Button
+              variant="primary"
+              size="small"
+              onClick={confirmPreparePaidOrders}
+              disabled={isPreparingPaidOrders || isLoading}
+              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            >
+              <FiPackage />
+              {isPreparingPaidOrders
+                ? t("Preparing orders...", "در حال آماده‌سازی سفارشات...")
+                : t("Prepare Paid Orders", "آماده‌سازی سفارشات پرداخت‌شده")}
+            </Button>
             <button
               onClick={() => setFilterType("all")}
               style={{
@@ -732,7 +798,7 @@ export default function OrdersSection() {
                               {t("Status", "وضعیت")}:
                             </span>
                             <span className={styles.orderMobileCardDetailValue}>
-                              {getStatusBadge(order.status)}
+                              {getStatusBadge(order.status, order.shippingStatus)}
                             </span>
                           </div>
                           <div className={styles.orderMobileCardActions}>
@@ -787,4 +853,3 @@ export default function OrdersSection() {
     </>
   );
 }
-

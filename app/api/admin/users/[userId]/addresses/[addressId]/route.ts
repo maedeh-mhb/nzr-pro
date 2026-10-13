@@ -25,6 +25,18 @@ export async function PUT(
     const body = await request.json();
     const { name, provinceId, cityId, address, postalCode, country, isDefault } = body;
 
+    if (postalCode !== undefined && typeof postalCode !== "string") {
+      return NextResponse.json({ error: "Postal code must be a string" }, { status: 400 });
+    }
+    const normalizedPostalCode =
+      typeof postalCode === "string" ? postalCode.trim() : postalCode === null ? "" : postalCode;
+    if (normalizedPostalCode && !/^\d{10}$/.test(normalizedPostalCode)) {
+      return NextResponse.json(
+        { error: "Postal code must be exactly 10 digits" },
+        { status: 400 }
+      );
+    }
+
     // If setting as default, unset other defaults
     if (isDefault) {
       await db
@@ -40,7 +52,7 @@ export async function PUT(
         provinceId: provinceId !== undefined ? provinceId : undefined,
         cityId: cityId !== undefined ? cityId : undefined,
         address: address !== undefined ? address : undefined,
-        postalCode: postalCode !== undefined ? postalCode : undefined,
+        postalCode: normalizedPostalCode !== undefined ? normalizedPostalCode : undefined,
         country: country !== undefined ? country : undefined,
         isDefault: isDefault !== undefined ? isDefault : undefined,
         updatedAt: new Date(),

@@ -10,6 +10,7 @@ import { useSession } from "next-auth/react";
 import SkeletonLoader from "../SkeletonLoader";
 import EmptyState from "../EmptyState";
 import OrderStatusTimeline from "../OrderStatusTimeline";
+import OrderEditor, { EditableOrderItem } from "@/components/orders/OrderEditor";
 import styles from "@/styles/components/_dashboard.module.scss";
 
 interface OrdersSectionProps {
@@ -17,8 +18,9 @@ interface OrdersSectionProps {
 }
 
 interface OrderItem {
+  productId: string;
   productName: string;
-  productNameFa?: string; // Add optional Farsi name
+  productNameFa?: string | null;
   quantity: number;
   price: string;
 }
@@ -29,6 +31,7 @@ interface Order {
   status: string;
   total: string;
   shippingCost?: number;
+  discountAmount?: string | null;
   paymentMethod: string;
   paymentVerified: Date | string | null;
   shippingMethod: string | null;
@@ -39,6 +42,8 @@ interface Order {
   createdAt: Date | string;
   updatedAt: Date | string;
   isCart?: boolean; // Flag to identify cart items
+  canEdit?: boolean;
+  editExpiresAt?: string;
 }
 
 interface ContactSettings {
@@ -85,8 +90,33 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
         console.error("Error fetching contact settings:", error);
       }
     };
+
     fetchContactSettings();
   }, []);
+
+  const handleOrderSaved = (
+    orderId: string,
+    total: string,
+    items: EditableOrderItem[],
+    shippingCost: number,
+    discountAmount: string | null
+  ) => {
+    setOrders((current) =>
+      current.map((order) =>
+        order.id === orderId
+          ? {
+              ...order,
+              total,
+              items,
+              shippingCost,
+              discountAmount,
+              status: items.length ? order.status : "cancelled",
+              canEdit: items.length ? order.canEdit : false,
+            }
+          : order
+      )
+    );
+  };
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -128,6 +158,7 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
               trackingCode: null,
               deliveryConfirmedByUser: null,
               items: cartItems.map((item) => ({
+                productId: item.productId,
                 productName: language === "fa" && item.nameFa ? item.nameFa : item.name,
                 productNameFa: item.nameFa ?? undefined, // Store Farsi name for future use
                 quantity: item.quantity,
@@ -163,6 +194,7 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
         return styles.statusProcessing;
       case "pending":
       case "pending_payment":
+      case "payment_pending":
       case "cart_pending":
         return styles.statusPending;
       case "cancelled":
@@ -184,6 +216,7 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
         return t("Shipped", "ارسال شده");
       case "pending":
       case "pending_payment":
+      case "payment_pending":
         return t("Pending", "در انتظار");
       case "cart_pending":
         return t("Cart - Awaiting Payment", "سبد خرید - در انتظار پرداخت");
@@ -242,7 +275,7 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
     (order) =>
       !order.isCart &&
       !order.deliveryConfirmedByUser &&
-      ["pending", "pending_payment", "processing", "shipped"].includes(order.status?.toLowerCase())
+      ["pending", "pending_payment", "payment_pending", "processing", "shipped"].includes(order.status?.toLowerCase())
   );
   const completedOrders = orders.filter(
     (order) =>
@@ -481,6 +514,16 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
                               deliveryConfirmedByUser={order.deliveryConfirmedByUser}
                               onRequestDeliveryConfirmation={order.status?.toLowerCase() === "delivered" && !order.deliveryConfirmedByUser ? () => setDeliveryConfirmationOrderId(order.id) : undefined}
                             />
+                            {order.canEdit && order.editExpiresAt && (
+                              <OrderEditor
+                                orderId={order.id}
+                                items={order.items}
+                                editExpiresAt={order.editExpiresAt}
+                                onSaved={(total, items, shippingCost, discountAmount) =>
+                                  handleOrderSaved(order.id, total, items, shippingCost, discountAmount)
+                                }
+                              />
+                            )}
                           </div>
                         )}
                       </div>

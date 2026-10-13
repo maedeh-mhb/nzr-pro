@@ -109,7 +109,8 @@ export const guestOrders = pgTable("guest_orders", {
   cityId: integer("city_id").notNull(), // ID from cities JSON
   address: text("address").notNull(), // Complete address text
   postalCode: text("postal_code"), // 10-digit postal code
+  editTokenHash: text("edit_token_hash"),
+  editExpiresAt: timestamp("edit_expires_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
-

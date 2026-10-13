@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { orders, orderItems } from "@/lib/db/schema";
 import { eq, desc, count as drizzleCount } from "drizzle-orm";
 import { paginatedResponse } from "@/lib/utils/apiResponse";
+import { isOrderWithinEditWindow, ORDER_EDIT_WINDOW_MS } from "@/lib/utils/orderEditing";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
@@ -60,6 +61,14 @@ export async function GET(request: NextRequest) {
           status: order.status,
           total: order.total,
                     shippingCost,
+                    canEdit:
+                      isOrderWithinEditWindow(order.createdAt) &&
+                      ["pending", "payment_pending"].includes(order.status) &&
+                      !order.paymentVerified &&
+                      !order.zibalTrackId,
+                    editExpiresAt: new Date(
+                      order.createdAt.getTime() + ORDER_EDIT_WINDOW_MS
+                    ).toISOString(),
           paymentMethod: order.paymentMethod,
           paymentVerified: order.paymentVerified,
           shippingMethod: order.shippingMethod,
@@ -67,6 +76,7 @@ export async function GET(request: NextRequest) {
           trackingCode: order.trackingCode,
           deliveryConfirmedByUser: order.deliveryConfirmedByUser,
           items: items.map((item) => ({
+            productId: item.productId,
             productName: item.productName,
             productNameFa: item.productNameFa, // Include Farsi name
             quantity: item.quantity,
@@ -88,4 +98,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

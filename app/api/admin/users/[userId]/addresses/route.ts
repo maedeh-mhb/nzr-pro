@@ -57,9 +57,20 @@ export async function POST(
     const body = await request.json();
     const { name, provinceId, cityId, address, postalCode, country, isDefault } = body;
 
-    if (!name || !provinceId || !cityId || !address || !postalCode) {
+    if (!name || !provinceId || !cityId || !address) {
       return NextResponse.json(
         { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    if (postalCode !== undefined && postalCode !== null && typeof postalCode !== "string") {
+      return NextResponse.json({ error: "Postal code must be a string" }, { status: 400 });
+    }
+    const normalizedPostalCode = typeof postalCode === "string" ? postalCode.trim() : "";
+    if (normalizedPostalCode && !/^\d{10}$/.test(normalizedPostalCode)) {
+      return NextResponse.json(
+        { error: "Postal code must be exactly 10 digits" },
         { status: 400 }
       );
     }
@@ -80,7 +91,7 @@ export async function POST(
         provinceId,
         cityId,
         address,
-        postalCode,
+        postalCode: normalizedPostalCode,
         country: country || "Iran",
         isDefault: isDefault || false,
       })

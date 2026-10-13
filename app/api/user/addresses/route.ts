@@ -79,13 +79,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Address is required" }, { status: 400 });
     }
 
-    if (!postalCode || postalCode.trim() === "") {
-      return NextResponse.json({ error: "Postal code is required" }, { status: 400 });
+    if (postalCode !== undefined && postalCode !== null && typeof postalCode !== "string") {
+      return NextResponse.json({ error: "Postal code must be a string" }, { status: 400 });
     }
-
-    // Validate postal code: exactly 10 digits
-    const postalCodeRegex = /^\d{10}$/;
-    if (!postalCodeRegex.test(postalCode.trim())) {
+    const normalizedPostalCode =
+      typeof postalCode === "string" ? postalCode.trim() : "";
+    if (normalizedPostalCode && !/^\d{10}$/.test(normalizedPostalCode)) {
       return NextResponse.json(
         { error: "Postal code must be exactly 10 digits" },
         { status: 400 }
@@ -108,7 +107,7 @@ export async function POST(request: NextRequest) {
         provinceId: parseInt(provinceId),
         cityId: parseInt(cityId),
         address: address.trim(),
-        postalCode: postalCode.trim(),
+        postalCode: normalizedPostalCode,
         country: "Iran",
         isDefault,
       })
@@ -134,4 +133,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

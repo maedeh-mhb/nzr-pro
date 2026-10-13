@@ -3,6 +3,7 @@
  */
 
 import { z } from "zod";
+import { isPersianName } from "@/lib/utils/nameValidation";
 
 /**
  * Common field schemas
@@ -83,8 +84,18 @@ export const decimalSchema = z
 
 // Signup schema
 export const signupSchema = z.object({
-  name: z.string().trim().min(1, "Name is required").max(100, "Name is too long"),
-  surname: z.string().trim().min(1, "Family name is required").max(100, "Family name is too long"),
+  name: z
+    .string()
+    .trim()
+    .min(1, "Name is required")
+    .max(100, "Name is too long")
+    .refine(isPersianName, "Name must be written in Persian"),
+  surname: z
+    .string()
+    .trim()
+    .min(1, "Family name is required")
+    .max(100, "Family name is too long")
+    .refine(isPersianName, "Family name must be written in Persian"),
   email: z
     .union([emailSchema, z.literal("")])
     .optional()
