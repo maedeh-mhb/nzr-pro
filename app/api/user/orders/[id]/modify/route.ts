@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { and, eq, inArray, isNull, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import {
@@ -10,6 +10,7 @@ import {
   orders,
   products,
   shippingSettings,
+  walletTransactions,
 } from "@/lib/db/schema";
 import {
   calculateWeightBasedShippingCost,
@@ -74,28 +75,30 @@ export async function PATCH(
     if (!owner && !guestHasAccess) {
       return NextResponse.json({ error: "Unauthorized order access" }, { status: 403 });
     }
-    if (
-      !isOrderWithinEditWindow(order.createdAt) ||
-      !["pending", "payment_pending"].includes(order.status) ||
-      order.paymentVerified ||
-      order.zibalTrackId
-    ) {
+    const isPaidOrder = Boolean(order.paymentVerified);
+    const isUnpaidEditableOrder =
+      ["pending", "payment_pending"].includes(order.status) &&
+      !order.paymentVerified &&
+      !order.zibalTrackId;
+    const isPaidEditableOrder =
+      order.status === "processing" && isPaidOrder && Boolean(order.userId);
+    if (!isOrderWithinEditWindow(order.createdAt) || (!isUnpaidEditableOrder && !isPaidEditableOrder)) {
       return NextResponse.json({ error: "Order is no longer editable" }, { status: 409 });
     }
 
     const result = await db.transaction(async (tx) => {
       await tx.execute(sql`SELECT id FROM orders WHERE id = ${order.id} FOR UPDATE`);
-      const lockedOrder = await tx.query.orders.findFirst({
-        where: and(
-          eq(orders.id, order.id),
-          isNull(orders.paymentVerified),
-          isNull(orders.zibalTrackId),
-          inArray(orders.status, ["pending", "payment_pending"])
-        ),
-      });
+      const lockedOrder = await tx.query.orders.findFirst({ where: eq(orders.id, order.id) });
       if (!lockedOrder || !isOrderWithinEditWindow(lockedOrder.createdAt)) {
         throw new Error("ORDER_NOT_EDITABLE");
       }
+      const lockedIsPaid = Boolean(lockedOrder.paymentVerified);
+      const lockedIsEditable =
+        (lockedIsPaid && lockedOrder.status === "processing" && Boolean(lockedOrder.userId)) ||
+        (!lockedIsPaid &&
+          !lockedOrder.zibalTrackId &&
+          ["pending", "payment_pending"].includes(lockedOrder.status));
+      if (!lockedIsEditable) throw new Error("ORDER_NOT_EDITABLE");
       const previous = await tx.query.orderItems.findMany({
         where: eq(orderItems.orderId, lockedOrder.id),
       });
@@ -186,16 +189,47 @@ export async function PATCH(
           discount = Math.min(Number(code.discountValue || 0), subtotal);
         }
       }
+      const newTotal = Math.max(0, subtotal + postage - discount);
+      const paidAmount = Number(lockedOrder.paidAmount ?? (lockedIsPaid ? lockedOrder.total : 0));
+      const paymentAmount = Math.max(0, newTotal - paidAmount);
+      const refundAmount = Math.max(0, paidAmount - newTotal);
+      const requiresAdditionalPayment = paymentAmount > 0;
+
+      if (refundAmount > 0 && lockedOrder.userId) {
+        await tx.insert(walletTransactions).values({
+          userId: lockedOrder.userId,
+          type: "credit",
+          amount: refundAmount.toString(),
+          description: `Refund for order #${lockedOrder.orderNumber} after order edit`,
+          orderId: lockedOrder.id,
+        });
+      }
       const [updated] = await tx.update(orders)
         .set({
-          total: Math.max(0, subtotal + postage - discount).toString(),
+          total: newTotal.toString(),
+          paidAmount: requiresAdditionalPayment ? paidAmount.toString() : newTotal.toString(),
           discountAmount: discount.toString(),
-          status: newRows.length ? lockedOrder.status : "cancelled",
+          status: newRows.length
+            ? requiresAdditionalPayment
+              ? "payment_pending"
+              : lockedIsPaid
+                ? "processing"
+                : lockedOrder.status
+            : "cancelled",
+          paymentVerified: requiresAdditionalPayment ? null : lockedOrder.paymentVerified,
+          zibalTrackId: requiresAdditionalPayment ? null : lockedOrder.zibalTrackId,
           updatedAt: new Date(),
         })
         .where(eq(orders.id, order.id))
         .returning();
-      return { order: updated, items: newRows, postage };
+      return {
+        order: updated,
+        items: newRows,
+        postage,
+        paymentAmount,
+        refundAmount,
+        requiresAdditionalPayment,
+      };
     });
 
     return NextResponse.json({
@@ -205,6 +239,9 @@ export async function PATCH(
         total: result.order.total,
         shippingCost: result.postage,
         discountAmount: result.order.discountAmount,
+        paymentRequired: result.requiresAdditionalPayment,
+        paymentAmount: result.paymentAmount,
+        refundAmount: result.refundAmount,
         items: result.items.map((item) => ({
           productId: item.productId,
           productName: item.productName,

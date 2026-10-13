@@ -89,6 +89,10 @@
   display: none;
 }
 
+.instructionsMobileLabel {
+  display: none;
+}
+
 .logo {
   width: $logo-size;
   height: $logo-size;
@@ -473,6 +477,14 @@
   .mobileAuthItem {
     display: block;
     width: 100%;
+  }
+
+  .instructionsDesktopLabel {
+    display: none;
+  }
+
+  .instructionsMobileLabel {
+    display: inline;
   }
 
   .mobileAuthAction {

@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -50,11 +50,6 @@ const createSignupSchema = (t: (en: string, fa: string) => string) => yup.object
       t("Please enter your family name in Persian", "نام خانوادگی خود را به فارسی وارد کنید"),
       (value) => !value || isPersianName(value)
     ),
-  email: yup
-    .string()
-    .transform((value) => (value === "" ? undefined : value))
-    .email("Invalid email")
-    .optional(),
   phone: yup
     .string()
     .matches(/^09\d{9}$/, "Phone must be 11 digits starting with 09")
@@ -81,10 +76,19 @@ export default function LoginPage() {
   const { t, language } = useLanguage();
   const signupSchema = useMemo(() => createSignupSchema(t), [t]);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
+  const postLoginPath =
+    callbackUrl && callbackUrl.startsWith("/") && !callbackUrl.startsWith("//")
+      ? callbackUrl
+      : "/dashboard";
+  const requestedLoginMethod = searchParams.get("method");
   const { data: session, status } = useSession();
   const [activeForm, setActiveForm] = useState<"login" | "signup" | "forgot">("login");
   const [isLoading, setIsLoading] = useState(false);
-  const [loginMethod, setLoginMethod] = useState<"password" | "phone-code">("password");
+  const [loginMethod, setLoginMethod] = useState<"password" | "phone-code">(
+    requestedLoginMethod === "phone-code" ? "phone-code" : "password"
+  );
   const [loginPhone, setLoginPhone] = useState("");
   const [loginCode, setLoginCode] = useState("");
   const [loginCodeSent, setLoginCodeSent] = useState(false);
@@ -128,11 +132,11 @@ export default function LoginPage() {
       if (userRole === "admin" || userRole === "superadmin") {
         router.push("/admin");
       } else {
-        router.push("/dashboard");
+        router.push(postLoginPath);
       }
       router.refresh();
     }
-  }, [session, status, router]);
+  }, [session, status, router, postLoginPath]);
 
   // Login Form
   const {
@@ -251,7 +255,7 @@ export default function LoginPage() {
     } else {
       toast.success(t("Signed in successfully!", "با موفقیت وارد شدید!"));
       setTimeout(() => {
-        router.push("/dashboard");
+        router.push(postLoginPath);
         router.refresh();
       }, 100);
     }
@@ -360,7 +364,6 @@ export default function LoginPage() {
         body: JSON.stringify({
           name: data.name,
           surname: data.surname,
-          email: data.email || undefined,
           password: data.password,
           phone: data.phone,
           verificationToken: registrationToken,
@@ -376,7 +379,7 @@ export default function LoginPage() {
         toast.success(t("Account created successfully!", "حساب با موفقیت ایجاد شد!"));
         // Auto login after signup
         const signInResult = await signIn("credentials", {
-          emailOrPhone: data.email || data.phone,
+          emailOrPhone: data.phone,
           password: data.password,
           redirect: false,
         });
@@ -495,7 +498,7 @@ export default function LoginPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      const result = await signIn("google", { callbackUrl: "/dashboard" });
+      const result = await signIn("google", { callbackUrl: postLoginPath });
       if (result?.error) {
         toast.error(
           t("Google sign-in failed. Please try again.", "ورود با گوگل ناموفق بود. لطفاً دوباره تلاش کنید.")
@@ -564,6 +567,38 @@ export default function LoginPage() {
 
           {/* Auth Content */}
           <div className={styles.authContent}>
+            {activeForm === "login" && (
+              <div className={styles.loginMethodTabs} role="tablist" aria-label={t("Login method", "روش ورود")}>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={loginMethod === "password"}
+                  className={`${styles.loginMethodTab} ${loginMethod === "password" ? styles.active : ""}`}
+                  onClick={() => {
+                    setLoginCodeSent(false);
+                    setLoginCode("");
+                    setLoginCodeCountdown(0);
+                    setLoginMethod("password");
+                  }}
+                >
+                  {t("Password", "رمز عبور")}
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={loginMethod === "phone-code"}
+                  className={`${styles.loginMethodTab} ${loginMethod === "phone-code" ? styles.active : ""}`}
+                  onClick={() => {
+                    const currentIdentifier = getLoginValues("emailOrPhone");
+                    setLoginPhone(/^\d[\d\s\-()]*$/.test(currentIdentifier || "") ? currentIdentifier : "");
+                    setLoginMethod("phone-code");
+                  }}
+                >
+                  {t("Phone verification code", "کد تأیید تلفن")}
+                </button>
+              </div>
+            )}
+
             {/* Login Form */}
             <form
               className={`${styles.authForm} ${activeForm === "login" ? styles.active : ""}`}
@@ -691,28 +726,6 @@ export default function LoginPage() {
                   )}
                 </>
               )}
-
-              <div className={styles.loginMethodToggle}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (loginMethod === "password") {
-                      const currentIdentifier = getLoginValues("emailOrPhone");
-                      setLoginPhone(/^\d[\d\s\-()]*$/.test(currentIdentifier || "") ? currentIdentifier : "");
-                      setLoginMethod("phone-code");
-                    } else {
-                      setLoginCodeSent(false);
-                      setLoginCode("");
-                      setLoginCodeCountdown(0);
-                      setLoginMethod("password");
-                    }
-                  }}
-                >
-                  {loginMethod === "password"
-                    ? t("Sign in with a code sent to your phone", "ورود با کد ارسال‌شده به تلفن")
-                    : t("Sign in with password", "ورود با رمز عبور")}
-                </button>
-              </div>
 
               {/* <div className={styles.divider}>
                 <span>{t("Or continue with", "یا ادامه دهید با")}</span>
@@ -866,22 +879,6 @@ export default function LoginPage() {
                     {t("Phone number verified", "شماره تلفن تأیید شده است")}
                   </span>
                 )}
-              </div>
- <div className={styles.formGroup}>
-                <label className={styles.label}>
-                  <span>{t("Email Address", "آدرس ایمیل")}</span>
-                  <span className={styles.optional}>{t("(Optional)", "(اختیاری)")}</span>
-                </label>
-                <div className={styles.inputWrapper}>
-                  <input
-                    type="email"
-                    {...registerSignup("email")}
-                    placeholder={t("")}
-                    className={signupErrors.email ? styles.inputError : ""}
-                  />
-                  {/* <span className={styles.inputIcon}>📧</span> */}
-                </div>
-                {signupErrors.email && <span className={styles.error}>{signupErrors.email.message}</span>}
               </div>
               <div className={styles.formGroup}>
                 <label className={styles.label}>{t("Password", "رمز عبور")}</label>

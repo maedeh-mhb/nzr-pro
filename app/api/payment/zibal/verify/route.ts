@@ -50,6 +50,7 @@ export async function POST(request: NextRequest) {
         .set({
           status: "processing",
           paymentVerified: new Date(),
+          paidAmount: order.total,
           zibalTrackId: trackId.toString(),
         })
         .where(eq(orders.id, order.id));

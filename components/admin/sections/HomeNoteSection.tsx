@@ -186,24 +186,39 @@ export default function HomeNoteSection() {
 
               <div className={formStyles.formGroup}>
                 <label className={formStyles.formLabel}>{t("Availability voice", "فایل صوتی زمان عرضه")}</label>
-                <input
-                  ref={availabilityAudioInputRef}
-                  type="file"
-                  accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/m4a,audio/mp4"
-                  onChange={handleAvailabilityAudioUpload}
-                  disabled={isUploadingAvailabilityAudio}
-                  style={{ display: "none" }}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={isUploadingAvailabilityAudio}
-                  onClick={() => availabilityAudioInputRef.current?.click()}
-                >
-                  {isUploadingAvailabilityAudio
-                    ? t("Uploading...", "در حال آپلود...")
-                    : t("Upload voice file", "آپلود فایل صوتی")}
-                </Button>
+                <div className={styles.uploadOptions}>
+                  <div className={styles.uploadOption}>
+                    <input
+                      ref={availabilityAudioInputRef}
+                      type="file"
+                      accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/m4a,audio/mp4"
+                      onChange={handleAvailabilityAudioUpload}
+                      disabled={isUploadingAvailabilityAudio}
+                      style={{ display: "none" }}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={isUploadingAvailabilityAudio}
+                      onClick={() => availabilityAudioInputRef.current?.click()}
+                      style={{ width: "100%" }}
+                    >
+                      {isUploadingAvailabilityAudio
+                        ? t("Uploading...", "در حال آپلود...")
+                        : t("Upload voice file", "آپلود فایل صوتی")}
+                    </Button>
+                  </div>
+                  <div className={styles.uploadOption}>
+                    <input
+                      type="url"
+                      value={availabilityAudioUrl}
+                      onChange={(event) => setAvailabilityAudioUrl(event.target.value)}
+                      className={formStyles.formInput}
+                      placeholder={t("Or enter an external audio URL", "یا لینک خارجی فایل صوتی را وارد کنید")}
+                      dir="ltr"
+                    />
+                  </div>
+                </div>
                 {availabilityAudioUrl && (
                   <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginTop: "0.75rem" }}>
                     <audio controls preload="metadata" src={availabilityAudioUrl} style={{ flex: 1, minWidth: 0 }} />

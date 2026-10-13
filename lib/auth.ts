@@ -159,6 +159,11 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        await db
+          .update(users)
+          .set({ phoneVerified: new Date(), updatedAt: new Date() })
+          .where(eq(users.id, user.id));
+
         return {
           id: user.id,
           email: user.email,

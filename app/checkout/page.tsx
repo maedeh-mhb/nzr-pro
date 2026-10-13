@@ -141,7 +141,6 @@ export default function CheckoutPage() {
   // Get selected items for checkout - memoize to prevent infinite loops
   const selectedItemsList = useMemo(() => getSelectedItems(), [items, selectedItems]);
   const selectedItemIds = useMemo(() => Array.from(selectedItems), [selectedItems]);
-  const [isGuestCheckout, setIsGuestCheckout] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [isLoadingPaymentMethods, setIsLoadingPaymentMethods] = useState(true);
@@ -239,6 +238,12 @@ export default function CheckoutPage() {
     }
   }, [sessionStatus, session, wasAuthenticated]);
 
+  useEffect(() => {
+    if (sessionStatus === "unauthenticated" && !cartLoading && items.length > 0) {
+      router.replace("/login?callbackUrl=%2Fcheckout&method=phone-code");
+    }
+  }, [sessionStatus, cartLoading, items.length, router]);
+
   // Load CSRF token
   useEffect(() => {
     const loadCsrfToken = async () => {
@@ -312,6 +317,11 @@ export default function CheckoutPage() {
   // Only consider user a guest if session has finished loading and there's no authenticated session
   const isGuest = sessionStatus !== "loading" && (sessionStatus === "unauthenticated" || !session);
   const isAuthenticated = sessionStatus === "authenticated" && !!session;
+  const needsProfileDetails =
+    isAuthenticated &&
+    !!userProfile &&
+    (!userProfile.name?.trim() || !userProfile.surname?.trim());
+  const requiresContactInfo = isGuest || needsProfileDetails;
 
   // Create schema with current language
   const guestCheckoutSchema = useMemo(() => createGuestCheckoutSchema(t), [t]);
@@ -327,7 +337,7 @@ export default function CheckoutPage() {
     resolver: yupResolver(guestCheckoutSchema),
     mode: "onChange",
     reValidateMode: "onChange",
-    context: { isGuest },
+    context: { isGuest: requiresContactInfo },
     defaultValues: { createAccount: false },
   });
 
@@ -419,6 +429,10 @@ export default function CheckoutPage() {
           if (response.ok) {
             const data = await response.json();
             setUserProfile(data);
+            if (!data.name?.trim()) setValue("guestName", "");
+            if (!data.surname?.trim()) setValue("guestSurname", "");
+            if (data.email) setValue("guestEmail", data.email);
+            if (data.phone) setValue("guestPhone", data.phone);
           }
         } catch (error) {
           console.error("Error loading user profile:", error);
@@ -567,13 +581,6 @@ export default function CheckoutPage() {
     }
   }, [selectedShippingMethod, originalShippingCost]);
 
-  // If user is logged in, redirect to registered checkout (or show registered form)
-  // For now, we'll show guest checkout option for both
-  const handleGuestCheckout = () => {
-    setIsGuestCheckout(true);
-    setCurrentStep("shipping");
-  };
-
   // Calculate totals for selected items only
   const subtotalPrice = selectedItemsList.reduce((total, item) => {
     const price = parseFloat(item.price) || 0;
@@ -591,9 +598,11 @@ export default function CheckoutPage() {
     if (!isAuthenticated) return true; // Guest checkout doesn't have these requirements
 
     // Check full name
-    const hasFullName =
-      isPersianName(userProfile?.name || "") &&
-      isPersianName(userProfile?.surname || "");
+    const hasFullName = needsProfileDetails
+      ? isPersianName(watch("guestName") || "") &&
+        isPersianName(watch("guestSurname") || "")
+      : isPersianName(userProfile?.name || "") &&
+        isPersianName(userProfile?.surname || "");
 
     // Check verified phone
     const hasVerifiedPhone = userProfile?.phoneVerified;
@@ -613,7 +622,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (!isAuthenticated && !isGuestCheckout) {
+    if (!isAuthenticated) {
       setCurrentStep("account");
       return;
     }
@@ -629,7 +638,7 @@ export default function CheckoutPage() {
     }
 
     setCurrentStep("payment");
-  }, [selectedItemsList.length, provinceId, cityId, watch, isAuthenticated, isGuestCheckout]);
+  }, [selectedItemsList.length, provinceId, cityId, watch, isAuthenticated]);
 
   const handleStepClick = (step: CheckoutStep) => {
     const order: CheckoutStep[] = (!isAuthenticated ? ["cart", "account", "shipping", "payment", "complete"] : ["cart", "shipping", "payment", "complete"]);
@@ -936,6 +945,36 @@ export default function CheckoutPage() {
 
     setIsLoading(true);
     try {
+      if (isAuthenticated && needsProfileDetails) {
+        const profileResponse = await fetch("/api/user/profile", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: data.guestName,
+            surname: data.guestSurname,
+            email: data.guestEmail || null,
+            phone: data.guestPhone,
+          }),
+        });
+        const profileResult = await profileResponse.json();
+        if (!profileResponse.ok) {
+          toast.error(
+            profileResult.errorFa && language === "fa"
+              ? profileResult.errorFa
+              : profileResult.error || t("Unable to update your profile", "به‌روزرسانی پروفایل ممکن نشد")
+          );
+          setIsLoading(false);
+          return;
+        }
+        setUserProfile((current: any) => ({
+          ...current,
+          name: data.guestName,
+          surname: data.guestSurname,
+          email: data.guestEmail || null,
+          phone: data.guestPhone,
+        }));
+      }
+
       // First, validate selected items
       const validationBody: any = {
         cartItemIds: selectedItemIds,
@@ -1023,10 +1062,7 @@ export default function CheckoutPage() {
         requestBody.guestSurname = data.guestSurname;
         requestBody.guestEmail = data.guestEmail;
         requestBody.guestPhone = data.guestPhone;
-        requestBody.createAccount = data.createAccount;
-        if (data.createAccount) {
-          requestBody.accountPassword = data.accountPassword;
-        }
+        requestBody.createAccount = true;
         requestBody.provinceId = data.provinceId;
         requestBody.cityId = data.cityId;
         requestBody.address = data.address;
@@ -1163,6 +1199,19 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return null; // Will redirect
+  }
+
+  if (sessionStatus === "unauthenticated") {
+    return (
+      <>
+        <Navbar />
+        <div className={styles.checkoutContainer}>
+          <p>{t("Redirecting to phone verification...", "در حال انتقال به تأیید شماره تلفن...")}</p>
+        </div>
+        <Footer />
+        <BottomBar />
+      </>
+    );
   }
 
   return (
@@ -1723,7 +1772,7 @@ export default function CheckoutPage() {
                                         flexShrink: 0
                                       }}
                                     />
-                                    <p className={styles.paymentMethodText}>
+                                    {/* <p className={styles.paymentMethodText}>
                                       {language === "fa"
                                         ? (
                                           <>
@@ -1741,7 +1790,7 @@ export default function CheckoutPage() {
                                             </span>
                                           </>
                                         )}
-                                    </p>
+                                    </p> */}
                                   </div>
                                 </div>
                               );
@@ -1856,14 +1905,14 @@ export default function CheckoutPage() {
                 </form>
               </div>
             </>
-          ) : sessionStatus === "unauthenticated" && !isGuestCheckout ? (
+          ) : sessionStatus === "unauthenticated" ? (
             <>
               <div className={styles.checkoutOptions}>
                 <div className={styles.optionRow}>
                   <div className={styles.optionCard}>
                     <h2>{t("Already have an account?", "حساب کاربری دارید؟")}</h2>
                     <p>{t("Sign in to your account for faster checkout and order tracking", "برای تسویه حساب سریع‌تر و ردیابی سفارش وارد حساب خود شوید")}</p>
-                    <Link href="/login" className={styles.signInButton}>
+                    <Link href="/login?callbackUrl=%2Fcheckout" className={styles.signInButton}>
                       {t("Sign In", "ورود")}
                     </Link>
                   </div>
@@ -1875,9 +1924,12 @@ export default function CheckoutPage() {
                   <div className={styles.optionCard}>
                     <h2>{t("Continue as Guest", "ادامه به عنوان مهمان")}</h2>
                     <p>{t("Checkout quickly without creating an account", "بدون ایجاد حساب کاربری خرید کنید")}</p>
-                    <button onClick={handleGuestCheckout} className={styles.guestButton}>
+                    <Link
+                      href="/login?callbackUrl=%2Fcheckout&method=phone-code"
+                      className={styles.guestButton}
+                    >
                       {t("Continue as Guest", "ادامه به عنوان مهمان")}
-                    </button>
+                    </Link>
                   </div>
                 </div>
 
@@ -1897,7 +1949,7 @@ export default function CheckoutPage() {
                     {/* Left Panel - Purchase Details */}
                     <div className={styles.leftPanel}>
                       {/* Guest Information Section */}
-                      {sessionStatus === "unauthenticated" && (
+                      {requiresContactInfo && (
                         <div className={styles.section}>
                           <h2 className={styles.sectionTitle}>{t("Contact Information", "اطلاعات تماس")}</h2>
                           <Input
@@ -1933,29 +1985,12 @@ export default function CheckoutPage() {
                             placeholder={t("09XXXXXXXXX", "09XXXXXXXXX")}
                           />
                           <div className={styles.createAccountSection}>
-                            <label className={styles.checkboxLabel}>
-                              <span className={styles.checkboxText}>
-                                {t("Create an account for faster checkout", "برای تسویه حساب سریع‌تر یک حساب کاربری ایجاد کنید")}
-                              </span>
-                              <input
-                                type="checkbox"
-                                className={styles.customCheckbox}
-                                {...register("createAccount")}
-                              />
-                              <span className={styles.checkboxCustom} aria-hidden="true" />
-                            </label>
-                            {watch("createAccount") && (
-                              <div className={styles.accountPasswordField}>
-                                <Input
-                                  type="password"
-                                  label={t("Create a password", "یک رمز عبور ایجاد کنید")}
-                                  autoComplete="new-password"
-                                  {...register("accountPassword")}
-                                  error={errors.accountPassword?.message}
-                                  placeholder={t("At least 8 characters", "حداقل ۸ کاراکتر")}
-                                />
-                              </div>
-                            )}
+                            <p className={styles.emailHelperText}>
+                              {t(
+                                "A profile will be created automatically from this information. You can sign in later with your phone and verification code.",
+                                "پروفایل شما با این اطلاعات به‌صورت خودکار ایجاد می‌شود و بعداً می‌توانید با شماره تلفن و کد تأیید وارد شوید."
+                              )}
+                            </p>
                           </div>
                         </div>
                       )}

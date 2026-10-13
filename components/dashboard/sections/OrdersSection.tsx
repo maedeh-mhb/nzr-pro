@@ -99,7 +99,8 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
     total: string,
     items: EditableOrderItem[],
     shippingCost: number,
-    discountAmount: string | null
+    discountAmount: string | null,
+    paymentRequired?: boolean
   ) => {
     setOrders((current) =>
       current.map((order) =>
@@ -111,7 +112,7 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
               shippingCost,
               discountAmount,
               status: items.length ? order.status : "cancelled",
-              canEdit: items.length ? order.canEdit : false,
+              canEdit: items.length && !paymentRequired ? order.canEdit : false,
             }
           : order
       )
@@ -519,8 +520,8 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
                                 orderId={order.id}
                                 items={order.items}
                                 editExpiresAt={order.editExpiresAt}
-                                onSaved={(total, items, shippingCost, discountAmount) =>
-                                  handleOrderSaved(order.id, total, items, shippingCost, discountAmount)
+                                onSaved={(total, items, shippingCost, discountAmount, paymentRequired) =>
+                                  handleOrderSaved(order.id, total, items, shippingCost, discountAmount, paymentRequired)
                                 }
                               />
                             )}

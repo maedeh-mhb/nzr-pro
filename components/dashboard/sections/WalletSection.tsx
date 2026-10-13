@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useLanguage } from "@/lib/utils/language";
 import { formatPrice } from "@/lib/utils/formatPrice";
 import toast from "react-hot-toast";
@@ -14,6 +15,27 @@ interface WalletSectionProps {
 export default function WalletSection({ setActiveSection }: WalletSectionProps) {
   const { t, language, currency } = useLanguage();
   const displayCurrency = currency || "toman";
+  const [balance, setBalance] = useState(0);
+  const [transactions, setTransactions] = useState<Array<{
+    id: string;
+    type: string;
+    amount: string;
+    description: string | null;
+    createdAt: string;
+  }>>([]);
+
+  useEffect(() => {
+    fetch("/api/user/wallet")
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Failed to fetch wallet");
+        return response.json();
+      })
+      .then((data) => {
+        setBalance(Number(data.balance || 0));
+        setTransactions(data.transactions || []);
+      })
+      .catch((error) => console.error("Error fetching wallet:", error));
+  }, []);
 
   return (
     <>
@@ -29,7 +51,7 @@ export default function WalletSection({ setActiveSection }: WalletSectionProps) 
           <div className={styles.balanceLabel}>
             {t("Available Balance", "موجودی قابل دسترس")}
           </div>
-          <div className={styles.balanceAmount}>{formatPrice(150000, language, displayCurrency)}</div>
+          <div className={styles.balanceAmount}>{formatPrice(balance, language, displayCurrency)}</div>
           <div className={styles.walletActions}>
             <Button
               variant="primary"
@@ -54,39 +76,22 @@ export default function WalletSection({ setActiveSection }: WalletSectionProps) 
             <span>{t("Transaction History", "تاریخچه تراکنش")}</span>
           </h3>
         </div>
-        <div className={styles.orderItem}>
-          <div className={styles.orderHeader}>
-            <span className={styles.orderProduct}>
-              {t("Funds Added", "وجه اضافه شد")}
-            </span>
-            <span className={styles.transactionPositive}>
-              +{formatPrice(100000, language, displayCurrency)}
-            </span>
+        {transactions.map((transaction) => (
+          <div className={styles.orderItem} key={transaction.id}>
+            <div className={styles.orderHeader}>
+              <span className={styles.orderProduct}>
+                {transaction.description || t("Wallet transaction", "تراکنش کیف پول")}
+              </span>
+              <span className={transaction.type === "credit" ? styles.transactionPositive : styles.transactionNegative}>
+                {transaction.type === "credit" ? "+" : "-"}
+                {formatPrice(Number(transaction.amount), language, displayCurrency)}
+              </span>
+            </div>
+            <div className={styles.orderDate}>
+              {new Intl.DateTimeFormat(language === "fa" ? "fa-IR" : "en-US").format(new Date(transaction.createdAt))}
+            </div>
           </div>
-          <div className={styles.orderDate}>December 15, 2025</div>
-        </div>
-        <div className={styles.orderItem}>
-          <div className={styles.orderHeader}>
-            <span className={styles.orderProduct}>
-              {t("Purchase - Order #1235", "خرید - سفارش #1235")}
-            </span>
-            <span className={styles.transactionNegative}>
-              -{formatPrice(199990, language, displayCurrency)}
-            </span>
-          </div>
-          <div className={styles.orderDate}>December 15, 2025</div>
-        </div>
-        <div className={styles.orderItem}>
-          <div className={styles.orderHeader}>
-            <span className={styles.orderProduct}>
-              {t("Refund - Order #1230", "بازپرداخت - سفارش #1230")}
-            </span>
-            <span className={styles.transactionPositive}>
-              +{formatPrice(89990, language, displayCurrency)}
-            </span>
-          </div>
-          <div className={styles.orderDate}>December 12, 2025</div>
-        </div>
+        ))}
       </div>
     </>
   );

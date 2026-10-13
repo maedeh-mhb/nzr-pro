@@ -52,9 +52,18 @@ function getCityNameById(cityId: number | null): string {
   return cityEn?.name || "";
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 /**
  * Export orders as CSV
- * GET /api/admin/orders/export?search=...&status=...&paymentMethod=...&dateFrom=...&dateTo=...&orderType=...
+ * GET /api/admin/orders/export?format=csv|word&search=...&status=...&paymentMethod=...&dateFrom=...&dateTo=...&orderType=...
  */
 export async function GET(request: NextRequest) {
   try {
@@ -76,6 +85,7 @@ export async function GET(request: NextRequest) {
     const dateFrom = searchParams.get("dateFrom") || "";
     const dateTo = searchParams.get("dateTo") || "";
     const orderType = searchParams.get("orderType") || "all";
+    const format = searchParams.get("format") || "csv";
 
     // Build where conditions (same logic as GET endpoint)
     const conditions: any[] = [];
@@ -175,10 +185,10 @@ export async function GET(request: NextRequest) {
           shippingStatus: order.shippingStatus || "",
           trackingCode: order.trackingCode || "",
           itemsCount: items.length,
-          items: items.map((item) => `${item.productName} x${item.quantity}`).join("; "),
+          items: items.map((item) => `${item.productName} x${item.quantity}`).join("\n"),
           itemsFarsi: items
             .map((item) => `${item.productNameFa ?? item.productName} x${item.quantity}`)
-            .join("; "),
+            .join("\n"),
           createdAt: order.createdAt,
           updatedAt: order.updatedAt,
         };
@@ -202,6 +212,64 @@ export async function GET(request: NextRequest) {
           (order.customerEmail || "").toLowerCase().includes(searchLower) ||
           (order.customerPhone && order.customerPhone.toLowerCase().includes(searchLower))
       );
+    }
+
+    if (format === "word") {
+      const verifiedOrders = ordersWithDetails.filter((order) => order.paymentVerified === "Yes");
+      const orderCells = verifiedOrders.map((order) => {
+        const location = [order.customerProvinceName, order.customerCityName]
+          .filter(Boolean)
+          .join("، ");
+        const items = escapeHtml(order.itemsFarsi).replace(/\n/g, "<br />");
+        const contactDetails = [
+          `نام و نام خانوادگی: ${escapeHtml(order.customerName)}`,
+          `شماره تماس: ${escapeHtml(order.customerPhone || "")}`,
+          `شهر و استان: ${escapeHtml(location)}`,
+          `آدرس: ${escapeHtml(order.customerAddress)}`,
+          `کد پستی: ${escapeHtml(order.customerPostalCode)}`,
+          `سفارشات: ${items}`,
+        ].join("<br />");
+
+        return `<td>${contactDetails}</td>`;
+      });
+      const orderRows = Array.from({ length: Math.ceil(orderCells.length / 2) }, (_, index) => {
+        const firstCell = orderCells[index * 2];
+        const secondCell = orderCells[index * 2 + 1] || "<td></td>";
+        return `<tr>${firstCell}${secondCell}</tr>`;
+      }).join("");
+
+      const wordDocument = `<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @page { size: A4; margin: 1.5cm; }
+      body { font-family: Tahoma, Arial, sans-serif; font-size: 11pt; }
+      table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+      tr { break-inside: avoid; page-break-inside: avoid; }
+      td {
+        width: 50%;
+        border: 1px solid #000;
+        padding: 8px;
+        line-height: 1.7;
+        vertical-align: top;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+    </style>
+  </head>
+  <body>
+    <table>${orderRows}</table>
+  </body>
+</html>`;
+      const timestamp = new Date().toISOString().split("T")[0];
+
+      return new NextResponse(wordDocument, {
+        headers: {
+          "Content-Type": "application/msword; charset=utf-8",
+          "Content-Disposition": `attachment; filename="orders-list-${timestamp}.doc"`,
+        },
+      });
     }
 
     // Generate CSV
@@ -296,4 +364,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

@@ -20,7 +20,9 @@ interface OrderEditorProps {
     total: string,
     items: EditableOrderItem[],
     shippingCost: number,
-    discountAmount: string | null
+    discountAmount: string | null,
+    paymentRequired?: boolean,
+    refundAmount?: number
   ) => void;
 }
 
@@ -98,8 +100,22 @@ export default function OrderEditor({
         data.order.total,
         data.order.items,
         data.order.shippingCost,
-        data.order.discountAmount
+        data.order.discountAmount,
+        data.paymentRequired,
+        data.refundAmount
       );
+      if (data.paymentRequired) {
+        const paymentResponse = await fetch("/api/payment/zibal/request", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId, editToken }),
+        });
+        const paymentData = await paymentResponse.json();
+        if (!paymentResponse.ok || !paymentData.paymentUrl) {
+          throw new Error(paymentData.error || "Unable to start additional payment");
+        }
+        window.location.assign(paymentData.paymentUrl);
+      }
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "Unable to update order");
     } finally {

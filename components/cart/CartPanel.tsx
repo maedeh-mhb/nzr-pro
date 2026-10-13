@@ -254,7 +254,7 @@ export default function CartPanel() {
             </div>
             <div className={styles.actions}>
               <Link
-                href="/checkout"
+                href="/login?callbackUrl=%2Fcheckout&method=phone-code"
                 className={`${styles.checkoutButton} ${selectedCount === 0 ? styles.disabled : ""
                   }`}
                 onClick={(e) => {
@@ -283,4 +283,3 @@ export default function CartPanel() {
     </>
   );
 }
-

@@ -71,6 +71,7 @@ export async function GET(request: NextRequest) {
       await db.update(orders).set({
         status: "processing",
         paymentVerified: new Date(),
+        paidAmount: order.total,
         zibalTrackId: trackId,
       }).where(eq(orders.id, order.id));
 

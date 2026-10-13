@@ -63,9 +63,10 @@ export async function GET(request: NextRequest) {
                     shippingCost,
                     canEdit:
                       isOrderWithinEditWindow(order.createdAt) &&
-                      ["pending", "payment_pending"].includes(order.status) &&
-                      !order.paymentVerified &&
-                      !order.zibalTrackId,
+                      ((["pending", "payment_pending"].includes(order.status) &&
+                        !order.paymentVerified &&
+                        !order.zibalTrackId) ||
+                        (order.status === "processing" && Boolean(order.paymentVerified))),
                     editExpiresAt: new Date(
                       order.createdAt.getTime() + ORDER_EDIT_WINDOW_MS
                     ).toISOString(),

@@ -54,6 +54,7 @@ export default function OrdersSection() {
   const [searchQuery, setSearchQuery] = useState("");
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
   const [isLoadingMoreOrders, setIsLoadingMoreOrders] = useState(false);
   const [isPreparingPaidOrders, setIsPreparingPaidOrders] = useState(false);
   const [ordersPage, setOrdersPage] = useState(1);
@@ -434,6 +435,37 @@ export default function OrdersSection() {
   // Orders are already filtered by API, so use them directly
   const filteredOrders = orders;
 
+  const downloadOrdersExport = async (format: "csv" | "word") => {
+    try {
+      setIsExporting(true);
+      const params = new URLSearchParams(queryParams);
+      params.set("format", format);
+      const response = await fetch(`/api/admin/orders/export?${params.toString()}`);
+
+      if (!response.ok) {
+        toast.error(t("Failed to export orders", "خطا در صادرات سفارشات"));
+        return;
+      }
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const timestamp = new Date().toISOString().split("T")[0];
+      link.href = blobUrl;
+      link.download = format === "word" ? `orders-list-${timestamp}.doc` : `orders-export-${timestamp}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      window.URL.revokeObjectURL(blobUrl);
+      document.body.removeChild(link);
+      toast.success(t("Orders exported successfully", "سفارشات با موفقیت صادر شد"));
+    } catch (error) {
+      console.error("Error exporting orders:", error);
+      toast.error(t("An error occurred", "خطایی رخ داد"));
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   // Filter options
   const statusOptions: SelectOption[] = [
     { value: "", label: t("All Statuses", "همه وضعیت‌ها") },
@@ -564,39 +596,22 @@ export default function OrdersSection() {
             <Button
               variant="outline"
               size="small"
-              onClick={async () => {
-                try {
-                  setIsLoading(true);
-                  const exportUrl = `/api/admin/orders/export${queryParams ? `?${queryParams}` : ""}`;
-                  const response = await fetch(exportUrl);
-
-                  if (response.ok) {
-                    const blob = await response.blob();
-                    const blobUrl = window.URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = blobUrl;
-                    const timestamp = new Date().toISOString().split("T")[0];
-                    a.download = `orders-export-${timestamp}.csv`;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(blobUrl);
-                    document.body.removeChild(a);
-                    toast.success(t("Orders exported successfully", "سفارشات با موفقیت صادر شد"));
-                  } else {
-                    toast.error(t("Failed to export orders", "خطا در صادرات سفارشات"));
-                  }
-                } catch (error) {
-                  console.error("Error exporting orders:", error);
-                  toast.error(t("An error occurred", "خطایی رخ داد"));
-                } finally {
-                  setIsLoading(false);
-                }
-              }}
-              disabled={isLoading}
+              onClick={() => downloadOrdersExport("csv")}
+              disabled={isLoading || isExporting}
               style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.5rem" }}
             >
               <FiDownload />
               {t("Export CSV", "صادرات CSV")}
+            </Button>
+            <Button
+              variant="outline"
+              size="small"
+              onClick={() => downloadOrdersExport("word")}
+              disabled={isLoading || isExporting}
+              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            >
+              <FiDownload />
+              {t("Export Word", "صادرات Word")}
             </Button>
           </div>
 

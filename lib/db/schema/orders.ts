@@ -13,6 +13,7 @@ export const orders = pgTable("orders", {
   orderNumber: text("order_number").notNull().unique(),
   status: text("status").notNull().default("pending"), // pending, processing, delivered, cancelled
   total: decimal("total", { precision: 10, scale: 2 }).notNull(),
+  paidAmount: decimal("paid_amount", { precision: 10, scale: 2 }),
   paymentMethod: text("payment_method"), // e.g., "card_to_card", "online_payment", "paypal", "pay_after_delivery"
   paymentVerified: timestamp("payment_verified"), // When admin verified payment (for card_to_card)
   zibalTrackId: text("zibal_track_id"), // Zibal transaction track ID for online payments

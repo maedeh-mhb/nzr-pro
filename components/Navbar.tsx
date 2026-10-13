@@ -146,11 +146,6 @@ export default function Navbar({ dashboardDesktopOnly = false }: NavbarProps) {
             </Link>
           </li>
           <li>
-            <Link href={localizedPath("/instructions")} className={styles.link} onClick={() => setMenuOpen(false)}>
-              {t("Instructions", "آموزش")}
-            </Link>
-          </li>
-          <li>
             <Link
               href={localizedPath("/products")}
               className={styles.link}
@@ -160,6 +155,12 @@ export default function Navbar({ dashboardDesktopOnly = false }: NavbarProps) {
               }}
             >
               {t("Products", "محصولات")}
+            </Link>
+          </li>
+          <li>
+            <Link href={localizedPath("/how-to-use/howtoorder-1-1")} className={styles.link} onClick={() => setMenuOpen(false)}>
+              <span className={styles.instructionsDesktopLabel}>{t("Instructions", "آموزش")}</span>
+              <span className={styles.instructionsMobileLabel}>{t("How to order", "نحوه ثبت سفارش")}</span>
             </Link>
           </li>
           <li>

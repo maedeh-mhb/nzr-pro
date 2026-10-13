@@ -3,7 +3,7 @@
 import { useLanguage } from "@/lib/utils/language";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { FiGrid, FiHome, FiPackage, FiShoppingBag, FiShoppingCart, FiUser, FiMessageCircle, FiLogOut } from "react-icons/fi";
+import { FiGrid, FiHome, FiPackage, FiShoppingBag, FiShoppingCart, FiUser, FiMessageCircle, FiLogOut, FiDollarSign } from "react-icons/fi";
 import styles from "@/styles/components/_dashboard.module.scss";
 import { useCart } from "@/lib/contexts/CartContext";
 
@@ -82,6 +82,15 @@ export default function DashboardBottomNav({
             <FiPackage />
           </span>
           <span>{t("Orders", "سفارشات")}</span>
+        </button>
+        <button
+          className={`${styles.navItem} ${activeSection === "wallet" ? styles.active : ""}`}
+          onClick={() => setActiveSection("wallet")}
+        >
+          <span className={styles.navItemIcon}>
+            <FiDollarSign />
+          </span>
+          <span>{t("Wallet", "کیف پول")}</span>
         </button>
         <button
           className={`${styles.navItem} ${activeSection === "profile" ? styles.active : ""}`}

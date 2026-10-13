@@ -337,23 +337,41 @@
   }
 }
 
-.loginMethodToggle {
-  text-align: center;
+.loginMethodTabs {
+  display: flex;
+  gap: $spacing-xs;
   margin-bottom: $spacing-lg;
+  border-bottom: 1px solid $tertiary;
 
-  button {
-    color: $primary;
-    text-decoration: none;
+  [dir="rtl"] & {
+    direction: rtl;
+  }
+}
+
+.loginMethodTab {
+    flex: 1;
+    color: $text-dark;
     font-size: $font-sm;
     font-weight: 600;
-    background: none;
+    background: transparent;
     border: 0;
-    padding: 0;
+    border-bottom: 3px solid transparent;
+    padding: $spacing-sm $spacing-xs;
     cursor: pointer;
+    transition: all $transition-base;
 
-    &:hover {
-      color: darken($primary, 10%);
-    }
+  &:hover {
+    color: $primary;
+  }
+
+  &.active {
+    color: $primary;
+    border-bottom-color: $primary;
+    background: rgba($primary, 0.08);
+  }
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
 }
 

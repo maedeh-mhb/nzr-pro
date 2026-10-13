@@ -351,6 +351,13 @@
       "when": 1791888646065,
       "tag": "0049_add_home_note_availability_audio",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1791889569190,
+      "tag": "0050_nifty_harpoon",
+      "breakpoints": true
     }
   ]
 }

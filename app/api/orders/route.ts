@@ -6,7 +6,6 @@ import { db } from "@/lib/db";
 import { orders, orderItems, guestOrders, products, paymentSettings, users, contactSettings, userActivities, notifications, discountCodeUsages, discountCodes, idempotencyKeys, orderStatusHistory, shippingSettings } from "@/lib/db/schema";
 import { and, eq, gte, inArray, isNull, or, sql } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
-import bcrypt from "bcryptjs";
 import { createActivity } from "@/lib/services/activities";
 import { createAdminActivity } from "@/lib/services/adminActivities";
 import { createNotification } from "@/lib/services/notifications";
@@ -147,8 +146,6 @@ export async function POST(request: NextRequest) {
       guestSurname,
       guestEmail,
       guestPhone,
-      createAccount,
-      accountPassword,
       provinceId,
       cityId,
       address,
@@ -372,20 +369,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const shouldCreateAccount = isGuestOrder && createAccount === true;
+    // Every guest checkout creates a passwordless profile from the submitted
+    // contact information. The user can authenticate later with phone OTP.
+    const shouldCreateAccount = isGuestOrder;
     const guestEditToken = isGuestOrder ? createOrderEditToken() : null;
-    let hashedAccountPassword: string | null = null;
     if (shouldCreateAccount) {
-      if (typeof accountPassword !== "string" || accountPassword.length < 8 || accountPassword.length > 100) {
-        return NextResponse.json(
-          {
-            error: "Password must be between 8 and 100 characters",
-            errorFa: "رمز عبور باید بین ۸ تا ۱۰۰ کاراکتر باشد",
-          },
-          { status: 400 }
-        );
-      }
-
       const existingAccount = await db.query.users.findFirst({
         where: sanitizedGuestEmail
           ? or(eq(users.phone, sanitizedGuestPhone!), eq(users.email, sanitizedGuestEmail))
@@ -396,15 +384,14 @@ export async function POST(request: NextRequest) {
       if (existingAccount) {
         return NextResponse.json(
           {
-            error: "An account already exists with this phone number or email. Sign in or continue without creating an account.",
-            errorFa: "با این شماره تلفن یا ایمیل قبلاً حسابی ایجاد شده است. وارد شوید یا بدون ایجاد حساب ادامه دهید.",
+            error: "An account already exists with this phone number or email. Sign in with your phone verification code before checkout.",
+            errorFa: "با این شماره تلفن یا ایمیل قبلاً حسابی ایجاد شده است. پیش از تسویه حساب با کد تأیید تلفن وارد شوید.",
             code: "ACCOUNT_ALREADY_EXISTS",
           },
           { status: 409 }
         );
       }
 
-      hashedAccountPassword = await bcrypt.hash(accountPassword, 10);
     }
 
     // Initial product validation (without locking) for early error detection and cart subtotal calculation
@@ -600,7 +587,12 @@ export async function POST(request: NextRequest) {
           surname: sanitizedGuestSurname!,
           email: sanitizedGuestEmail,
           phone: sanitizedGuestPhone!,
-          password: hashedAccountPassword!,
+          password: null,
+          address: sanitizedAddress,
+          city: sanitizedCityId !== null ? String(sanitizedCityId) : null,
+          state: sanitizedProvinceId !== null ? String(sanitizedProvinceId) : null,
+          zipCode: sanitizedPostalCode,
+          country: "Iran",
         }).returning({ id: users.id });
         orderUserId = createdUser.id;
       }

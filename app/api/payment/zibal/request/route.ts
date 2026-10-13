@@ -1,14 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { guestOrders, orders } from "@/lib/db/schema/orders";
 import { users } from "@/lib/db/schema/users";
 import { isPersianName } from "@/lib/utils/nameValidation";
 import { paymentSettings } from "@/lib/db/schema/payments";
 import { eq } from "drizzle-orm";
+import { isOrderEditTokenValid } from "@/lib/utils/orderEditing";
 
 export async function POST(request: NextRequest) {
   try {
-    const { orderId } = await request.json();
+    const { orderId, editToken } = await request.json();
 
     if (!orderId) {
       return NextResponse.json({ error: "Order ID is required" }, { status: 400 });
@@ -23,6 +26,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
+    const session = await getServerSession(authOptions);
+    const guestOrder = await db.query.guestOrders.findFirst({
+      where: eq(guestOrders.orderId, order.id),
+    });
+    const isOwner = Boolean(order.userId && session?.user?.id === order.userId);
+    const isGuestWithValidToken =
+      Boolean(guestOrder?.editTokenHash) &&
+      typeof editToken === "string" &&
+      isOrderEditTokenValid(editToken, guestOrder?.editTokenHash) &&
+      Boolean(guestOrder?.editExpiresAt && guestOrder.editExpiresAt.getTime() > Date.now());
+    if (!isOwner && !isGuestWithValidToken) {
+      return NextResponse.json({ error: "Unauthorized order access" }, { status: 403 });
+    }
+
     if (order.paymentMethod !== "online_payment") {
       return NextResponse.json({ error: "Order is not for online payment" }, { status: 400 });
     }
@@ -31,9 +48,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid order status for payment" }, { status: 400 });
     }
 
-    const guestOrder = await db.query.guestOrders.findFirst({
-      where: eq(guestOrders.orderId, order.id),
-    });
     if (guestOrder) {
       const guestFirstName = guestOrder.guestName.trim().split(/[\s\u200c]+/)[0] || "";
       if (!isPersianName(guestFirstName)) {
@@ -75,7 +89,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Amount in Rials (total is in Tomans, multiply by 10)
-    const amountInRials = Math.round(Number(order.total) * 10);
+    const amountDue = Math.max(
+      0,
+      Number(order.total) - Number(order.paidAmount || 0)
+    );
+    if (!amountDue) {
+      return NextResponse.json({ error: "No additional payment is required" }, { status: 400 });
+    }
+    const amountInRials = Math.round(amountDue * 10);
 
     // Build callback URL
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || request.headers.get("origin") || "http://localhost:3000";

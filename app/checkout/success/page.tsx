@@ -304,7 +304,7 @@ export default function CheckoutSuccessPage() {
                   items={orderItems}
                   editExpiresAt={order.editExpiresAt}
                   editToken={order.isGuest ? editToken : null}
-                  onSaved={(updatedTotal, updatedItems, _shippingCost, updatedDiscount) => {
+                  onSaved={(updatedTotal, updatedItems, _shippingCost, updatedDiscount, paymentRequired) => {
                     setOrderItems(updatedItems);
                     setOrder((current) => current
                       ? {
@@ -312,7 +312,7 @@ export default function CheckoutSuccessPage() {
                           total: updatedTotal,
                           discountAmount: updatedDiscount,
                           status: updatedItems.length ? current.status : "cancelled",
-                          canEdit: updatedItems.length > 0,
+                          canEdit: updatedItems.length > 0 && !paymentRequired,
                         }
                       : current);
                     if (!updatedItems.length) {

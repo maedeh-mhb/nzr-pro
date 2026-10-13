@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 const genericResponse = {
   success: true,
-  message: "If an account exists for this phone number, a code has been sent.",
+  message: "A verification code has been sent to your phone.",
 };
 
 function hashCode(code: string): string {
@@ -39,12 +39,24 @@ export async function POST(request: NextRequest) {
     }
 
     phase = "looking up account";
-    const user = await db.query.users.findFirst({
+    let user = await db.query.users.findFirst({
       where: eq(users.phone, phone),
     });
 
-    if (!user || user.mustChangePassword) {
-      return NextResponse.json(genericResponse);
+    if (!user) {
+      const [createdUser] = await db.insert(users).values({
+        name: "",
+        phone,
+        password: null,
+      }).returning();
+      user = createdUser;
+    }
+
+    if (user.mustChangePassword) {
+      return NextResponse.json(
+        { error: "Please sign in with your password or reset it first.", code: "PASSWORD_CHANGE_REQUIRED" },
+        { status: 400 }
+      );
     }
 
     const now = new Date();
