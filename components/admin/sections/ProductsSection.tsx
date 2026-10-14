@@ -173,7 +173,6 @@ export default function ProductsSection() {
     ogImage: yup.string(),
     sellerId: yup.string().required(t("Seller is required", "انتخاب فروشنده الزامی است")),
     badge: yup.string(),
-    productType: yup.string().oneOf(["economic", "featured"]).required(t("Product type is required", "نوع محصول الزامی است")),
     minOrderQuantity: yup.number().min(1, t("Minimum order quantity must be at least 1", "کمترین مقدار سفارش نمی تواند از یک کمتر باشد")),
     maxOrderQuantity: yup.number().test("max-greater-than-min", t("Maximum must be greater than minimum", "حداکثر مقدار سفارش نمی تواند از حداقل مقدار سفارش کمتر باشد"), function (value) {
       const min = this.parent.minOrderQuantity;
@@ -201,7 +200,6 @@ export default function ProductsSection() {
     resolver: yupResolver(productSchema),
     defaultValues: {
       badge: "None",
-      productType: "economic",
       minOrderQuantity: 1,
       quantity: 0,
       rewardPoints: null,
@@ -796,7 +794,6 @@ const handleEditProduct = useCallback(async (productId: string) => {
       ogImage: fullProduct.ogImage || "",
       badge: fullProduct.badge || "None",
       sellerId: fullProduct.sellerId || "",
-      productType: fullProduct.productType || "economic",
       minOrderQuantity: fullProduct.minOrderQuantity || 1,
       maxOrderQuantity: fullProduct.maxOrderQuantity || undefined,
       weight: fullProduct.weight !== null && fullProduct.weight !== undefined
@@ -1990,18 +1987,6 @@ const handleShowProduct = useCallback(async (productId: string) => {
                 error={productErrors.badge?.message}
               />
             </div>
-            <Select
-              label={t("Product Type", "نوع محصول")}
-              options={[
-                { value: "economic", label: t("Economic", "اقتصادی") },
-                { value: "featured", label: t("Featured", "ویژه") },
-              ]}
-              value={watchProduct("productType") || ""}
-              onChange={(value) => setValueProduct("productType", value as "economic" | "featured")}
-              error={productErrors.productType?.message}
-              placeholder={t("Select product type", "نوع محصول را انتخاب کنید")}
-            />
-
             {/* Descriptions */}
             <Textarea
               label={t("Short Description (English)", "توضیح کوتاه محصول (انگلیسی) ")}

@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { cartItems, products, users } from "@/lib/db/schema";
-import { eq, and, inArray } from "drizzle-orm";
+import { cartItems, inventoryReservations, products, users } from "@/lib/db/schema";
+import { eq, and, gte, inArray, isNull, ne, or, sql } from "drizzle-orm";
 import { getOrCreateCartReminder, deleteCartReminder } from "@/lib/services/notifications";
+import { getActiveCartSince } from "@/lib/services/cartInventory";
 export const dynamic = "force-dynamic";
+
+class CartInventoryError extends Error {}
 
 // Get cart items
 export async function GET(request: NextRequest) {
@@ -125,63 +128,98 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { items } = body;
 
-    // Validate items before saving (remove invalid products)
-    let validItems = items || [];
-    if (validItems.length > 0) {
-      // Fetch product details to validate
-      const productIds = validItems.map((item: any) => item.productId);
-      const dbProducts = await db
-        .select({
-          id: products.id,
-          badge: products.badge,
-          quantity: products.quantity,
-        })
-        .from(products)
-        .where(inArray(products.id, productIds));
-
-      // Create set of valid product IDs (exist and available)
-      const validProductIds = new Set(
-        dbProducts
-          .filter(
-            (product) =>
-              product.badge !== "Out of Stock" &&
-              product.badge !== "Not Available" &&
-              product.quantity > 0
-          )
-          .map((product) => product.id)
-      );
-
-      // Filter items to only include valid products
-      validItems = validItems.filter((item: any) =>
-        validProductIds.has(item.productId)
-      );
+    if (!Array.isArray(items)) {
+      return NextResponse.json({ error: "Invalid cart items" }, { status: 400 });
     }
 
-    // Delete existing cart items
-    await db
-      .delete(cartItems)
-      .where(eq(cartItems.userId, session.user.id));
+    const normalizedItems = items.map((item: unknown) => {
+      const candidate = item as { productId?: unknown; quantity?: unknown };
+      const productId = typeof candidate.productId === "string" ? candidate.productId : "";
+      const quantity = Number(candidate.quantity);
 
-    // Insert new cart items (only valid ones)
-    if (validItems.length > 0) {
-      await db.insert(cartItems).values(
-        validItems.map((item: any) => ({
-          userId: session.user.id,
-          productId: item.productId,
-          quantity: item.quantity,
-        }))
-      );
+      if (!productId || !Number.isInteger(quantity) || quantity < 1) {
+        throw new CartInventoryError("Invalid cart item");
+      }
 
-      // Create or update cart reminder notification
-      await getOrCreateCartReminder(session.user.id, validItems.length);
+      return { productId, quantity };
+    });
+
+    await db.transaction(async (tx) => {
+      for (const item of normalizedItems) {
+        const lockedProducts = await tx.execute(
+          sql`SELECT id, quantity, badge FROM products WHERE id = ${item.productId} FOR UPDATE`
+        );
+        const product = lockedProducts[0] as
+          | { id: string; quantity: number; badge: string | null }
+          | undefined;
+
+        if (!product || product.badge === "Out of Stock" || product.badge === "Not Available") {
+          throw new CartInventoryError("Product is unavailable");
+        }
+
+        const activeCartReservations = await tx
+          .select({
+            quantity: sql<number>`COALESCE(SUM(${cartItems.quantity}), 0)`,
+          })
+          .from(cartItems)
+          .where(
+            and(
+              eq(cartItems.productId, item.productId),
+              ne(cartItems.userId, session.user.id),
+              gte(cartItems.updatedAt, getActiveCartSince())
+            )
+          );
+        const checkoutReservations = await tx
+          .select({
+            quantity: sql<number>`COALESCE(SUM(${inventoryReservations.quantity}), 0)`,
+          })
+          .from(inventoryReservations)
+          .where(
+            and(
+              eq(inventoryReservations.productId, item.productId),
+              or(
+                isNull(inventoryReservations.userId),
+                ne(inventoryReservations.userId, session.user.id)
+              ),
+              isNull(inventoryReservations.orderId),
+              sql`${inventoryReservations.expiresAt} > ${new Date().toISOString()}`
+            )
+          );
+        const availableQuantity =
+          product.quantity -
+          (Number(activeCartReservations[0]?.quantity) || 0) -
+          (Number(checkoutReservations[0]?.quantity) || 0);
+
+        if (item.quantity > availableQuantity) {
+          throw new CartInventoryError("Requested quantity is no longer available");
+        }
+      }
+
+      await tx.delete(cartItems).where(eq(cartItems.userId, session.user.id));
+
+      if (normalizedItems.length > 0) {
+        await tx.insert(cartItems).values(
+          normalizedItems.map((item) => ({
+            userId: session.user.id,
+            productId: item.productId,
+            quantity: item.quantity,
+          }))
+        );
+      }
+    });
+
+    if (normalizedItems.length > 0) {
+      await getOrCreateCartReminder(session.user.id, normalizedItems.length);
     } else {
-      // Cart is empty, delete cart reminder
       await deleteCartReminder(session.user.id);
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error updating cart:", error);
+    if (error instanceof CartInventoryError) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
     return NextResponse.json(
       { error: "Failed to update cart" },
       { status: 500 }

@@ -4,6 +4,8 @@ import { products } from "@/lib/db/schema";
 import { eq, ilike, or, and, isNull, ne, count as drizzleCount, sql, desc } from "drizzle-orm";
 import { checkRateLimit, getRateLimitIdentifier, extractIpAddress, getRateLimitError } from "@/lib/utils/rateLimiter";
 import { paginatedResponse } from "@/lib/utils/apiResponse";
+import { getActiveCartReservations } from "@/lib/services/cartInventory";
+import { getActiveReservationsForProducts } from "@/lib/services/inventoryReservation";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
@@ -123,6 +125,11 @@ export async function GET(request: NextRequest) {
     // Fetch products with all fields, including minOrderQuantity and maxOrderQuantity
     const allProductsRaw = await query.offset(offset).limit(limit);
     // Map to include only necessary fields for frontend
+    const productIds = allProductsRaw.map((product) => product.id);
+    const [cartReservations, checkoutReservations] = await Promise.all([
+      getActiveCartReservations(productIds),
+      getActiveReservationsForProducts(productIds),
+    ]);
     const allProducts = allProductsRaw.map((product: any) => {
       // Parse images if it's a JSON string
       let imagesArray: string[] = [];
@@ -146,7 +153,12 @@ export async function GET(request: NextRequest) {
         price: product.price,
         image: product.image,
         images: imagesArray,
-        quantity: product.quantity ?? 0,
+        quantity: Math.max(
+          0,
+          (product.quantity ?? 0) -
+            (cartReservations.get(product.id) || 0) -
+            (checkoutReservations.get(product.id) || 0)
+        ),
         badge: product.badge,
         productType: product.productType,
         slug: product.slug,
@@ -169,4 +181,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

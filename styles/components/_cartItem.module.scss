@@ -95,6 +95,13 @@
   color: $primary;
 }
 
+.outOfStockMessage {
+  margin: 0;
+  color: $danger;
+  font-size: $font-sm;
+  font-weight: 600;
+}
+
 .controls {
   display: flex;
   justify-content: space-between;
@@ -179,4 +186,3 @@
     height: 1.2rem;
   }
 }
-

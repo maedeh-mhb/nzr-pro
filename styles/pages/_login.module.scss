@@ -136,6 +136,19 @@
   }
 }
 
+.checkoutLoginPrompt {
+  margin: 0 0 $spacing-lg;
+  padding: $spacing-md;
+  border: 1px solid rgba($primary, 0.25);
+  border-radius: $radius-lg;
+  background: rgba($primary, 0.08);
+  color: $primary;
+  font-size: $font-base;
+  font-weight: 600;
+  line-height: 1.8;
+  text-align: center;
+}
+
 // Form
 .authForm {
   display: none;

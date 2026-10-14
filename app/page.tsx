@@ -284,7 +284,6 @@ export default function HomePage() {
           </div>
         )}
       </section>
-
       
 
       {/* Featured Products Section */}

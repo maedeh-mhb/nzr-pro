@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { products } from "@/lib/db/schema";
 import { eq, or } from "drizzle-orm";
+import { getActiveCartReservations } from "@/lib/services/cartInventory";
+import { getActiveReservationsForProducts } from "@/lib/services/inventoryReservation";
 export const dynamic = "force-dynamic";
 
 // Define a type for the product response that matches frontend expectations
@@ -80,18 +82,29 @@ export async function GET(
     }
 
     // Parse the images field if it's a JSON string
-    const productData: ProductResponse = { ...product[0] } as any;
-    if (productData.images && typeof productData.images === 'string') {
+    const [cartReservations, checkoutReservations] = await Promise.all([
+      getActiveCartReservations([product[0].id]),
+      getActiveReservationsForProducts([product[0].id]),
+    ]);
+    const rawImages = product[0].images;
+    const productData: ProductResponse = {
+      ...product[0],
+      quantity: Math.max(
+        0,
+        product[0].quantity -
+          (cartReservations.get(product[0].id) || 0) -
+          (checkoutReservations.get(product[0].id) || 0)
+      ),
+      images: [],
+    };
+    if (rawImages && typeof rawImages === 'string') {
       try {
-        productData.images = JSON.parse(productData.images);
+        productData.images = JSON.parse(rawImages);
       } catch (error) {
         // If parsing fails, set to empty array
         console.error('Failed to parse images JSON:', error);
         productData.images = [];
       }
-    } else if (!productData.images) {
-      // Ensure images is always an array (empty if null/undefined)
-      productData.images = [];
     }
 
     return NextResponse.json({ product: productData });
@@ -104,4 +117,3 @@ export async function GET(
     );
   }
 }
-

@@ -1,6 +1,8 @@
 import { db } from "@/lib/db";
 import { products } from "@/lib/db/schema/products";
 import { eq, or } from "drizzle-orm";
+import { getActiveCartReservations } from "@/lib/services/cartInventory";
+import { getActiveReservationsForProducts } from "@/lib/services/inventoryReservation";
 
 export async function getProductBySlug(slug: string) {
   const normalizedSlug = decodeURIComponent(slug).replace(/^\/+|\/+$/g, "").trim();
@@ -24,5 +26,19 @@ export async function getProductBySlug(slug: string) {
     }
   }
 
-  return { ...product, images };
+  const [cartReservations, checkoutReservations] = await Promise.all([
+    getActiveCartReservations([product.id]),
+    getActiveReservationsForProducts([product.id]),
+  ]);
+
+  return {
+    ...product,
+    quantity: Math.max(
+      0,
+      product.quantity -
+        (cartReservations.get(product.id) || 0) -
+        (checkoutReservations.get(product.id) || 0)
+    ),
+    images,
+  };
 }

@@ -12,6 +12,7 @@ import { createNotification } from "@/lib/services/notifications";
 import { sendOrderConfirmationEmail, sendGuestOrderConfirmationEmail, sendPasswordResetEmail, sendEmail } from "@/lib/services/email";
 import { validateDiscountCode } from "@/lib/services/discountCodes";
 import { convertReservationToOrder, releaseUserReservations, getActiveReservationsForProduct } from "@/lib/services/inventoryReservation";
+import { getActiveCartReservations } from "@/lib/services/cartInventory";
 import { validateOrigin, getOriginValidationError } from "@/lib/utils/validateOrigin";
 import { checkRateLimit, getRateLimitIdentifier, extractIpAddress, getRateLimitError } from "@/lib/utils/rateLimiter";
 import { validateCsrfToken } from "@/lib/utils/csrf";
@@ -628,7 +629,11 @@ export async function POST(request: NextRequest) {
         // Re-check quantity with locked row (accounting for reservations)
         const totalQuantity = parseFloat(product.quantity?.toString() || "0");
         const activeReservations = await getActiveReservationsForProduct(product.id);
-        const availableQuantity = totalQuantity - activeReservations;
+        const activeCartReservations = await getActiveCartReservations([product.id], userId);
+        const availableQuantity =
+          totalQuantity -
+          activeReservations -
+          (activeCartReservations.get(product.id) || 0);
 
         if (availableQuantity < item.quantity) {
           throw new Error(`Insufficient quantity for ${product.name}. Available: ${availableQuantity}, Requested: ${item.quantity}`);

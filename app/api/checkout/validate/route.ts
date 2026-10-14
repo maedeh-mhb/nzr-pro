@@ -9,6 +9,7 @@ import { checkRateLimit, getRateLimitIdentifier, extractIpAddress, getRateLimitE
 import { validateCsrfToken } from "@/lib/utils/csrf";
 import { sanitizeProductId, sanitizeCartItemId } from "@/lib/utils/sanitize";
 import { reserveInventory, releaseUserReservations, getActiveReservationsForProduct } from "@/lib/services/inventoryReservation";
+import { getActiveCartReservations } from "@/lib/services/cartInventory";
 import { API_ERRORS } from "@/lib/utils/apiErrors";
 
 const normalizePriceValue = (value: unknown): number => {
@@ -279,7 +280,11 @@ export async function POST(request: NextRequest) {
         }
 
         const activeReservations = Math.max(0, totalReservations - ownReservations);
-        const availableQuantity = totalQuantity - activeReservations;
+        const activeCartReservations = await getActiveCartReservations([product.id], userId);
+        const availableQuantity =
+          totalQuantity -
+          activeReservations -
+          (activeCartReservations.get(product.id) || 0);
 
         if (requestedQuantity > availableQuantity) {
           // Quantity exceeds available stock

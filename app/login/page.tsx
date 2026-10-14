@@ -83,11 +83,12 @@ export default function LoginPage() {
       ? callbackUrl
       : "/dashboard";
   const requestedLoginMethod = searchParams.get("method");
+  const isCheckoutPhoneLogin = postLoginPath === "/checkout" && requestedLoginMethod === "phone-code";
   const { data: session, status } = useSession();
   const [activeForm, setActiveForm] = useState<"login" | "signup" | "forgot">("login");
   const [isLoading, setIsLoading] = useState(false);
-  const [loginMethod, setLoginMethod] = useState<"password" | "phone-code">(
-    requestedLoginMethod === "phone-code" ? "phone-code" : "password"
+  const [loginMethod, setLoginMethod] = useState<"phone-code" | "password">(
+    requestedLoginMethod === "password" ? "password" : "phone-code"
   );
   const [loginPhone, setLoginPhone] = useState("");
   const [loginCode, setLoginCode] = useState("");
@@ -567,8 +568,30 @@ export default function LoginPage() {
 
           {/* Auth Content */}
           <div className={styles.authContent}>
+            {isCheckoutPhoneLogin && activeForm === "login" && (
+              <p className={styles.checkoutLoginPrompt}>
+                {t(
+                  "Verify your phone number to continue shopping",
+                  "برای ادامه خرید شماره تلفن خود را تایید کنید"
+                )}
+              </p>
+            )}
+
             {activeForm === "login" && (
               <div className={styles.loginMethodTabs} role="tablist" aria-label={t("Login method", "روش ورود")}>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={loginMethod === "phone-code"}
+                  className={`${styles.loginMethodTab} ${loginMethod === "phone-code" ? styles.active : ""}`}
+                  onClick={() => {
+                    const currentIdentifier = getLoginValues("emailOrPhone");
+                    setLoginPhone(/^\d[\d\s\-()]*$/.test(currentIdentifier || "") ? currentIdentifier : "");
+                    setLoginMethod("phone-code");
+                  }}
+                >
+                  {t("Phone verification code", "کد تأیید تلفن")}
+                </button>
                 <button
                   type="button"
                   role="tab"
@@ -582,19 +605,6 @@ export default function LoginPage() {
                   }}
                 >
                   {t("Password", "رمز عبور")}
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={loginMethod === "phone-code"}
-                  className={`${styles.loginMethodTab} ${loginMethod === "phone-code" ? styles.active : ""}`}
-                  onClick={() => {
-                    const currentIdentifier = getLoginValues("emailOrPhone");
-                    setLoginPhone(/^\d[\d\s\-()]*$/.test(currentIdentifier || "") ? currentIdentifier : "");
-                    setLoginMethod("phone-code");
-                  }}
-                >
-                  {t("Phone verification code", "کد تأیید تلفن")}
                 </button>
               </div>
             )}

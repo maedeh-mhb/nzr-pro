@@ -237,8 +237,8 @@ export default function ProductCard({
   };
 
   const isOutOfStock = currentBadge === "Out of Stock" || (currentQuantity !== null && currentQuantity !== undefined && currentQuantity <= 0);
-  const badgeLabel = getBadgeLabel(currentBadge) || (isOutOfStock ? t("Out of Stock", "ناموجود") : null);
-  const badgeColor = getBadgeColor(currentBadge);
+  const badgeLabel = isOutOfStock ? t("Out of Stock", "ناموجود") : getBadgeLabel(currentBadge);
+  const badgeColor = isOutOfStock ? null : getBadgeColor(currentBadge);
   // Disable add to cart if product is out of stock, not available, or quantity is zero
   const isUnavailable =
     isOutOfStock ||
@@ -308,7 +308,12 @@ export default function ProductCard({
           {badgeLabel && (
             <span
               className={styles.badge}
-              style={badgeColor ? { background: badgeColor, position: "relative", top: 0, left: 0 } : { position: "relative", top: 0, left: 0 }}
+              style={{
+                background: isOutOfStock ? "#dc2626" : badgeColor || undefined,
+                position: "relative",
+                top: 0,
+                left: 0,
+              }}
             >
               {badgeLabel}
             </span>

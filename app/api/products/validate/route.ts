@@ -3,6 +3,8 @@ import { db } from "@/lib/db";
 import { products } from "@/lib/db/schema";
 import { inArray } from "drizzle-orm";
 import { sanitizeProductId } from "@/lib/utils/sanitize";
+import { getActiveCartReservations } from "@/lib/services/cartInventory";
+import { getActiveReservationsForProducts } from "@/lib/services/inventoryReservation";
 export const dynamic = "force-dynamic";
 
 // Validate multiple products by IDs
@@ -39,18 +41,39 @@ export async function GET(request: NextRequest) {
       .from(products)
       .where(inArray(products.id, productIds));
 
-    // Filter to only include available products (not out of stock or not available)
-    const productStatuses = dbProducts.map((product) => ({
-      id: product.id,
-      quantity: product.quantity,
-      badge: product.badge,
-      available:
-        product.quantity > 0 &&
-        product.badge !== "Out of Stock" &&
-        product.badge !== "Not Available",
-    }));
+    const productIdsToCheck = dbProducts.map((product) => product.id);
+    const [cartReservations, checkoutReservations] = await Promise.all([
+      getActiveCartReservations(productIdsToCheck),
+      getActiveReservationsForProducts(productIdsToCheck),
+    ]);
+
+    const productStatuses = dbProducts.map((product) => {
+      const availableQuantity = Math.max(
+        0,
+        product.quantity -
+          (cartReservations.get(product.id) || 0) -
+          (checkoutReservations.get(product.id) || 0)
+      );
+
+      return {
+        id: product.id,
+        quantity: availableQuantity,
+        badge: product.badge,
+        available:
+          availableQuantity > 0 &&
+          product.badge !== "Out of Stock" &&
+          product.badge !== "Not Available",
+      };
+    });
+    // Keep a customer's own cart intact when its quantity consumes the final unit.
+    // The API's availability status is used to disable new additions, while this
+    // list is used by CartContext to remove only products that are intrinsically unavailable.
     const validProductIds = productStatuses
-      .filter((product) => product.available)
+      .filter(
+        (product) =>
+          product.badge !== "Out of Stock" &&
+          product.badge !== "Not Available"
+      )
       .map((product) => product.id);
 
     return NextResponse.json({ validProductIds, productStatuses });

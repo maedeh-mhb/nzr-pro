@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
-import { inventoryReservations, products } from "@/lib/db/schema";
-import { eq, and, lt, sql, or, isNull } from "drizzle-orm";
+import { cartItems, inventoryReservations, products } from "@/lib/db/schema";
+import { eq, and, gte, lt, sql, isNull, inArray } from "drizzle-orm";
+import { getActiveCartSince } from "@/lib/services/cartInventory";
 
 /**
  * Reserve inventory for a product during checkout
@@ -192,3 +193,117 @@ export async function getActiveReservationsForProduct(productId: string): Promis
   return parseInt(result[0]?.totalReserved?.toString() || "0");
 }
 
+export async function getActiveReservationsForProducts(productIds: string[]): Promise<Map<string, number>> {
+  if (productIds.length === 0) {
+    return new Map();
+  }
+
+  const now = new Date().toISOString();
+  const results = await db
+    .select({
+      productId: inventoryReservations.productId,
+      totalReserved: sql<number>`COALESCE(SUM(${inventoryReservations.quantity}), 0)`,
+    })
+    .from(inventoryReservations)
+    .where(
+      and(
+        inArray(inventoryReservations.productId, productIds),
+        isNull(inventoryReservations.orderId),
+        sql`${inventoryReservations.expiresAt} > ${now}`
+      )
+    )
+    .groupBy(inventoryReservations.productId);
+
+  return new Map(
+    results.map((result) => [
+      result.productId,
+      Number(result.totalReserved) || 0,
+    ])
+  );
+}
+
+export async function syncGuestCartReservations(
+  sessionId: string,
+  items: Array<{ productId: string; quantity: number }>,
+  reservationDurationMinutes: number = 24 * 60
+): Promise<void> {
+  const normalizedItems = Array.from(
+    items.reduce((quantities, item) => {
+      quantities.set(item.productId, (quantities.get(item.productId) || 0) + item.quantity);
+      return quantities;
+    }, new Map<string, number>())
+  ).map(([productId, quantity]) => ({ productId, quantity }));
+  const productIds = normalizedItems.map((item) => item.productId).sort();
+
+  await db.transaction(async (tx) => {
+    for (const productId of productIds) {
+      await tx.execute(sql`SELECT id FROM products WHERE id = ${productId} FOR UPDATE`);
+    }
+
+    await tx
+      .delete(inventoryReservations)
+      .where(
+        and(
+          eq(inventoryReservations.sessionId, sessionId),
+          isNull(inventoryReservations.orderId)
+        )
+      );
+
+    const expiresAt = new Date(Date.now() + reservationDurationMinutes * 60 * 1000);
+    const now = new Date().toISOString();
+
+    for (const item of normalizedItems) {
+      const product = await tx.query.products.findFirst({
+        where: eq(products.id, item.productId),
+      });
+      if (!product || product.badge === "Out of Stock" || product.badge === "Not Available") {
+        throw new Error("Product is unavailable");
+      }
+
+      const [activeCartReservations, activeCheckoutReservations] = await Promise.all([
+        tx
+          .select({
+            quantity: sql<number>`COALESCE(SUM(${cartItems.quantity}), 0)`,
+          })
+          .from(cartItems)
+          .where(
+            and(
+              eq(cartItems.productId, item.productId),
+              gte(cartItems.updatedAt, getActiveCartSince())
+            )
+          ),
+        tx
+          .select({
+            quantity: sql<number>`COALESCE(SUM(${inventoryReservations.quantity}), 0)`,
+          })
+          .from(inventoryReservations)
+          .where(
+            and(
+              eq(inventoryReservations.productId, item.productId),
+              isNull(inventoryReservations.orderId),
+              sql`${inventoryReservations.expiresAt} > ${now}`
+            )
+          ),
+      ]);
+
+      const availableQuantity =
+        product.quantity -
+        (Number(activeCartReservations[0]?.quantity) || 0) -
+        (Number(activeCheckoutReservations[0]?.quantity) || 0);
+      if (item.quantity > availableQuantity) {
+        throw new Error("Requested quantity is no longer available");
+      }
+    }
+
+    if (normalizedItems.length > 0) {
+      await tx.insert(inventoryReservations).values(
+        normalizedItems.map((item) => ({
+          sessionId,
+          productId: item.productId,
+          quantity: item.quantity,
+          expiresAt,
+        }))
+      );
+    }
+  });
+}

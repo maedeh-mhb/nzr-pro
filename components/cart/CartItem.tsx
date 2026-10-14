@@ -14,7 +14,14 @@ interface CartItemProps {
 }
 
 export default function CartItem({ item }: CartItemProps) {
-  const { updateQuantity, removeItem, closeCart, selectedItems, toggleItemSelection } = useCart();
+  const {
+    updateQuantity,
+    removeItem,
+    closeCart,
+    selectedItems,
+    toggleItemSelection,
+    inventoryStatuses,
+  } = useCart();
   const { language, currency } = useLanguage();
   const isSelected = selectedItems.has(item.id);
 
@@ -25,6 +32,10 @@ export default function CartItem({ item }: CartItemProps) {
   const formattedPrice = formatPrice(price, language, displayCurrency);
   const formattedSubtotal = formatPrice(subtotal, language, displayCurrency);
   const productHref = item.slug ? `/${language}/products/${item.slug}` : "#";
+  const inventoryStatus = inventoryStatuses[item.productId];
+  const isOutOfStock =
+    inventoryStatus?.available === false ||
+    (inventoryStatus?.quantity !== undefined && inventoryStatus.quantity <= 0);
 
   // Debug: Log maxOrderQuantity to verify it's being loaded
   // console.log('CartItem maxOrderQuantity:', item.maxOrderQuantity, 'quantity:', item.quantity, 'productId:', item.productId);
@@ -69,7 +80,9 @@ export default function CartItem({ item }: CartItemProps) {
   // If maxOrderQuantity is null/undefined/0, there's no limit (can always increase)
   // Otherwise, disable if current quantity is already at or above the limit
   const hasMaxLimit = item.maxOrderQuantity !== null && item.maxOrderQuantity !== undefined && item.maxOrderQuantity > 0;
-  const canIncrease = !hasMaxLimit || item.quantity < item.maxOrderQuantity!;
+  const canIncrease =
+    !isOutOfStock &&
+    (!hasMaxLimit || item.quantity < item.maxOrderQuantity!);
 
   // Check if decrease button should be disabled
   // If minOrderQuantity is null/undefined/0, can always decrease (unless quantity is 1)
@@ -136,6 +149,13 @@ export default function CartItem({ item }: CartItemProps) {
           <span className={styles.price}>{formattedPrice}</span>
           <span className={styles.subtotal}>{formattedSubtotal}</span>
         </div>
+        {isOutOfStock && (
+          <p className={styles.outOfStockMessage}>
+            {language === "fa"
+              ? " موجودی محصول به پایان رسیده است و نمی‌توانید تعداد بیشتری به سبد خود اضافه کنید. "
+              : "This product is out of stock"}
+          </p>
+        )}
 
         <div className={styles.controls}>
           <div className={styles.quantityControls}>
@@ -169,4 +189,3 @@ export default function CartItem({ item }: CartItemProps) {
     </div>
   );
 }
-

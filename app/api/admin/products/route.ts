@@ -106,7 +106,6 @@ export async function POST(request: NextRequest) {
       audioUrl,
       ogImage,
       badge,
-      productType,
       minOrderQuantity,
       maxOrderQuantity,
       weight,
@@ -122,13 +121,14 @@ export async function POST(request: NextRequest) {
     const resolvedCategoryIds: string[] = Array.isArray(categoryIds) ? categoryIds : (categoryId ? [categoryId] : []);
     const resolvedCategoryId = resolvedCategoryIds[0] || categoryId || null;
 
-    if (!name || !price || !category || !productType) {
+    if (!name || !price || !category) {
       return NextResponse.json(
-        { error: "Name, price, category, and product type are required" },
+        { error: "Name, price, and category are required" },
         { status: 400 }
       );
     }
 
+    const productType = body.productType || "economic";
     if (productType !== "economic" && productType !== "featured") {
       return NextResponse.json(
         { error: "Product type must be 'economic' or 'featured'" },

@@ -356,7 +356,9 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
     return null;
   };
 
-  const badgeLabel = getBadgeLabel(product.badge);
+  const badgeLabel = isOutOfStock
+    ? t("Out of Stock", "ناموجود")
+    : getBadgeLabel(product.badge);
 
   const handleQuantityChange = (delta: number) => {
     const newQuantity = quantity + delta;
@@ -670,10 +672,16 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                   imageFit="contain"
                 />
                 <div style={{ position: "absolute", top: "16px", left: "16px", display: "flex", flexDirection: "column", gap: "0.5rem", zIndex: 10 }}>
-                  {badgeLabel && product.badge && (
+                  {badgeLabel && (
                     <span
                       className={styles.badge}
-                      style={badges[product.badge]?.color ? { background: badges[product.badge].color } : {}}
+                      style={
+                        isOutOfStock
+                          ? { background: "#dc2626" }
+                          : product.badge && badges[product.badge]?.color
+                            ? { background: badges[product.badge].color }
+                            : {}
+                      }
                     >
                       {badgeLabel}
                     </span>
