@@ -116,7 +116,7 @@ export default async function RootLayout({
         `}
       </Script>
 
-      <body>
+      <body suppressHydrationWarning>
         <FontLoader />
         <Providers>
           <LanguageProvider>

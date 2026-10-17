@@ -38,10 +38,10 @@ interface InstructionCard {
 interface SearchPanelProps {
   isOpen: boolean;
   onClose: () => void;
-  navbarHeight?: number;
+  navbarBottom?: number;
 }
 
-export default function SearchPanel({ isOpen, onClose, navbarHeight = 70 }: SearchPanelProps) {
+export default function SearchPanel({ isOpen, onClose, navbarBottom = 70 }: SearchPanelProps) {
   const { t, language, currency } = useLanguage();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
@@ -221,7 +221,7 @@ export default function SearchPanel({ isOpen, onClose, navbarHeight = 70 }: Sear
       <div
         ref={panelRef}
         className={`${styles.searchPanel} ${isOpen ? styles.open : ""} ${hasResults ? styles.hasResults : ""}`}
-        style={{ top: `${Math.max(0, navbarHeight - (isMobile ? 8 : 0))}px` }}
+        style={{ top: `${Math.max(0, navbarBottom - (isMobile ? 8 : 0))}px` }}
       >
         <div className={styles.searchInputContainer}>
           <FiSearch className={styles.searchIcon} />
@@ -399,4 +399,3 @@ export default function SearchPanel({ isOpen, onClose, navbarHeight = 70 }: Sear
     </>
   );
 }
-

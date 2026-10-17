@@ -9,6 +9,7 @@
   width: 100%;
   box-sizing: border-box;
   overflow-x: hidden;
+ 
 
   // On mobile: add padding-top to account for fixed navbar
   @include max-tablet {
@@ -44,7 +45,13 @@
   width: 100%;
   box-sizing: border-box;
   overflow-x: hidden;
+ @include glass-effect(18px, 0.12, rgba(255, 255, 255, 0.12));
+  border-color: rgba(255, 255, 255, 0.7);
 
+  box-shadow: $shadow-md;
+  transition: background-color $duration-base $ease-out,
+    border-color $duration-base $ease-out,
+    box-shadow $duration-base $ease-out;
   @include max-tablet {
     padding: $spacing-md;
   }
@@ -168,7 +175,7 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-md;
-
+padding: 2rem !important;
   .submitButton {
     width: 100%;
     font-size: $font-lg;
@@ -777,7 +784,7 @@
 .userInfoSection {
   margin-bottom: $spacing-xl;
   padding: $spacing-lg;
-  background: rgba($primary, 0.03);
+   background-color: rgba(164, 175, 164,0.5);
   border-radius: $radius-lg;
   border: 1px solid rgba($primary, 0.1);
 }
@@ -1175,7 +1182,7 @@
 .newAddressForm {
   margin-top: $spacing-lg;
   padding: $spacing-lg;
-  background: rgba($primary, 0.03);
+   background-color: rgba(164, 175, 164,0.5);
   border-radius: $radius-lg;
   border: 1px solid rgba($primary, 0.1);
   display: flex;
@@ -1509,16 +1516,14 @@
 .missingRequirementsWarning {
   margin-top: $spacing-sm;
   padding: $spacing-sm $spacing-md;
-  background: #fff3cd;
-  border: 1px solid #ffc107;
+ background-color: rgba(164, 175, 164,0.5);
   border-radius: $radius-md;
   text-align: center;
 
   .missingRequirementsText {
     font-size: $font-sm;
-    color: #856404;
-    display: block;
-
+    color: red;
+    display: block;;
     strong {
       font-weight: 700;
     }

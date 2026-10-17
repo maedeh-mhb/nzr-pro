@@ -2,12 +2,19 @@
 @use '../mixins' as *;
 
 .pageHeader {
-  @include gradient-primary;
+  // @include gradient-primary;
+  background: $primary;
   color: $text-light;
   padding: $spacing-3xl 5%;
   text-align: center;
   position: relative;
   overflow: hidden;
+  min-height: 35vh;
+
+  // Banner sits flush at the top; the navbar floats over it
+  &[data-main-banner] {
+    padding-top: calc(#{$navbar-height} + #{$spacing-xl});
+  }
 
   // Add padding-top on mobile to account for fixed navbar
   @include max-tablet {
@@ -17,6 +24,7 @@
   h1 {
     font-size: $font-4xl;
     font-weight: 700;
+    margin-top: $spacing-xl;
     margin-bottom: $spacing-sm;
     color: $text-light;
   }
@@ -68,7 +76,7 @@
 
 // Card container for content - mobile first approach
 .card {
-  background: $text-light;
+  background-color: rgba(164, 175, 164,0.3);
   border-radius: $radius-xl;
   // Enhanced drop shadow for better visibility
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);

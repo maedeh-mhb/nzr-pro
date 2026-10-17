@@ -20,10 +20,14 @@ interface MidPageBannerSettings {
   isEnabled: boolean;
 }
 
-export default function MidPageBanner() {
+export default function MidPageBanner({ onEnabledChange }: { onEnabledChange?: (enabled: boolean) => void }) {
   const { t, language } = useLanguage();
   const [bannerSettings, setBannerSettings] = useState<MidPageBannerSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    onEnabledChange?.(Boolean(bannerSettings?.isEnabled));
+  }, [bannerSettings, onEnabledChange]);
 
   useEffect(() => {
     const loadBannerSettings = async () => {
@@ -56,7 +60,6 @@ export default function MidPageBanner() {
     return null;
   }
 
-  const title = language === "fa" ? bannerSettings.titleFa : bannerSettings.titleEn;
   const description = language === "fa" ? bannerSettings.descriptionFa : bannerSettings.descriptionEn;
   const buttonText = language === "fa" ? bannerSettings.buttonTextFa : bannerSettings.buttonTextEn;
   const button2Text = language === "fa"
@@ -72,18 +75,18 @@ export default function MidPageBanner() {
     <section
       className={styles.banner}
       style={sectionStyle}
+      data-main-banner
       data-has-bg-image={bannerSettings.backgroundImageUrl ? "true" : "false"}
     >
       <div className={styles.content}>
-        {title && <h2 className={styles.title}>{title}</h2>}
         {description && <p className={styles.description}>{description}</p>}
         {buttonText && (
-          <Link href={bannerSettings.buttonLink || "/instructions"} className={styles.button}>
+          <Link href={bannerSettings.buttonLink || "/instructions"} className={`${styles.button} ${styles.buttonPrimary}`}>
             {buttonText}
           </Link>
         )}
         {button2Text && (
-          <Link href={bannerSettings.button2Link || "/instructions"} className={styles.button}>
+          <Link href={bannerSettings.button2Link || "/instructions"} className={`${styles.button} ${styles.buttonSecondary}`}>
             {button2Text}
           </Link>
         )}

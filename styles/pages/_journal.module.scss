@@ -4,14 +4,14 @@
 .pageHeader {
   @include gradient-primary;
   color: $text-light;
-  padding: $spacing-3xl 5%;
+  padding: 0 5% $spacing-3xl;
   text-align: center;
   position: relative;
   overflow: hidden;
 
   // Add padding-top on mobile to account for fixed navbar
   @include max-tablet {
-    padding-top: calc(#{$navbar-height} + #{$spacing-3xl});
+    padding-top: $navbar-height;
   }
 
   h1 {
@@ -53,7 +53,7 @@
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 0 1rem 2rem;
 
   // Large viewports - use more width
   @include desktop {

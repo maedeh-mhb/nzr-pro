@@ -5,6 +5,7 @@
   @include gradient-primary;
   color: $text-light;
   padding: $spacing-4xl 5%;
+  min-height: 60vh;
   text-align: center;
   display: flex;
   align-items: center;
@@ -71,6 +72,7 @@
 .button {
   background: $text-light;
   color: $primary;
+  
   padding: $spacing-md $spacing-2xl;
   border: none;
   border-radius: $radius-full;
@@ -92,10 +94,16 @@
   margin-top: $spacing-md;
 }
 
+.buttonPrimary,.buttonSecondary {
+  background: rgba(rgb(59, 80, 59),0.95);
+  color: white;
+  border: 1px solid $text-light;
+}
+
+
 @include max-tablet {
   .banner {
     padding: $spacing-3xl 5%;
-    margin-top: $navbar-height-mobile; // account for fixed navbar on tablet/mobile
   }
 
   .title {
@@ -110,7 +118,6 @@
 @include max-mobile {
   .banner {
     padding: $spacing-2xl 5%;
-    margin-top: $navbar-height-mobile; // ensure banner is not hidden under mobile header
   }
 
   .title {

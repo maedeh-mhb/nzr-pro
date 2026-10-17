@@ -1,0 +1,59 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.ribbonSection {
+  padding: $spacing-xl 0;
+  background: linear-gradient(135deg, rgba(164, 175, 164,0.7), darken(rgba(164, 175, 164,0.7), 12%));
+}
+
+.title {
+  text-align: center;
+  color: $text-light;
+  font-size: 1.5rem;
+  margin-bottom: $spacing-lg;
+}
+
+.ribbon {
+  display: flex;
+  justify-content: space-evenly;
+  gap: $spacing-md;
+  overflow-x: auto;
+  padding: $spacing-sm 5%;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.item {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-lg;
+  border-radius: $radius-full;
+  @include glass-effect(18px, 0.12, rgba(255, 255, 255, 0.15));
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: $text-light;
+  text-decoration: none !important;
+  white-space: nowrap;
+  scroll-snap-align: start;
+  transition: background $transition-base, transform $transition-base;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.name {
+  font-weight: 600;
+}

@@ -2,18 +2,19 @@
 @use '../mixins' as *;
 
 .authContainer {
-  min-height: calc(100vh - 200px);
+  min-height: 100vh;
   @include flex-center;
-  @include gradient-primary;
-  padding: $spacing-md;
+  // @include gradient-primary;
+  background-color: rgb(164, 175, 164);
+  padding: $navbar-height $spacing-md $spacing-md;
   flex: 1;
   width: 100%;
   margin: 0;
 
   // On mobile: add padding-top to account for fixed navbar
   @include max-tablet {
-    padding-top: calc(#{$navbar-height} + #{$spacing-md});
-    min-height: calc(100vh - 150px);
+      padding-top: $navbar-height;
+    min-height: 100vh;
     padding-bottom: calc($spacing-md + 60px); // Account for bottom bar
   }
 
@@ -24,6 +25,9 @@
 
   @include desktop {
     min-height: calc(100vh - 200px);
+    // Navbar is sticky in the flow here; pull the container up behind it
+    margin-top: calc(-1 * (#{$navbar-height} + #{$spacing-md}));
+    padding-top: calc(#{$navbar-height} + #{$spacing-md} + #{$spacing-md});
   }
 }
 
@@ -601,4 +605,110 @@
 .strengthText {
   display: block;
   margin-top: $spacing-xs;
+}
+
+// Transparent green glass form with white text
+.authCard {
+  background: rgba($primary, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: $text-light;
+}
+
+.authLogo {
+  background: transparent;
+}
+
+.authContent {
+  background: transparent;
+  color: $text-light;
+
+  p,
+  span,
+  label,
+  h1,
+  h2,
+  h3 {
+    color: $text-light;
+  }
+}
+
+.label,
+.label .optional,
+.forgotPassword,
+.forgotPassword a,
+.switchAuth,
+.switchAuth a,
+.consentText,
+.consentText a,
+.divider,
+.checkboxGroup label,
+.loginMethodTab,
+.phoneVerified,
+.strengthText {
+  color: $text-light;
+}
+
+.loginMethodTabs {
+  border-bottom-color: rgba(255, 255, 255, 0.4);
+}
+
+.loginMethodTab.active,
+.loginMethodTab[aria-selected="true"] {
+  color: $text-light;
+  border-bottom-color: $text-light;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.inputWrapper {
+  :global(input[type="text"]),
+  :global(input[type="email"]),
+  :global(input[type="tel"]),
+  :global(input[type="password"]) {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: $text-light;
+
+    &:focus {
+      border-color: $text-light;
+    }
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+}
+
+.inputIcon,
+.passwordToggle {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.btnPrimary {
+  background: $text-light;
+  color: $primary;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.85);
+  }
+}
+
+.btnGoogle {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: $text-light;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.25);
+  }
+}
+
+.divider::before,
+.divider::after {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.error {
+  color: #ffd6d6;
 }

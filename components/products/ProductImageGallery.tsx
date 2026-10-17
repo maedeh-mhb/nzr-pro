@@ -10,6 +10,7 @@ interface ProductImageGalleryProps {
     images?: string[] | null;
     altText?: string;
     imageFit?: "cover" | "contain";
+    showThumbnails?: boolean;
 }
 
 export default function ProductImageGallery({
@@ -17,6 +18,7 @@ export default function ProductImageGallery({
     images,
     altText = "Product image",
     imageFit = "cover",
+    showThumbnails = false,
 }: ProductImageGalleryProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -86,6 +88,7 @@ export default function ProductImageGallery({
                             <FiChevronRight size={20} />
                         </button>
 
+                        {!showThumbnails && (
                         <div className={styles.dotsContainer}>
                             {displayImages.map((_, index) => (
                                 <button
@@ -101,9 +104,28 @@ export default function ProductImageGallery({
                                 />
                             ))}
                         </div>
+                        )}
                     </>
                 )}
             </div>
+
+            {showThumbnails && hasMultiple && (
+                <div className={styles.thumbnails}>
+                    {displayImages.map((src, index) => (
+                        <button
+                            key={`${src}-${index}`}
+                            type="button"
+                            className={`${styles.thumbnail} ${index === currentIndex ? styles.thumbnailActive : ""}`}
+                            onClick={() => setCurrentIndex(index)}
+                            aria-label={`Show image ${index + 1}`}
+                            aria-current={index === currentIndex}
+                        >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={src} alt="" loading="lazy" decoding="async" />
+                        </button>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

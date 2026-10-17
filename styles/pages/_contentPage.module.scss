@@ -2,10 +2,14 @@
 @use '../mixins' as *;
 
 .contentPage {
-  padding: calc(#{$navbar-height} + #{$spacing-3xl}) 5% $spacing-3xl;
+  padding: 0 5% $spacing-3xl;
   max-width: $max-width-xl;
   margin: 0 auto;
   min-height: calc(100vh - #{$navbar-height});
+
+  @include max-tablet {
+    padding-top: $navbar-height;
+  }
 
   @include max-tablet {
     padding-bottom: calc(80px + #{$spacing-3xl});
@@ -60,11 +64,12 @@
 }
 
 .content {
-  color: $text-dark;
+  color: rgb(82, 85, 82);
   line-height: 1.8;
 
   p {
     margin-bottom: $spacing-md;
+    color: rgb(82, 85, 82);
     font-size: $font-base;
   }
 

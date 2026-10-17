@@ -414,7 +414,13 @@
   justify-content: center;
   align-items: center;
   min-width: 0;
-
+@include glass-effect(18px, 0.12, rgba(255, 255, 255, 0.12));
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow: $shadow-md;
+  border-radius: $radius-full;
+  transition: background-color $duration-base $ease-out,
+    border-color $duration-base $ease-out,
+    box-shadow $duration-base $ease-out;
   // Make stat cards square on desktop
   @include desktop-small {
     aspect-ratio: 1;
@@ -458,6 +464,13 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  @include glass-effect(18px, 0.12, rgba(255, 255, 255, 0.12));
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow: $shadow-md;
+  // border-radius: $radius-full;
+  transition: background-color $duration-base $ease-out,
+    border-color $duration-base $ease-out,
+    box-shadow $duration-base $ease-out;
   @include gpu-accelerated;
   position: relative;
   overflow: hidden;
@@ -649,8 +662,8 @@
   }
 
   @include state-hover {
-    background: $color-secondary;
-    color: $text-light;
+    background: $primary;
+    color: white;
     transform: translateY(-4px);
     @include elevation(3);
 
@@ -851,7 +864,7 @@
 
 .orderItem {
   padding: 0;
-  background: $text-light;
+  // background: $text-light;
   border: 1px solid rgba($color-primary, 0.1);
   border-radius: $radius-xl;
   margin-bottom: $spacing-md;
@@ -1418,6 +1431,7 @@
   .profileInput {
     padding: 0.65rem 0.75rem;
     font-size: $font-sm;
+    
   }
 }
 
@@ -1939,7 +1953,7 @@
 
 .orderProductLabel {
   font-weight: 600;
-  color: #666;
+  color: $primary;
   font-size: $font-sm;
   flex-shrink: 0;
   white-space: nowrap;
@@ -1956,7 +1970,7 @@
 
 .orderProductValue {
   color: $text-dark;
-  font-size: $font-base;
+  font-size: 1rem;
   word-break: break-word;
 
   [dir="rtl"] & {
@@ -2264,9 +2278,9 @@
 .completenessNotes {
   margin-top: $spacing-sm;
   padding: $spacing-md;
-  background: rgba(243, 156, 18, 0.1);
+  background-color: rgba(164, 175, 164,0.5);
   border-radius: $radius-lg;
-  border-left: 3px solid $warning;
+  border-left: 3px solid $primary;
 }
 
 .notesComplete {
@@ -2553,13 +2567,14 @@
 .notesTitle {
   font-weight: 600;
   font-size: $font-sm;
-  color: $text-dark;
+  color: $primary;
   margin-bottom: $spacing-sm;
 }
 
 .notesList {
   margin: 0;
   padding-left: $spacing-lg;
+  padding-right: 1rem;
   list-style-type: disc;
   color: $text-dark;
   font-size: $font-sm;
@@ -2612,7 +2627,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all $transition-base;
-  background: #81c784;
+  background: $primary;
   color: #ffffff;
   width: 100%;
   margin-top: $spacing-sm;
@@ -2999,13 +3014,14 @@
     transform: translateY(-50%);
     border-radius: $radius-lg 0 0 $radius-lg;
     box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-
+    // background-color: rgba(164, 175, 164,0.6);
     .bottomNavContainer {
       flex-direction: column;
       align-items: stretch;
       padding: $spacing-sm 0;
       overflow-x: hidden;
       overflow-y: auto;
+     
     }
 
     .navItem,

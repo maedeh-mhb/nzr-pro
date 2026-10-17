@@ -237,16 +237,16 @@ export default function HomeSection({ setActiveSection, refetchTrigger }: HomeSe
                   </div>
                   <ul className={styles.notesList}>
                     {completeness.missingItems.includes("firstName") && (
-                      <li>{t("Add your first name", "نام خود را اضافه کنید")}</li>
+                      <li>{t("Add your first name", "نام خود را اضافه کنید.")}</li>
                     )}
                     {completeness.missingItems.includes("lastName") && (
-                      <li>{t("Add your last name", "نام خانوادگی خود را اضافه کنید")}</li>
+                      <li>{t("Add your last name", "نام خانوادگی خود را اضافه کنید.")}</li>
                     )}
                     {completeness.missingItems.includes("phoneVerified") && (
-                      <li>{t("Verify your phone number", "شماره تلفن خود را تأیید کنید")}</li>
+                      <li>{t("Verify your phone number", "شماره تلفن خود را تأیید کنید.")}</li>
                     )}
                     {completeness.missingItems.includes("email") && (
-                      <li>{t("Add your email address", "آدرس ایمیل خود را اضافه کنید")}</li>
+                      <li>{t("Add your email address", "آدرس ایمیل خود را اضافه کنید.")}</li>
                     )}
                     {completeness.missingItems.includes("completeAddress") && (
                       <li>
@@ -274,7 +274,7 @@ export default function HomeSection({ setActiveSection, refetchTrigger }: HomeSe
               <strong>{t("Important:", "مهم:")}</strong>{" "}
               {t(
                 "If you don't verify your email, you will not be able to recover your forgotten password.",
-                "وارد کردن ایمیل برای ثبت سفارش الزامی نمی‌باشد، اما اگر ایمیل خود را وارد نکنید نمی‌توانید رمز عبور خود را بازیابی کنید."
+                "وارد کردن ایمیل برای ثبت سفارش الزامی نمی‌باشد، اما اگر ایمیل خود را وارد نکنید، نمی‌توانید رمز عبور خود را بازیابی کنید."
               )}
             </div>
           )}

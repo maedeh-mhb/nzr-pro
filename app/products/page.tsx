@@ -50,6 +50,7 @@ interface Category {
 export default function ProductsPage() {
   const { t, language } = useLanguage();
   const searchParams = useSearchParams();
+  const [hasBanner, setHasBanner] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>(searchParams.get("category") ?? "");
   const [selectedBadge, setSelectedBadge] = useState<string>("");
@@ -214,8 +215,8 @@ export default function ProductsPage() {
 
   return (
     <>
-      <Navbar />
-      <MidPageBanner />
+      <Navbar hasMainBanner={hasBanner} />
+      <MidPageBanner onEnabledChange={setHasBanner} />
       <ProductAvailabilitySection />
       
       <div className={styles.container}>
@@ -312,7 +313,7 @@ export default function ProductsPage() {
         ) : (
           <div className={styles.productsGrid}>
             {products.map((product) => (
-              <ProductCard key={product.id} id={product.id} name={product.name} nameFa={product.nameFa} shortDescription={product.shortDescription} shortDescriptionFa={product.shortDescriptionFa} price={product.price} image={product.image} images={product.images} badge={product.badge} productType={product.productType} slug={product.slug} category={product.category} minOrderQuantity={product.minOrderQuantity} maxOrderQuantity={product.maxOrderQuantity} quantity={product.quantity} />
+              <ProductCard key={product.id} id={product.id} name={product.name} nameFa={product.nameFa} shortDescription={product.shortDescription} shortDescriptionFa={product.shortDescriptionFa} price={product.price} image={product.image} images={product.images} badge={product.badge} slug={product.slug} category={product.category} minOrderQuantity={product.minOrderQuantity} maxOrderQuantity={product.maxOrderQuantity} quantity={product.quantity} />
             ))}
           </div>
         )}

@@ -145,7 +145,18 @@ export async function POST(request: NextRequest) {
     });
 
     await db.transaction(async (tx) => {
+      const existingItems = await tx
+        .select({ productId: cartItems.productId, quantity: cartItems.quantity })
+        .from(cartItems)
+        .where(eq(cartItems.userId, session.user.id));
+      const existingByProduct = new Map(
+        existingItems.map((existing) => [existing.productId, existing.quantity])
+      );
+
       for (const item of normalizedItems) {
+        // Decreasing or keeping a quantity is always allowed, even if the product is out of stock
+        if (item.quantity <= (existingByProduct.get(item.productId) || 0)) continue;
+
         const lockedProducts = await tx.execute(
           sql`SELECT id, quantity, badge FROM products WHERE id = ${item.productId} FOR UPDATE`
         );

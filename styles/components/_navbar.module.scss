@@ -2,8 +2,9 @@
 @use '../mixins' as *;
 
 .navbar {
-  background: $primary;
-  padding: $spacing-md 5%;
+  @include glass-effect(18px, 0.12, rgba(255, 255, 255, 0.12));
+  border-color: rgba(255, 255, 255, 0.7);
+  padding: $spacing-xs 5%;
   position: sticky;
   top: 0;
   left: 0;
@@ -11,14 +12,18 @@
   width: 100%;
   z-index: $z-navbar;
   box-shadow: $shadow-md;
+  border-radius: $radius-full;
+  transition: background-color $duration-base $ease-out,
+    border-color $duration-base $ease-out,
+    box-shadow $duration-base $ease-out;
 
   // Use fixed positioning on mobile for reliable sticky behavior
   @include max-tablet {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
+    top: $spacing-sm;
+    left: $spacing-sm;
+    right: $spacing-sm;
+    width: calc(100% - #{$spacing-sm * 2});
     z-index: $z-navbar;
   }
 
@@ -26,6 +31,46 @@
   &::after {
     content: '';
     display: none;
+  }
+}
+
+.scrolledPastBanner {
+  background-color: $primary;
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.24);
+}
+
+@include tablet {
+  .navbar {
+    position: fixed;
+    top: $spacing-md;
+    left: 50%;
+    right: auto;
+    width: min(calc(100% - 2rem), #{$max-width-xl});
+    padding: $spacing-xs clamp(1rem, 2.5vw, 2rem);
+    transform: translateX(-50%);
+    border-radius: $radius-full;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  }
+}
+
+@include desktop {
+  .navbar {
+    position: sticky;
+    top: $spacing-md;
+    left: auto;
+    right: auto;
+    margin: $spacing-md auto 0;
+    transform: none;
+    width: min(calc(100% - 2rem), #{$max-width-xl});
+  }
+
+  .hasMainBanner {
+    position: fixed;
+    top: $spacing-md;
+    left: 50%;
+    margin: 0;
+    transform: translateX(-50%);
   }
 }
 
@@ -87,6 +132,79 @@
 
 .mobileAuthItem {
   display: none;
+}
+
+// Desktop: "how to use" + "track order" share a dropdown; the drawer (< desktop) keeps flat links
+.guideDropdown {
+  display: none;
+  position: relative;
+}
+
+.guideTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+
+  svg {
+    transition: transform $transition-base;
+  }
+}
+
+.guideDropdown.open .guideTrigger svg {
+  transform: rotate(180deg);
+}
+
+.guideMenu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  inset-inline-start: 0;
+  min-width: 11rem;
+  margin: 0;
+  padding: 0.4rem;
+  list-style: none;
+  flex-direction: column;
+  gap: 0.15rem;
+  background-color: $primary;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+}
+
+.guideDropdown.open .guideMenu {
+  display: flex;
+}
+
+.guideMenuLink {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  color: $text-light;
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: 0.9rem;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: $text-light !important;
+    text-decoration: none !important;
+  }
+}
+
+@include desktop {
+  .guideDropdown {
+    display: block;
+  }
+
+  .mobileOnlyItem {
+    display: none;
+  }
 }
 
 .instructionsMobileLabel {
@@ -259,6 +377,12 @@
   color: $text-light;
   font-size: $font-2xl;
   cursor: pointer;
+  width: $logo-size;
+  height: $logo-size;
+  padding: 0;
+  line-height: 1;
+  align-items: center;
+  justify-content: center;
 
   svg {
     width: 1.5rem;
@@ -404,30 +528,38 @@
 
   .left {
     position: fixed;
-    left: -100%;
+    @include glass-effect(18px, 0.12, rgba(255, 255, 255, 0.12));
+    left: $spacing-sm;
+    right: $spacing-sm;
     top: 0; // Will be adjusted by JavaScript to match navbar height exactly
     flex-direction: column;
-    background: $primary;
-    width: 100%;
+    width: calc(100% - #{$spacing-sm * 2});
     padding: $spacing-xl;
-    transition: left $transition-base;
+    border-radius: $radius-3xl;
+    transform: translateX(-110%);
+    transition: transform $transition-base,
+      background-color $duration-base $ease-out,
+      border-color $duration-base $ease-out;
     gap: $spacing-md;
     align-items: flex-start;
     z-index: 999;
 
     [dir="rtl"] & {
-      left: auto;
-      right: -100%;
-      transition: right $transition-base; // Animate from right in RTL
+      transform: translateX(110%);
     }
 
     &.active {
-      left: 0;
+      background-color: $primary;
+      transform: translateX(0);
 
       [dir="rtl"] & {
-        left: auto;
-        right: 0; // Opens from right in RTL
+        transform: translateX(0);
       }
+    }
+
+    .navbar.scrolledPastBanner & {
+      background-color: $primary;
+      border-color: rgba(255, 255, 255, 0.7);
     }
   }
 
@@ -510,7 +642,7 @@
   }
 
   .searchIconMobile {
-    display: block;
+    display: flex;
     order: -1;
 
     [dir="rtl"] & {
@@ -519,7 +651,7 @@
   }
 
   .menuToggle {
-    display: block;
+    display: flex;
     order: 1;
 
     [dir="rtl"] & {
@@ -547,6 +679,18 @@
 
 @include max-mobile {
   .navbar {
-    padding: $spacing-md 3%;
+    padding: 0.15rem 3%;
+  }
+
+  .logo,
+  .menuToggle {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .icon {
+    min-width: 36px;
+    min-height: 36px;
+    padding: 0.35rem;
   }
 }

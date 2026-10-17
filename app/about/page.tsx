@@ -69,8 +69,8 @@ export default function AboutPage() {
 
   return (
     <>
-      <Navbar />
-      <div className={styles.pageHeader}>
+      <Navbar hasMainBanner />
+      <div className={styles.pageHeader} data-main-banner>
         <h1>{t("About Us", "از نگاه نازیرا")}</h1>
         {/* <p>
           {t(

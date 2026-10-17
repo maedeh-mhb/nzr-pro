@@ -86,6 +86,24 @@ textarea[class*="farsi"] {
   }
 }
 
+// Voice players: same glass look as the navbar
+audio {
+  @include glass-effect(18px, 0.12, rgba(255, 255, 255, 0.12));
+  border-color: rgba(255, 255, 255, 0.7);
+  border-radius: $radius-full;
+  box-shadow: $shadow-md;
+
+  // Native control panel is opaque by default; make it transparent so the blur shows
+  &::-webkit-media-controls-panel {
+    background-color: transparent;
+  }
+
+  &::-webkit-media-controls-enclosure {
+    background-color: transparent;
+    border-radius: $radius-full;
+  }
+}
+
 .app-wrapper {
   display: flex;
   flex-direction: column;
@@ -95,7 +113,7 @@ textarea[class*="farsi"] {
   overflow: visible;
   position: relative; // Create positioning context
   background: $tertiary; // Set background to grey to prevent white gaps
-
+   background-color: rgba(164, 175, 164,0.2);
   // Make footer stick to bottom
   footer {
     margin-top: auto;

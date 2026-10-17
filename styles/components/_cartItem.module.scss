@@ -5,11 +5,13 @@
   display: flex;
   gap: $spacing-md;
   padding: $spacing-md;
-  background: $tertiary;
+  // border-bottom: 1px solid $tertiary;
+  // @include glass-effect(18px, 0.12, rgba(255, 255, 255, 0.6));
+  //  border-color: rgba(255, 255, 255, 0.7);
   border-radius: $radius-lg;
   align-items: flex-start;
   transition: all $transition-base;
-
+  
   &.selected {
     background: rgba($primary, 0.05);
     border: 1px solid rgba($primary, 0.2);
@@ -23,6 +25,7 @@
   cursor: pointer;
   flex-shrink: 0;
   accent-color: $primary;
+  display: none;
 }
 
 .imageLink {
@@ -86,7 +89,7 @@
 
 .price {
   font-size: $font-sm;
-  color: #666;
+  color: $primary;
 }
 
 .subtotal {
@@ -114,7 +117,7 @@
   display: flex;
   align-items: center;
   gap: $spacing-sm;
-  background: $text-light;
+  background: rgba(255, 255, 255, 0.25);
   border-radius: $radius-full;
   padding: 0.2rem;
 }

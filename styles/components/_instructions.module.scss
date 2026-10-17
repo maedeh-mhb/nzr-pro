@@ -49,23 +49,23 @@
 }
 
 .instructionsPage {
-  padding: $spacing-3xl 5%;
+  padding: 0 5% $spacing-3xl;
   min-height: 60vh;
   overflow-x: hidden;
 
   @include max-tablet {
-    padding: calc(#{$navbar-height-mobile} + #{$spacing-2xl}) 5% $spacing-2xl;
+    padding: $navbar-height-mobile 5% $spacing-2xl;
   }
 
   @include max-mobile {
-    padding: calc(#{$navbar-height-mobile} + #{$spacing-xl}) 5% $spacing-xl;
+    padding: $navbar-height-mobile 5% $spacing-xl;
     overflow-x: hidden;
   }
 }
 
 .container {
   max-width: $max-width-lg;
-  margin: 0 auto;
+  margin:2rem auto;
   overflow: hidden;
 }
 
@@ -83,8 +83,8 @@
   padding-top: 4px;
 
   @include max-tablet {
-    grid-template-columns: repeat(2, 1fr);
-    gap: $spacing-lg;
+    grid-template-columns: 1fr;
+    gap: $spacing-md;
   }
 
   @include max-mobile {
@@ -100,8 +100,14 @@
 .card {
   border-radius: $radius-lg;
   overflow: hidden;
-  background: #fff;
+  // background: #fff;
+  // box-shadow: $shadow-md;
+  @include glass-effect(18px, 0.12, rgba(255, 255, 255, 0.12));
+  border-color: rgba(255, 255, 255, 0.7);
   box-shadow: $shadow-md;
+  transition: background-color $duration-base $ease-out,
+    border-color $duration-base $ease-out,
+    box-shadow $duration-base $ease-out;
   cursor: pointer;
   transition: transform $duration-base, box-shadow $duration-base;
   position: relative;
@@ -123,9 +129,10 @@
   max-width: 100%;
   height: auto;
   max-height: 250px;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
-  background: #f0f0f0;
+  // background: #f0f0f0;
+  border-color: rgba(255, 255, 255, 0.7);
 }
 
 .cardTitleBar {
@@ -139,7 +146,7 @@
 .cardTitle {
   font-size: $font-lg;
   font-weight: 600;
-  color: $text-dark;
+  color: $primary;
   margin: 0;
   flex: 1;
   min-width: 0;
@@ -193,7 +200,6 @@
 }
 
 .cardExpanded {
-  background: #fff;
   border-radius: $radius-lg;
   width: 100%;
   max-width: 800px;
@@ -203,7 +209,11 @@
   overflow: hidden;
   box-shadow: $shadow-xl;
   animation: slideUp 0.3s ease;
-
+@include glass-effect(18px, 0.12, rgba(164, 175, 164,0.9));
+  border-color: rgba(255, 255, 255, 0.7);
+  transition: background-color $duration-base $ease-out,
+    border-color $duration-base $ease-out,
+    box-shadow $duration-base $ease-out;
   @include max-mobile {
     max-width: 100%;
     max-height: 100%;
@@ -223,7 +233,7 @@
 .cardExpandedTitle {
   font-size: $font-xl;
   font-weight: 600;
-  color: $text-dark;
+  color: $primary;
   margin: 0;
 
   [dir="rtl"] & {
@@ -245,7 +255,7 @@
   height: 36px;
   border: none;
   border-radius: $radius-full;
-  background: #f3f4f6;
+  background:rgba( $primary,0.5);
   color: #374151;
   cursor: pointer;
   transition: background $duration-base;
@@ -267,7 +277,7 @@
   padding: $spacing-xl;
   max-width: 100%;
   box-sizing: border-box;
-
+color: rgb(82, 85, 82);
   @include max-mobile {
     padding: $spacing-lg;
   }

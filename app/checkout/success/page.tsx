@@ -298,7 +298,21 @@ export default function CheckoutSuccessPage() {
                 </div>
               </div>
 
-              {order.canEdit && order.editExpiresAt && (!order.isGuest || editToken) && (
+              {order.canEdit && order.editExpiresAt && !order.isGuest && (
+                <div className={styles.priceBreakdown} style={{ marginTop: "1rem" }}>
+                  <p>
+                    {t(
+                      "You can edit your order for up to one hour after placing it: change quantities, remove items or add new products. If the total increases you can pay the difference; if it decreases, the difference is added to your wallet. Shipping cost is recalculated based on your updated order and what you have paid.",
+                      "تا یک ساعت پس از ثبت سفارش می‌توانید آن را ویرایش کنید: تعداد را تغییر دهید، محصولی حذف کنید یا محصول جدید اضافه کنید. در صورت افزایش مبلغ می‌توانید مابه‌التفاوت را پرداخت کنید و در صورت کاهش، مبلغ به کیف پول شما اضافه می‌شود. هزینه ارسال نیز بر اساس سفارش جدید و مبلغ پرداخت‌شده محاسبه می‌شود."
+                    )}
+                  </p>
+                  <Link href="/dashboard?section=orders">
+                    <Button>{t("Edit my order", "ویرایش سفارش من")}</Button>
+                  </Link>
+                </div>
+              )}
+
+              {order.canEdit && order.editExpiresAt && order.isGuest && editToken && (
                 <OrderEditor
                   orderId={order.id}
                   items={orderItems}

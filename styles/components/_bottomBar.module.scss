@@ -37,7 +37,7 @@
 .item {
   background: transparent;
   border: none;
-  color: rgba($primary, 0.8);
+  color: white;
   cursor: pointer;
   transition: transform $duration-fast $ease-out,
     color $duration-fast $ease-out,
@@ -124,5 +124,40 @@
 @include max-tablet {
   .bottomBar {
     display: block;
+    @include glass-effect(18px, 0.12, rgba(255, 255, 255, 0.12));
+    left: $spacing-sm;
+    right: $spacing-sm;
+    bottom: calc(#{$spacing-sm} + env(safe-area-inset-bottom, 0px));
+    width: calc(100% - #{$spacing-sm * 2});
+    padding: 0.4rem 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: $radius-full;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+    transition: background-color $duration-base $ease-out,
+      border-color $duration-base $ease-out,
+      box-shadow $duration-base $ease-out;
+  }
+
+  .bottomBarGreen,
+  .bottomBarGreen.bottomBarOpen {
+    background: $primary;
+    border-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.24);
+
+    .item {
+      color: $text-light;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+    }
+
+    .itemLoggedIn {
+      background: rgba(255, 255, 255, 0.18);
+
+      svg {
+        color: $text-light;
+      }
+    }
   }
 }

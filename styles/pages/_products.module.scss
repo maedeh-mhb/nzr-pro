@@ -4,15 +4,14 @@
 .pageHeader {
   @include gradient-primary;
   color: $text-light;
-  padding: $spacing-3xl 5%;
+  padding: 0 5% $spacing-3xl;
   text-align: center;
   position: relative;
   overflow: hidden;
 
   // Add padding-top on mobile to account for fixed navbar
   @include max-tablet {
-    // Reduce gap: use smaller spacing so header padding is ~78px on mobile
-    padding-top: calc(#{$navbar-height-mobile} + #{$spacing-sm});
+    padding-top: $navbar-height-mobile;
   }
 
   h1 {
@@ -54,10 +53,10 @@
 .container {
   max-width: $max-width-xl;
   margin: 0 auto;
-  padding: $spacing-xl $spacing-md;
+  padding: 0 $spacing-md $spacing-xl;
   width: 100%;
   box-sizing: border-box;
-
+  // background-color: rgba(164, 175, 164,0.2);
   // Enhanced spacing for tablets
   @include tablet {
     padding: $spacing-2xl $spacing-lg;
@@ -137,12 +136,14 @@
   flex-direction: column;
   gap: 0;
   margin-bottom: 2rem;
+  margin-top: 2rem;
   width: auto;
   max-width: 100%;
   margin-left: auto;
   margin-right: auto;
   padding: 0 1rem;
   box-sizing: border-box;
+
 }
 
 .filterGroup {
@@ -175,7 +176,7 @@
   padding: $spacing-md;
   background: #f8f9fa;
   border-radius: $radius-md;
-
+ background-color: rgba(164, 175, 164,0.5);
   // On mobile: keep filter items on one line with horizontal scroll
   @include max-tablet {
     flex-wrap: nowrap; // Keep all items on one line
@@ -308,6 +309,7 @@
 
 .filterSelectionView {
   margin-bottom: $spacing-md;
+  
   padding: $spacing-md;
   background: #f8f9fa;
   border-radius: $radius-md;
@@ -326,9 +328,9 @@
   gap: 0.3rem;
   background: transparent;
   border: none;
-  color: $primary;
   font-size: $font-base;
   font-weight: 600;
+  margin-top:$spacing-md;
   cursor: pointer;
   padding: 0.25rem 0.5rem;
   border-radius: $radius-sm;

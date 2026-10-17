@@ -5,8 +5,14 @@
   width: 398px;
   max-width: 100%;
   min-width: 0;
-  background: #ffffff;
   border-radius: $radius-card;
+  @include glass-effect(18px, 0.12, rgba(255, 255, 255, 0.3));
+  border-color: rgba(255, 255, 255, 0.7);
+  padding: $spacing-xs 5%;
+  box-shadow: $shadow-md;
+  transition: background-color $duration-base $ease-out,
+    border-color $duration-base $ease-out,
+    box-shadow $duration-base $ease-out;
   @include elevation(2);
   overflow: hidden;
   position: relative;
@@ -208,15 +214,6 @@
   text-transform: uppercase;
 }
 
-.productTypeBadge {
-  color: #ffffff;
-  padding: 0.4rem 0.8rem;
-  border-radius: $radius-sm;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
 .productInfo {
   padding: 1.2rem;
   display: flex;
@@ -225,9 +222,9 @@
 }
 
 .productTitle {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 600;
-  color: $text-dark;
+ color: rgb(82, 85, 82);
   margin-bottom: 0.5rem;
   line-height: 1.3;
 
@@ -251,7 +248,7 @@
 .productPrice {
   font-size: 1.5rem;
   font-weight: 700;
-  color: $text-dark;
+  color: rgb(82, 85, 82);
   margin-bottom: 1rem;
 
   // Apply Sahel font for Farsi text in RTL mode
@@ -284,9 +281,11 @@
 }
 
 .btnBuy {
-  background: $text-dark;
-  color: #ffffff;
-
+  // background: $primary;
+  // color: #ffffff;
+  background:$primary;
+  color: white;
+  border: 1px solid $text-light;
   @include focus-visible;
 
   @include state-hover {
@@ -354,7 +353,7 @@
   }
 
   .productTitle {
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
 
   .productPrice {

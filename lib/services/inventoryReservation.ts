@@ -240,6 +240,26 @@ export async function syncGuestCartReservations(
       await tx.execute(sql`SELECT id FROM products WHERE id = ${productId} FOR UPDATE`);
     }
 
+    const previousReservations = await tx
+      .select({
+        productId: inventoryReservations.productId,
+        quantity: inventoryReservations.quantity,
+      })
+      .from(inventoryReservations)
+      .where(
+        and(
+          eq(inventoryReservations.sessionId, sessionId),
+          isNull(inventoryReservations.orderId)
+        )
+      );
+    const previousByProduct = new Map<string, number>();
+    for (const reservation of previousReservations) {
+      previousByProduct.set(
+        reservation.productId,
+        (previousByProduct.get(reservation.productId) || 0) + reservation.quantity
+      );
+    }
+
     await tx
       .delete(inventoryReservations)
       .where(
@@ -253,6 +273,9 @@ export async function syncGuestCartReservations(
     const now = new Date().toISOString();
 
     for (const item of normalizedItems) {
+      // Decreasing or keeping a quantity is always allowed, even if the product is out of stock
+      if (item.quantity <= (previousByProduct.get(item.productId) || 0)) continue;
+
       const product = await tx.query.products.findFirst({
         where: eq(products.id, item.productId),
       });

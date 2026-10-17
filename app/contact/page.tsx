@@ -231,7 +231,7 @@ export default function ContactPage() {
           {/* Contact Form */}
           <div className={styles.contactFormCard}>
             <h2>
-              <span>✉️</span>
+              {/* <span>✉️</span> */}
               <span>{t("Send us a Message", "پیام خود را ارسال کنید")}</span>
             </h2>
 

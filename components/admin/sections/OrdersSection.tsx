@@ -784,6 +784,8 @@ export default function OrdersSection() {
                             <span className={styles.orderMobileCardDetailLabel}>
                               {t("Items", "آیتم‌ها")}:
                             </span>
+                            
+                            
                             <div className={styles.orderMobileCardItems}>
                               {order.items.map((item, idx) => (
                                 <div key={idx} className={styles.orderMobileCardItem}>

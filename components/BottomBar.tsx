@@ -18,6 +18,32 @@ export default function BottomBar() {
 
   const isDashboard = pathname?.startsWith("/dashboard");
   const totalItems = getTotalItems();
+  const barePath = (pathname || "/").replace(/^\/(en|fa)(?=\/|$)/, "") || "/";
+  const [isPastMainBanner, setIsPastMainBanner] = useState(false);
+  const [isOverFooter, setIsOverFooter] = useState(false);
+  const isSolidGreen =
+    isPastMainBanner ||
+    isOverFooter ||
+    barePath === "/" ||
+    barePath === "/products" ||
+    !/^\/(login)(\/|$)/.test(barePath);
+
+  // Same rule as the top navbar: green once the main banner is scrolled past, and when the footer reaches the bar
+  useEffect(() => {
+    const update = () => {
+      const banner = document.querySelector<HTMLElement>("[data-main-banner]");
+      setIsPastMainBanner(banner ? banner.getBoundingClientRect().bottom <= 0 : false);
+      const footer = document.querySelector<HTMLElement>("footer");
+      setIsOverFooter(footer ? footer.getBoundingClientRect().top <= window.innerHeight : false);
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [pathname]);
 
   // Check if we're on mobile viewport (max-width: 640px)
   useEffect(() => {
@@ -45,7 +71,7 @@ export default function BottomBar() {
   }
 
   return (
-    <div className={`${styles.bottomBar} ${isOpen ? styles.bottomBarOpen : ""}`}>
+    <div className={`${styles.bottomBar} ${isSolidGreen ? styles.bottomBarGreen : ""} ${isOpen ? styles.bottomBarOpen : ""}`}>
       <div className={styles.container}>
         <Link
           href="/"

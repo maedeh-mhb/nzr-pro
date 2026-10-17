@@ -12,16 +12,17 @@ interface AvailabilityData {
   availabilityIsEnabled: boolean;
 }
 
-export default function ProductAvailabilitySection() {
+export default function ProductAvailabilitySection({ initialData }: { initialData?: AvailabilityData | null }) {
   const { language, t } = useLanguage();
-  const [availability, setAvailability] = useState<AvailabilityData | null>(null);
+  const [availability, setAvailability] = useState<AvailabilityData | null>(initialData ?? null);
 
   useEffect(() => {
+    if (initialData !== undefined) return;
     fetch(`/api/home-note?_=${Date.now()}`, { cache: "no-store" })
       .then((response) => response.ok ? response.json() : null)
       .then((data) => data && setAvailability(data))
       .catch(() => {});
-  }, []);
+  }, [initialData]);
 
   if (!availability?.availabilityIsEnabled || availability.availabilityDates.length === 0) {
     return null;

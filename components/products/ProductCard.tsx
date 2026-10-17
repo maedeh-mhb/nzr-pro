@@ -22,7 +22,6 @@ interface ProductCardProps {
   image: string | null;
   images?: string[] | null;
   badge: string | null;
-  productType?: "economic" | "featured" | null;
   slug: string | null;
   category: string | null;
   minOrderQuantity?: number | null;
@@ -41,7 +40,6 @@ export default function ProductCard({
   image,
   images,
   badge,
-  productType,
   slug,
   category,
   minOrderQuantity,
@@ -318,21 +316,6 @@ export default function ProductCard({
               {badgeLabel}
             </span>
           )}
-          {productType && (
-            <span
-              className={styles.productTypeBadge}
-              style={{
-                background: productType === "featured" ? "#367260" : "#6c9cb8",
-                position: "relative",
-                top: 0,
-                left: 0,
-              }}
-            >
-              {productType === "featured"
-                ? (language === "fa" ? "ویژه" : "Featured")
-                : (language === "fa" ? "اقتصادی" : "Economic")}
-            </span>
-          )}
         </div>
         <button
           className={`${styles.wishlistBtn} ${isWishlisted ? styles.active : ""}`}
@@ -377,12 +360,12 @@ export default function ProductCard({
             style={{ cursor: "not-allowed" }}
           >
             <FiEye />
-            <span>{t("View More", "مشاهده بیشتر")}</span>
+            <span>{t("View More", " جزئیات محصول")}</span>
           </div>
         ) : (
           <Link href={productUrl} className={styles.btnView}>
             <FiEye />
-            <span>{t("View More", "مشاهده بیشتر")}</span>
+            <span>{t("View More", " جزئیات محصول")}</span>
           </Link>
         )}
       </div>

@@ -670,6 +670,7 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                   images={product.images}
                   altText={displayName}
                   imageFit="contain"
+                  showThumbnails
                 />
                 <div style={{ position: "absolute", top: "16px", left: "16px", display: "flex", flexDirection: "column", gap: "0.5rem", zIndex: 10 }}>
                   {badgeLabel && (
@@ -684,18 +685,6 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                       }
                     >
                       {badgeLabel}
-                    </span>
-                  )}
-                  {product.productType && (
-                    <span
-                      className={styles.productTypeBadge}
-                      style={{
-                        background: product.productType === "featured" ? "#367260" : "#6c9cb8"
-                      }}
-                    >
-                      {product.productType === "featured"
-                        ? (language === "fa" ? "ویژه" : "Featured")
-                        : (language === "fa" ? "اقتصادی" : "Economic")}
                     </span>
                   )}
                 </div>
@@ -1091,6 +1080,45 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
         <div className={styles.mobileStickyBar}>
           {!isStickyBarExpanded ? (
             <div className={`${styles.stickyBarInitial} ${showPlaceOrderBar ? styles.centered : ''}`}>
+              {showPlaceOrderBar && (
+                <div className={styles.placeOrderQuantityControls}>
+                  {quantity === 1 ? (
+                    <button
+                      className={styles.placeOrderQuantityButton + ' ' + styles.removeButton}
+                      onClick={async () => {
+                        // Remove item from cart and hide place order controls
+                        await removeItem(product.id);
+                        setShowPlaceOrderBar(false);
+                        toast.success(t("Product removed from your cart", "محصول از سبد خرید شما حذف شد"));
+                      }}
+                      aria-label={t("Remove from cart", "حذف از سبد خرید")}
+                    >
+                      {/* Trash/Remove icon (FiTrash2) */}
+                      <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle' }}><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m5 0V4a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" /></svg>
+                    </button>
+                  ) : (
+                    <button
+                      className={styles.placeOrderQuantityButton}
+                      onClick={() => handleQuantityChange(-1)}
+                      disabled={quantity <= (product?.minOrderQuantity || 1)}
+                    >
+                      −
+                    </button>
+                  )}
+                  <span className={styles.placeOrderQuantityValue}>{quantity}</span>
+                  <button
+                    className={styles.placeOrderQuantityButton}
+                    onClick={() => handleQuantityChange(1)}
+                    disabled={
+                      product?.maxOrderQuantity
+                        ? quantity >= product.maxOrderQuantity
+                        : false
+                    }
+                  >
+                    +
+                  </button>
+                </div>
+              )}
               {!showPlaceOrderBar && (
                 <button
                   className={styles.stickyAddToCart}
@@ -1111,6 +1139,17 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
                   return formatPrice(parseFloat(product.price || "0") * quantity, language, normalizedCurrency);
                 })()}
               </div>
+              {showPlaceOrderBar && (
+                <button
+                  className={styles.placeOrderButton}
+                  onClick={() => {
+                    setShowPlaceOrderBar(false);
+                    openCart();
+                  }}
+                >
+                  {t("Place the order", "سفارش را ثبت کنید")}
+                </button>
+              )}
             </div>
           ) : (
             <div className={styles.stickyBarExpanded}>
@@ -1170,58 +1209,6 @@ export default function ProductDetailClient({ initialProduct, slug }: ProductDet
               </button>
             </div>
           )}
-        </div>
-      )}
-
-      {/* Place Order Bar - Slides up after adding to cart on mobile */}
-      {showPlaceOrderBar && product && (
-        <div className={styles.placeOrderBar}>
-          <div className={styles.placeOrderQuantityControls}>
-            {quantity === 1 ? (
-              <button
-                className={styles.placeOrderQuantityButton + ' ' + styles.removeButton}
-                onClick={async () => {
-                  // Remove item from cart and hide place order bar
-                  await removeItem(product.id);
-                  setShowPlaceOrderBar(false);
-                  toast.success(t("Product removed from your cart", "محصول از سبد خرید شما حذف شد"));
-                }}
-                aria-label={t("Remove from cart", "حذف از سبد خرید")}
-              >
-                {/* Trash/Remove icon (FiTrash2) */}
-                <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle' }}><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m5 0V4a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" /></svg>
-              </button>
-            ) : (
-              <button
-                className={styles.placeOrderQuantityButton}
-                onClick={() => handleQuantityChange(-1)}
-                disabled={quantity <= (product?.minOrderQuantity || 1)}
-              >
-                −
-              </button>
-            )}
-            <span className={styles.placeOrderQuantityValue}>{quantity}</span>
-            <button
-              className={styles.placeOrderQuantityButton}
-              onClick={() => handleQuantityChange(1)}
-              disabled={
-                product?.maxOrderQuantity
-                  ? quantity >= product.maxOrderQuantity
-                  : false
-              }
-            >
-              +
-            </button>
-          </div>
-          <button
-            className={styles.placeOrderButton}
-            onClick={() => {
-              setShowPlaceOrderBar(false);
-              openCart();
-            }}
-          >
-            {t("Place the order", "سفارش را ثبت کنید")}
-          </button>
         </div>
       )}
 

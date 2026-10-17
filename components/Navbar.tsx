@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useLanguage } from "@/lib/utils/language";
 import { signOut, useSession } from "next-auth/react";
 import { useState, useEffect, useRef } from "react";
-import { FiSearch, FiUser, FiShoppingCart, FiMenu, FiX, FiLogIn, FiLogOut } from "react-icons/fi";
+import { FiSearch, FiUser, FiShoppingCart, FiMenu, FiX, FiLogIn, FiLogOut, FiChevronDown } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { useCart } from "@/lib/contexts/CartContext";
 import SearchPanel from "@/components/SearchPanel";
@@ -15,24 +15,41 @@ import styles from "@/styles/components/_navbar.module.scss";
 
 interface NavbarProps {
   dashboardDesktopOnly?: boolean;
+  hasMainBanner?: boolean;
 }
 
-export default function Navbar({ dashboardDesktopOnly = false }: NavbarProps) {
+export default function Navbar({ dashboardDesktopOnly = false, hasMainBanner = false }: NavbarProps) {
   const { language, setLanguage, t } = useLanguage();
   const { data: session } = useSession();
   const router = useRouter();
+  const pathname = usePathname() || "/";
+  const barePath = pathname.replace(/^\/(en|fa)(?=\/|$)/, "") || "/";
+  const isSolidGreen = barePath !== "/" && !/^\/(login|about)(\/|$)|^\/products\/?$/.test(barePath);
   const { openCart, getTotalItems } = useCart();
   const localizedPath = (path: string) => `/${language}${path === "/" ? "" : path}`;
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
-  const [navbarHeight, setNavbarHeight] = useState(70);
+  const [isPastMainBanner, setIsPastMainBanner] = useState(false);
+  const [navbarBottom, setNavbarBottom] = useState(70);
   const navbarRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLUListElement>(null);
   const menuToggleRef = useRef<HTMLButtonElement>(null);
   const accountButtonRef = useRef<HTMLButtonElement>(null);
 
   const totalItems = getTotalItems();
+  const trackOrderHref = session ? "/dashboard" : "/login?method=phone-code&callbackUrl=%2Fdashboard";
+  const [guideOpen, setGuideOpen] = useState(false);
+  const guideRef = useRef<HTMLLIElement>(null);
+
+  useEffect(() => {
+    if (!guideOpen) return;
+    const close = (e: MouseEvent) => {
+      if (!guideRef.current?.contains(e.target as Node)) setGuideOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [guideOpen]);
 
   const handleMobileLogout = async () => {
     await signOut({ redirect: false });
@@ -52,19 +69,39 @@ export default function Navbar({ dashboardDesktopOnly = false }: NavbarProps) {
     }
   }, [menuOpen]);
 
-  // Calculate navbar height for SearchPanel
+  // Keep the search panel aligned below the navbar, including its floating offset.
   useEffect(() => {
-    const updateNavbarHeight = () => {
+    const updateNavbarBottom = () => {
       if (navbarRef.current) {
-        const height = navbarRef.current.getBoundingClientRect().height;
-        setNavbarHeight(height);
+        setNavbarBottom(navbarRef.current.getBoundingClientRect().bottom);
       }
     };
 
-    updateNavbarHeight();
-    window.addEventListener("resize", updateNavbarHeight);
-    return () => window.removeEventListener("resize", updateNavbarHeight);
+    updateNavbarBottom();
+    window.addEventListener("resize", updateNavbarBottom);
+    return () => window.removeEventListener("resize", updateNavbarBottom);
   }, []);
+
+  useEffect(() => {
+    if (!hasMainBanner) {
+      setIsPastMainBanner(false);
+      return;
+    }
+
+    const updateBannerState = () => {
+      const mainBanner = document.querySelector<HTMLElement>("[data-main-banner]");
+      setIsPastMainBanner(mainBanner ? mainBanner.getBoundingClientRect().bottom <= 0 : false);
+    };
+
+    updateBannerState();
+    window.addEventListener("scroll", updateBannerState, { passive: true });
+    window.addEventListener("resize", updateBannerState);
+
+    return () => {
+      window.removeEventListener("scroll", updateBannerState);
+      window.removeEventListener("resize", updateBannerState);
+    };
+  }, [hasMainBanner]);
 
   // Close search when opening menu and vice versa
   useEffect(() => {
@@ -122,7 +159,7 @@ export default function Navbar({ dashboardDesktopOnly = false }: NavbarProps) {
   return (
     <nav
       ref={navbarRef}
-      className={`${styles.navbar} ${dashboardDesktopOnly ? styles.dashboardDesktopOnly : ""}`}
+      className={`${styles.navbar} ${dashboardDesktopOnly ? styles.dashboardDesktopOnly : ""} ${hasMainBanner ? styles.hasMainBanner : ""} ${isPastMainBanner || isSolidGreen ? styles.scrolledPastBanner : ""}`}
     >
       <div className={styles.container}>
         <button
@@ -157,13 +194,46 @@ export default function Navbar({ dashboardDesktopOnly = false }: NavbarProps) {
               {t("Products", "محصولات")}
             </Link>
           </li>
-          <li>
+              <li>
+            <Link
+              href={localizedPath("/instructions")}
+              className={styles.link}
+              onClick={() => setMenuOpen(false)}
+            >
+              {t("Instructions", "آموزش")}
+            </Link>
+          </li>
+          {/* <li>
             <Link href={localizedPath("/how-to-use/howtoorder-1-1")} className={styles.link} onClick={() => setMenuOpen(false)}>
               <span className={styles.instructionsDesktopLabel}>{t("Instructions", "آموزش")}</span>
               <span className={styles.instructionsMobileLabel}>{t("How to order", "نحوه ثبت سفارش")}</span>
             </Link>
+          </li> */}
+          <li className={`${styles.guideDropdown} ${guideOpen ? styles.open : ""}`} ref={guideRef}>
+            <button
+              type="button"
+              className={`${styles.link} ${styles.guideTrigger}`}
+              aria-haspopup="true"
+              aria-expanded={guideOpen}
+              onClick={() => setGuideOpen((v) => !v)}
+            >
+              {t("How to Use", "طرز استفاده از محصولات")}
+              <FiChevronDown aria-hidden="true" />
+            </button>
+            <ul className={styles.guideMenu}>
+              <li>
+                <Link href={localizedPath("/how-to-use/how-to-use-products-1")} className={styles.guideMenuLink} onClick={() => setGuideOpen(false)}>
+                  {t("How to Use", "طرز استفاده از محصولات")}
+                </Link>
+              </li>
+              <li>
+                <Link href={trackOrderHref} className={styles.guideMenuLink} onClick={() => setGuideOpen(false)}>
+                  {t("Track Order", "پیگیری سفارشات")}
+                </Link>
+              </li>
+            </ul>
           </li>
-          <li>
+          <li className={styles.mobileOnlyItem}>
             <Link href={localizedPath("/how-to-use/how-to-use-products-1")} className={styles.link} onClick={() => setMenuOpen(false)}>
               {t("How to Use", "طرز استفاده از محصولات")}
             </Link>
@@ -171,6 +241,15 @@ export default function Navbar({ dashboardDesktopOnly = false }: NavbarProps) {
           <li>
             <Link href={localizedPath("/contact")} className={styles.link} onClick={() => setMenuOpen(false)}>
               {t("Contact Us", "ارتباط با ما")}
+            </Link>
+          </li>
+          <li className={styles.mobileOnlyItem}>
+            <Link
+              href={trackOrderHref}
+              className={styles.link}
+              onClick={() => setMenuOpen(false)}
+            >
+              {t("Track Order", "پیگیری سفارش")}
             </Link>
           </li>
           {session ? (
@@ -307,7 +386,7 @@ export default function Navbar({ dashboardDesktopOnly = false }: NavbarProps) {
       <SearchPanel
         isOpen={searchOpen}
         onClose={() => setSearchOpen(false)}
-        navbarHeight={navbarHeight}
+        navbarBottom={navbarBottom}
       />
     </nav>
   );

@@ -13,7 +13,10 @@ export async function GET() {
       .where(eq(categories.isActive, true))
       .orderBy(categories.order);
 
-    return NextResponse.json({ categories: allCategories });
+    return NextResponse.json(
+      { categories: allCategories },
+      { headers: { "Cache-Control": "public, max-age=60, stale-while-revalidate=300" } }
+    );
   } catch (error) {
     console.error("Error fetching categories:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);

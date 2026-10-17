@@ -356,17 +356,17 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
                         {isExpanded && (
                           <div className={styles.orderItemCartContent}>
                             <div className={styles.orderProductInfo}>
-                              <div className={styles.orderProductRow}>
                                 <span className={styles.orderProductLabel}>{t("Items", "آیتم‌ها")}: </span>
+                              <div className={styles.orderProductRow}>
                                 <span className={styles.orderProductValue}>{order.items.map((item) => `${language === "fa" && item.productNameFa ? item.productNameFa : item.productName} x${item.quantity}`).join("، ")}</span>
                               </div>
                               <div className={styles.orderProductRow}>
-                                <span className={styles.orderProductLabel}>{t("Total", "کل")}: </span>
+                                <span className={styles.orderProductLabel}>{t("Total", "هزینه‌ی کل")}: </span>
                                 <span className={styles.orderProductValue}>{formatPrice(totalPrice, language, currency || "toman")}</span>
                               </div>
                             </div>
                             <div className={styles.orderProductRow}>
-                              <span className={styles.orderProductLabel}>{t("Shipping Cost", "هزینه ارسال")}: </span>
+                              <span className={styles.orderProductLabel}>{t("Shipping Cost", "هزینه‌ی ارسال")}: </span>
                               <span className={styles.orderProductValue}>{formatPrice(order.shippingCost || 0, language, currency ?? "toman")}</span>
                             </div>
                             <a href="/checkout" className={styles.continueCheckoutBtn}>{t("Continue Checkout", "ادامه تسویه حساب")}</a>

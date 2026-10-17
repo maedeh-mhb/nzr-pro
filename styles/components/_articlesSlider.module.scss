@@ -1,0 +1,104 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.section {
+  padding: $spacing-3xl 5%;
+  background: linear-gradient(135deg, $primary, darken($primary, 12%));
+  overflow: hidden;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 1.58rem;
+  margin-bottom: $spacing-2xl;
+  color: $text-light;
+}
+
+.viewport {
+  max-width: $max-width-xl;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.track {
+  display: flex;
+  transition: transform 0.6s $ease-out;
+}
+
+.slide {
+  flex: 0 0 auto;
+  padding: 0 $spacing-sm;
+  box-sizing: border-box;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  @include glass-effect(18px, 0.12, rgba(255, 255, 255, 0.15));
+  border-color: rgba(255, 255, 255, 0.6);
+  border-radius: $radius-card;
+  box-shadow: $shadow-md;
+  overflow: hidden;
+  text-decoration: none !important;
+  color: $text-light;
+  transition: transform $duration-base $ease-out, box-shadow $duration-base $ease-out;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  }
+}
+
+.imageWrapper {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.title {
+  padding: $spacing-md;
+  font-size: $font-lg;
+  font-weight: 600;
+  text-align: center;
+  color: $text-light;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  [dir="rtl"] & {
+    font-family: 'Sahel', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-sm;
+  margin-top: $spacing-lg;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border: none;
+  border-radius: $radius-circle;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 0;
+  transition: all $transition-base;
+}
+
+.activeDot {
+  background: $text-light;
+  width: 24px;
+  border-radius: $radius-full;
+}

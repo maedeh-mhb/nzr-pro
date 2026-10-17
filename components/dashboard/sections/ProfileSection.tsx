@@ -357,7 +357,7 @@ export default function ProfileSection({ setActiveSection, onProfileUpdate }: Pr
               <p className={styles.profileNameHint}>
                 {t(
                   "Please write your full first and family names in Persian",
-                  "نام و نام خانوادگی خود را به صورت کامل و به فارسی بنویسید"
+                  "نام و نام خانوادگی خود را به صورت کامل و به فارسی بنویسید."
                 )}
               </p>
             )}
