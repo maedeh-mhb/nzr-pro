@@ -24,6 +24,11 @@
   @include max-tablet {
     padding-top: $navbar-height;
   }
+
+  @include max-mobile {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
 }
 
 .productCard {
@@ -40,6 +45,10 @@
   transition: background-color $duration-base $ease-out,
     border-color $duration-base $ease-out,
     box-shadow $duration-base $ease-out;
+
+  @include max-mobile {
+    padding: $spacing-md;
+  }
 }
 
 .productDetail {

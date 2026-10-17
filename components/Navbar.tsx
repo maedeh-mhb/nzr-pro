@@ -159,7 +159,7 @@ export default function Navbar({ dashboardDesktopOnly = false, hasMainBanner = f
   return (
     <nav
       ref={navbarRef}
-      className={`${styles.navbar} ${dashboardDesktopOnly ? styles.dashboardDesktopOnly : ""} ${hasMainBanner ? styles.hasMainBanner : ""} ${isPastMainBanner || isSolidGreen ? styles.scrolledPastBanner : ""}`}
+      className={`${styles.navbar} ${menuOpen ? styles.menuOpen : ""} ${dashboardDesktopOnly ? styles.dashboardDesktopOnly : ""} ${hasMainBanner ? styles.hasMainBanner : ""} ${isPastMainBanner || isSolidGreen ? styles.scrolledPastBanner : ""}`}
     >
       <div className={styles.container}>
         <button

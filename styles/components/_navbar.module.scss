@@ -25,6 +25,10 @@
     right: $spacing-sm;
     width: calc(100% - #{$spacing-sm * 2});
     z-index: $z-navbar;
+
+    &.menuOpen {
+      z-index: 1101;
+    }
   }
 
   // Store navbar height for menu positioning
