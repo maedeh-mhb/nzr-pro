@@ -31,7 +31,7 @@ interface HomeClientProps {
 
 export default function HomeClient({ hero, featuredProducts, articles, categories, note }: HomeClientProps) {
   const { t, language } = useLanguage();
-  const [featuredSlidesPerView, setFeaturedSlidesPerView] = useState(1);
+  const [featuredSlidesPerView, setFeaturedSlidesPerView] = useState(1.2);
   const featuredCloneCount = Math.ceil(featuredSlidesPerView);
   const [featuredSlideIndex, setFeaturedSlideIndex] = useState(featuredCloneCount);
   const [isFeaturedSliderPaused, setIsFeaturedSliderPaused] = useState(false);
@@ -83,11 +83,10 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
   useEffect(() => {
     if (isFeaturedSliderPaused || featuredSlideCount <= 1) return;
 
-    const autoplayDirection = language === "fa" ? -1 : 1;
-    const timer = window.setInterval(() => moveFeaturedSlide(autoplayDirection), 4000);
+    const timer = window.setInterval(() => moveFeaturedSlide(1), 4000);
 
     return () => window.clearInterval(timer);
-  }, [featuredSlideCount, isFeaturedSliderPaused, language, moveFeaturedSlide]);
+  }, [featuredSlideCount, isFeaturedSliderPaused, moveFeaturedSlide]);
 
   const heroSettings = hero;
   const noteContent = note?.isEnabled
@@ -194,6 +193,7 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
             className={productStyles.featuredCarouselViewport}
             role="region"
             aria-roledescription={t("carousel", "اسلایدر")}
+            dir="ltr"
             onMouseEnter={() => setIsFeaturedSliderPaused(true)}
             onMouseLeave={() => setIsFeaturedSliderPaused(false)}
             onTouchStart={(event) => {
@@ -210,8 +210,7 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
                 const deltaX = touch.clientX - start.x;
                 const deltaY = touch.clientY - start.y;
                 if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
-                  const isNextSwipe = language === "fa" ? deltaX > 0 : deltaX < 0;
-                  moveFeaturedSlide(isNextSwipe ? 1 : -1);
+                  moveFeaturedSlide(deltaX < 0 ? 1 : -1);
                 }
               }
               setIsFeaturedSliderPaused(false);
@@ -238,12 +237,11 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
               className={productStyles.featuredCarouselTrack}
               style={{
                 width: `${(featuredTrackSlideCount * 100) / featuredSlidesPerView}%`,
-                direction: language === "fa" ? "rtl" : "ltr",
+                direction: "ltr",
                 transition: isFeaturedLoopResetting ? "none" : undefined,
                 transform: `translateX(${
-                  (language === "fa" ? 1 : -1) *
                   featuredSlideIndex *
-                  (100 / featuredTrackSlideCount)
+                  (-100 / featuredTrackSlideCount)
                 }%)`,
               }}
               onTransitionEnd={(event) => {
@@ -275,7 +273,10 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
                   <div
                     key={`${trackIndex}-${product.id}`}
                     className={productStyles.featuredCarouselSlide}
-                    style={{ flexBasis: `${100 / featuredTrackSlideCount}%` }}
+                    style={{
+                      flexBasis: `${100 / featuredTrackSlideCount}%`,
+                      direction: language === "fa" ? "rtl" : "ltr",
+                    }}
                   >
                     <ProductCard
                       id={product.id}
@@ -294,6 +295,7 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
                       maxOrderQuantity={product.maxOrderQuantity}
                       alignPriceAtBottom={true}
                       flushImage
+                      hideActions
                     />
                   </div>
                 );

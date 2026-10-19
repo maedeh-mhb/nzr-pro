@@ -29,6 +29,7 @@ interface ProductCardProps {
   quantity?: number | null;
   alignPriceAtBottom?: boolean;
   flushImage?: boolean;
+  hideActions?: boolean;
 }
 
 export default function ProductCard({
@@ -48,6 +49,7 @@ export default function ProductCard({
   quantity,
   alignPriceAtBottom = false,
   flushImage = false,
+  hideActions = false,
 }: ProductCardProps) {
   const { t, language, currency } = useLanguage();
   const { data: session } = useSession();
@@ -319,22 +321,26 @@ export default function ProductCard({
             </span>
           )}
         </div>
-        <button
-          className={`${styles.wishlistBtn} ${isWishlisted ? styles.active : ""}`}
-          onClick={handleWishlistToggle}
-          disabled={isLoading}
-          aria-label={isWishlisted ? t("Remove from wishlist", "حذف از علاقه‌مندی‌ها") : t("Add to wishlist", "افزودن به علاقه‌مندی‌ها")}
-        >
-          <FiHeart className={styles.wishlistIcon} />
-        </button>
-        <button
-          type="button"
-          className={styles.shareBtn}
-          onClick={handleShare}
-          aria-label={t("Share Product", "اشتراک گذاری محصول")}
-        >
-          <FiShare2 className={styles.shareIcon} />
-        </button>
+        {!hideActions && (
+          <>
+            <button
+              className={`${styles.wishlistBtn} ${isWishlisted ? styles.active : ""}`}
+              onClick={handleWishlistToggle}
+              disabled={isLoading}
+              aria-label={isWishlisted ? t("Remove from wishlist", "حذف از علاقه‌مندی‌ها") : t("Add to wishlist", "افزودن به علاقه‌مندی‌ها")}
+            >
+              <FiHeart className={styles.wishlistIcon} />
+            </button>
+            <button
+              type="button"
+              className={styles.shareBtn}
+              onClick={handleShare}
+              aria-label={t("Share Product", "اشتراک گذاری محصول")}
+            >
+              <FiShare2 className={styles.shareIcon} />
+            </button>
+          </>
+        )}
       </div>
       <div className={styles.productInfo}>
         <h3 className={styles.productTitle}>{displayName}</h3>
@@ -342,33 +348,37 @@ export default function ProductCard({
           <p className={styles.productSubtitle}>{displayDescription}</p>
         )}
         <div className={styles.productPrice}>{formattedPrice}</div>
-        <button
-          className={`${styles.btnBuy} ${isUnavailable || isAddingToCart ? styles.disabled : ""}`}
-          onClick={handleBuyNow}
-          disabled={isUnavailable || isAddingToCart}
-        >
-          <FiShoppingCart />
-          <span>
-            {isAddingToCart
-              ? t("Adding...", "در حال افزودن...")
-              : t("Buy Now", "خرید")}
-          </span>
-        </button>
-        {currentBadge === "Not Available" ? (
-          <div
-            className={styles.btnView}
-            aria-disabled="true"
-            title={t("This product is hidden", "این محصول مخفی است")}
-            style={{ cursor: "not-allowed" }}
-          >
-            <FiEye />
-            <span>{t("View More", " جزئیات محصول")}</span>
-          </div>
-        ) : (
-          <Link href={productUrl} className={styles.btnView}>
-            <FiEye />
-            <span>{t("View More", " جزئیات محصول")}</span>
-          </Link>
+        {!hideActions && (
+          <>
+            <button
+              className={`${styles.btnBuy} ${isUnavailable || isAddingToCart ? styles.disabled : ""}`}
+              onClick={handleBuyNow}
+              disabled={isUnavailable || isAddingToCart}
+            >
+              <FiShoppingCart />
+              <span>
+                {isAddingToCart
+                  ? t("Adding...", "در حال افزودن...")
+                  : t("Buy Now", "خرید")}
+              </span>
+            </button>
+            {currentBadge === "Not Available" ? (
+              <div
+                className={styles.btnView}
+                aria-disabled="true"
+                title={t("This product is hidden", "این محصول مخفی است")}
+                style={{ cursor: "not-allowed" }}
+              >
+                <FiEye />
+                <span>{t("View More", " جزئیات محصول")}</span>
+              </div>
+            ) : (
+              <Link href={productUrl} className={styles.btnView}>
+                <FiEye />
+                <span>{t("View More", " جزئیات محصول")}</span>
+              </Link>
+            )}
+          </>
         )}
       </div>
     </div>
