@@ -32,36 +32,28 @@ interface HomeClientProps {
 export default function HomeClient({ hero, featuredProducts, articles, categories, note }: HomeClientProps) {
   const { t, language } = useLanguage();
   const [featuredSlidesPerView, setFeaturedSlidesPerView] = useState(1);
-  const [featuredSlideIndex, setFeaturedSlideIndex] = useState(0);
+  const featuredCloneCount = Math.ceil(featuredSlidesPerView);
+  const [featuredSlideIndex, setFeaturedSlideIndex] = useState(featuredCloneCount);
   const [isFeaturedSliderPaused, setIsFeaturedSliderPaused] = useState(false);
   const [isFeaturedLoopResetting, setIsFeaturedLoopResetting] = useState(false);
   const featuredTouchStart = useRef<{ x: number; y: number } | null>(null);
-  const featuredSlideCount = featuredProducts.length + 1;
-  const maxFeaturedSlideIndex = Math.max(0, featuredSlideCount - featuredSlidesPerView);
+  const featuredSlideCount = featuredProducts.length;
+  const featuredTrackSlideCount = featuredSlideCount + featuredCloneCount * 2;
+  const featuredTrackSlides =
+    featuredSlideCount > 0
+      ? Array.from(
+          { length: featuredTrackSlideCount },
+          (_, index) =>
+            ((index - featuredCloneCount) % featuredSlideCount + featuredSlideCount) %
+            featuredSlideCount
+        )
+      : [];
 
   const moveFeaturedSlide = useCallback(
     (direction: 1 | -1) => {
-      const wrapsAround =
-        direction > 0
-          ? featuredSlideIndex >= maxFeaturedSlideIndex
-          : featuredSlideIndex <= 0;
-      const nextIndex = wrapsAround
-        ? direction > 0
-          ? 0
-          : maxFeaturedSlideIndex
-        : Math.max(0, Math.min(featuredSlideIndex + direction, maxFeaturedSlideIndex));
-
-      if (wrapsAround) {
-        setIsFeaturedLoopResetting(true);
-        setFeaturedSlideIndex(nextIndex);
-        window.requestAnimationFrame(() => {
-          window.requestAnimationFrame(() => setIsFeaturedLoopResetting(false));
-        });
-      } else {
-        setFeaturedSlideIndex(nextIndex);
-      }
+      setFeaturedSlideIndex((currentIndex) => currentIndex + direction);
     },
-    [featuredSlideIndex, maxFeaturedSlideIndex]
+    []
   );
 
   useEffect(() => {
@@ -81,16 +73,20 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
   }, []);
 
   useEffect(() => {
-    setFeaturedSlideIndex((currentIndex) => Math.min(currentIndex, maxFeaturedSlideIndex));
-  }, [maxFeaturedSlideIndex]);
+    setIsFeaturedLoopResetting(true);
+    setFeaturedSlideIndex(featuredCloneCount);
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => setIsFeaturedLoopResetting(false));
+    });
+  }, [featuredCloneCount]);
 
   useEffect(() => {
-    if (isFeaturedSliderPaused || maxFeaturedSlideIndex <= 0) return;
+    if (isFeaturedSliderPaused || featuredSlideCount <= 1) return;
 
     const timer = window.setInterval(() => moveFeaturedSlide(1), 4000);
 
     return () => window.clearInterval(timer);
-  }, [isFeaturedSliderPaused, maxFeaturedSlideIndex, moveFeaturedSlide]);
+  }, [featuredSlideCount, isFeaturedSliderPaused, moveFeaturedSlide]);
 
   const heroSettings = hero;
   const noteContent = note?.isEnabled
@@ -234,53 +230,75 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
             }}
             aria-label={t("Featured products", "محصولات ویژه")}
           >
+            <div className={productStyles.featuredCarouselHeader}>
+              <Link href="/products" className={productStyles.viewAllProductsButton}>
+                {t("View all", "مشاهده همه")}
+              </Link>
+            </div>
             <div
               className={productStyles.featuredCarouselTrack}
               style={{
-                width: `${(featuredSlideCount * 100) / featuredSlidesPerView}%`,
+                width: `${(featuredTrackSlideCount * 100) / featuredSlidesPerView}%`,
                 direction: language === "fa" ? "rtl" : "ltr",
                 transition: isFeaturedLoopResetting ? "none" : undefined,
                 transform: `translateX(${
                   (language === "fa" ? 1 : -1) *
                   featuredSlideIndex *
-                  (100 / featuredSlidesPerView)
+                  (100 / featuredTrackSlideCount)
                 }%)`,
               }}
+              onTransitionEnd={(event) => {
+                if (event.target !== event.currentTarget || event.propertyName !== "transform") return;
+
+                const firstOriginalIndex = featuredCloneCount;
+                const afterLastOriginalIndex = firstOriginalIndex + featuredSlideCount;
+                if (
+                  featuredSlideIndex < firstOriginalIndex ||
+                  featuredSlideIndex >= afterLastOriginalIndex
+                ) {
+                  setIsFeaturedLoopResetting(true);
+                  setFeaturedSlideIndex(
+                    featuredSlideIndex < firstOriginalIndex
+                      ? afterLastOriginalIndex - 1
+                      : firstOriginalIndex
+                  );
+                  window.requestAnimationFrame(() => {
+                    window.requestAnimationFrame(() => setIsFeaturedLoopResetting(false));
+                  });
+                }
+              }}
             >
-              {featuredProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className={productStyles.featuredCarouselSlide}
-                  style={{ flexBasis: `${100 / featuredSlideCount}%` }}
-                >
-                  <ProductCard
-                    id={product.id}
-                    name={product.name}
-                    nameFa={product.nameFa}
-                    shortDescription={product.shortDescription}
-                    shortDescriptionFa={product.shortDescriptionFa}
-                    price={product.price}
-                    image={product.image}
-                    images={product.images}
-                    quantity={product.quantity}
-                    badge={product.badge}
-                    slug={product.slug}
-                    category={product.category}
-                    minOrderQuantity={product.minOrderQuantity}
-                    maxOrderQuantity={product.maxOrderQuantity}
-                    alignPriceAtBottom={true}
-                    flushImage
-                  />
-                </div>
-              ))}
-              <div
-                className={productStyles.featuredCarouselSlide}
-                style={{ flexBasis: `${100 / featuredSlideCount}%` }}
-              >
-                <Link href="/products" className={productStyles.viewAllProductsCard}>
-                  {t("View all", "مشاهده همه")}
-                </Link>
-              </div>
+              {featuredTrackSlides.map((slideIndex, trackIndex) => {
+                const product = featuredProducts[slideIndex];
+                if (!product) return null;
+
+                return (
+                  <div
+                    key={`${trackIndex}-${product.id}`}
+                    className={productStyles.featuredCarouselSlide}
+                    style={{ flexBasis: `${100 / featuredTrackSlideCount}%` }}
+                  >
+                    <ProductCard
+                      id={product.id}
+                      name={product.name}
+                      nameFa={product.nameFa}
+                      shortDescription={product.shortDescription}
+                      shortDescriptionFa={product.shortDescriptionFa}
+                      price={product.price}
+                      image={product.image}
+                      images={product.images}
+                      quantity={product.quantity}
+                      badge={product.badge}
+                      slug={product.slug}
+                      category={product.category}
+                      minOrderQuantity={product.minOrderQuantity}
+                      maxOrderQuantity={product.maxOrderQuantity}
+                      alignPriceAtBottom={true}
+                      flushImage
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
         ) : (

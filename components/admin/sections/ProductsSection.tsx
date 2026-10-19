@@ -43,6 +43,7 @@ interface Product {
   image: string | null;
   audioUrl?: string | null;
   badge: string | null;
+  productType: "economic" | "featured" | null;
   weight?: string | null;
   volume?: string | null;
   rewardPoints?: number | null;
@@ -173,6 +174,7 @@ export default function ProductsSection() {
     ogImage: yup.string(),
     sellerId: yup.string().required(t("Seller is required", "انتخاب فروشنده الزامی است")),
     badge: yup.string(),
+    productType: yup.string().oneOf(["economic", "featured"]).required(),
     minOrderQuantity: yup.number().min(1, t("Minimum order quantity must be at least 1", "کمترین مقدار سفارش نمی تواند از یک کمتر باشد")),
     maxOrderQuantity: yup.number().test("max-greater-than-min", t("Maximum must be greater than minimum", "حداکثر مقدار سفارش نمی تواند از حداقل مقدار سفارش کمتر باشد"), function (value) {
       const min = this.parent.minOrderQuantity;
@@ -204,6 +206,7 @@ export default function ProductsSection() {
       quantity: 0,
       rewardPoints: null,
       sellerId: "",
+      productType: "economic",
       ogImage: "",
     },
   });
@@ -793,6 +796,7 @@ const handleEditProduct = useCallback(async (productId: string) => {
       audioUrl: fullProduct.audioUrl || "",
       ogImage: fullProduct.ogImage || "",
       badge: fullProduct.badge || "None",
+      productType: fullProduct.productType || "economic",
       sellerId: fullProduct.sellerId || "",
       minOrderQuantity: fullProduct.minOrderQuantity || 1,
       maxOrderQuantity: fullProduct.maxOrderQuantity || undefined,
@@ -1985,6 +1989,20 @@ const handleShowProduct = useCallback(async (productId: string) => {
                 value={watchProduct("badge") || ""}
                 onChange={(value) => setValueProduct("badge", value)}
                 error={productErrors.badge?.message}
+              />
+              <Select
+                label={t("Product Type", "نوع محصول")}
+                options={[
+                  { value: "economic", label: t("Economic", "اقتصادی") },
+                  { value: "featured", label: t("Featured (Home Slider)", "ویژه (اسلایدر صفحه اصلی)") },
+                ]}
+                value={watchProduct("productType") || "economic"}
+                onChange={(value) => {
+                  if (value === "economic" || value === "featured") {
+                    setValueProduct("productType", value);
+                  }
+                }}
+                error={productErrors.productType?.message}
               />
             </div>
             {/* Descriptions */}
