@@ -358,7 +358,9 @@ export default function ContactPage() {
               </div>
             </form>
           </div>
-
+          <h3 className={styles.contactNotif}>
+            برای پاسخ‌دهی سریع تر در تلگرام پیام بگذارید.
+          </h3>
           {/* Contact Info */}
           <div className={styles.contactInfo}>
             {contactSettings?.telegram && (

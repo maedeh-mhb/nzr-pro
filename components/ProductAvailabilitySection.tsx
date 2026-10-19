@@ -12,7 +12,13 @@ interface AvailabilityData {
   availabilityIsEnabled: boolean;
 }
 
-export default function ProductAvailabilitySection({ initialData }: { initialData?: AvailabilityData | null }) {
+export default function ProductAvailabilitySection({
+  initialData,
+  showAudio = false,
+}: {
+  initialData?: AvailabilityData | null;
+  showAudio?: boolean;
+}) {
   const { language, t } = useLanguage();
   const [availability, setAvailability] = useState<AvailabilityData | null>(initialData ?? null);
 
@@ -24,7 +30,11 @@ export default function ProductAvailabilitySection({ initialData }: { initialDat
       .catch(() => {});
   }, [initialData]);
 
-  if (!availability?.availabilityIsEnabled || availability.availabilityDates.length === 0) {
+  if (
+    !availability?.availabilityIsEnabled ||
+    (availability.availabilityDates.length === 0 &&
+      !(showAudio && availability.availabilityAudioUrl))
+  ) {
     return null;
   }
 
@@ -36,13 +46,20 @@ export default function ProductAvailabilitySection({ initialData }: { initialDat
     <section className={styles.section} dir={language === "fa" ? "rtl" : "ltr"}>
       <div className={styles.content}><p className={styles.eyebrow}>{t("PRODUCT AVAILABILITY", "زمان عرضه محصولات")}</p>
         {/* <h2 className={styles.title}>{title || t("Products are available on these dates", "محصولات در تاریخ‌های زیر عرضه می‌شوند")}</h2> */}
-        <div className={styles.dates}>
-          {availability.availabilityDates.map((date) => (
-            <span key={date} className={styles.date}>{date}</span>
-          ))}
-        </div>
-        {availability.availabilityAudioUrl && (
-          <audio className={styles.audio} controls preload="metadata" src={availability.availabilityAudioUrl}>
+        {availability.availabilityDates.length > 0 && (
+          <div className={styles.dates}>
+            {availability.availabilityDates.map((date) => (
+              <span key={date} className={styles.date}>{date}</span>
+            ))}
+          </div>
+        )}
+        {showAudio && availability.availabilityAudioUrl && (
+          <audio
+            className={styles.audio}
+            controls
+            preload="metadata"
+            src={availability.availabilityAudioUrl}
+          >
             {t("Your browser does not support audio playback.", "مرورگر شما از پخش صوت پشتیبانی نمی‌کند.")}
           </audio>
         )}

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { orders, orderItems, guestOrders } from "@/lib/db/schema";
+import { orders, orderItems } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { isOrderWithinEditWindow, ORDER_EDIT_WINDOW_MS } from "@/lib/utils/orderEditing";
 export const dynamic = "force-dynamic";
 
 /**
@@ -34,10 +33,6 @@ export async function GET(
     const items = await db.query.orderItems.findMany({
       where: eq(orderItems.orderId, order.id),
     });
-    const guest = await db.query.guestOrders.findFirst({
-      where: eq(guestOrders.orderId, order.id),
-    });
-
     // Transform items for frontend
     const orderItemsData = items.map((item) => ({
       productId: item.productId,
@@ -57,16 +52,6 @@ export async function GET(
         shippingMethod: order.shippingMethod,
         discountAmount: order.discountAmount,
         createdAt: order.createdAt,
-        isGuest: Boolean(guest),
-        canEdit:
-          isOrderWithinEditWindow(order.createdAt) &&
-          ((["pending", "payment_pending"].includes(order.status) &&
-            !order.paymentVerified &&
-            !order.zibalTrackId) ||
-            (order.status === "processing" && Boolean(order.paymentVerified))),
-        editExpiresAt: new Date(
-          order.createdAt.getTime() + ORDER_EDIT_WINDOW_MS
-        ).toISOString(),
       },
       items: orderItemsData,
     });

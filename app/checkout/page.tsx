@@ -1044,10 +1044,6 @@ export default function CheckoutPage() {
         invoiceRequested,
         csrfToken,
       };
-      if (!isAuthenticated) {
-        const guestEditToken = sessionStorage.getItem("guest-order-edit-token");
-        if (guestEditToken) requestBody.editToken = guestEditToken;
-      }
 
       // Add discount code if applied
       if (appliedDiscount) {
@@ -1108,13 +1104,6 @@ export default function CheckoutPage() {
       // Set flag BEFORE clearing cart to prevent auto-redirect
       if (result.order && result.order.orderNumber) {
         isNavigatingAfterOrderRef.current = true;
-        if (result.guestEditToken) {
-          sessionStorage.setItem("guest-order-edit-token", result.guestEditToken);
-          sessionStorage.setItem(
-            `guest-order-edit:${result.order.orderNumber}`,
-            result.guestEditToken
-          );
-        }
 
         // For online payment, redirect to Zibal gateway
         if (data.paymentMethod === "online_payment") {
@@ -1122,7 +1111,10 @@ export default function CheckoutPage() {
             const paymentResponse = await fetch("/api/payment/zibal/request", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ orderId: result.order.id }),
+              body: JSON.stringify({
+                orderId: result.order.id,
+                editToken: result.guestEditToken,
+              }),
             });
 
             const paymentData = await paymentResponse.json();

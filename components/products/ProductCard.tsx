@@ -28,6 +28,7 @@ interface ProductCardProps {
   maxOrderQuantity?: number | null;
   quantity?: number | null;
   alignPriceAtBottom?: boolean;
+  flushImage?: boolean;
 }
 
 export default function ProductCard({
@@ -46,6 +47,7 @@ export default function ProductCard({
   maxOrderQuantity,
   quantity,
   alignPriceAtBottom = false,
+  flushImage = false,
 }: ProductCardProps) {
   const { t, language, currency } = useLanguage();
   const { data: session } = useSession();
@@ -294,7 +296,7 @@ export default function ProductCard({
 
   return (
     <div
-      className={`${styles.productCard} ${alignPriceAtBottom ? styles.alignPriceAtBottom : ""}`}
+      className={`${styles.productCard} ${alignPriceAtBottom ? styles.alignPriceAtBottom : ""} ${flushImage ? styles.flushImage : ""}`}
     >
       <div className={styles.productImageContainer}>
         <ProductImageGallery

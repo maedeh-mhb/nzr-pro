@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { orders, orderItems, guestOrders, products, paymentSettings, users, contactSettings, userActivities, notifications, discountCodeUsages, discountCodes, idempotencyKeys, orderStatusHistory, shippingSettings } from "@/lib/db/schema";
-import { and, eq, gte, inArray, isNull, or, sql } from "drizzle-orm";
+import { orders, orderItems, guestOrders, products, paymentSettings, users, contactSettings, userActivities, notifications, discountCodeUsages, discountCodes, idempotencyKeys, orderStatusHistory } from "@/lib/db/schema";
+import { and, eq, or, sql } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 import { createActivity } from "@/lib/services/activities";
 import { createAdminActivity } from "@/lib/services/adminActivities";
@@ -19,11 +19,9 @@ import { validateCsrfToken } from "@/lib/utils/csrf";
 import { getOrCreateRequestId, addRequestIdToHeaders } from "@/lib/utils/requestId";
 import { API_ERRORS } from "@/lib/utils/apiErrors";
 import { firstNameMatchesEmail, isPersianName } from "@/lib/utils/nameValidation";
-import { calculateWeightBasedShippingCost, DEFAULT_SHIPPING_WEIGHT_RATES } from "@/lib/shipping/weightRates";
 import {
   createOrderEditToken,
   hashOrderEditToken,
-  isOrderEditTokenValid,
   ORDER_EDIT_WINDOW_MS,
 } from "@/lib/utils/orderEditing";
 import {
@@ -87,7 +85,7 @@ export async function POST(request: NextRequest) {
 
     // 3. CSRF protection
     const body = await request.json();
-    const { csrfToken, idempotencyKey, editToken, ...orderData } = body;
+    const { csrfToken, idempotencyKey, ...orderData } = body;
 
     const csrfValid = await validateCsrfToken(request, csrfToken);
     if (!csrfValid) {
@@ -510,60 +508,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    let mergeCandidate: typeof orders.$inferSelect | null = null;
-    if (
-      !shouldCreateAccount &&
-      !finalDiscountCodeId &&
-      !finalDiscountAmount
-    ) {
-      const recentOrders = await db
-        .select()
-        .from(orders)
-        .where(
-          and(
-            userId ? eq(orders.userId, userId) : isNull(orders.userId),
-            inArray(orders.status, ["pending", "payment_pending"]),
-            eq(orders.paymentMethod, sanitizedPaymentMethod),
-            eq(orders.shippingMethod, sanitizedShippingMethod),
-            isNull(orders.paymentVerified),
-            isNull(orders.zibalTrackId),
-            isNull(orders.discountCodeId),
-            isNull(orders.discountAmount),
-            gte(orders.createdAt, new Date(Date.now() - ORDER_EDIT_WINDOW_MS))
-          )
-        )
-        .orderBy(orders.createdAt);
-
-      for (const candidate of recentOrders) {
-        if (
-          candidate.shippingProvinceId !== sanitizedProvinceId ||
-          candidate.shippingCityId !== sanitizedCityId ||
-          candidate.shippingAddress !== sanitizedAddress ||
-          candidate.shippingPostalCode !== sanitizedPostalCode
-        ) continue;
-
-        if (userId) {
-          mergeCandidate = candidate;
-          break;
-        }
-
-        const guest = await db.query.guestOrders.findFirst({
-          where: eq(guestOrders.orderId, candidate.id),
-        });
-        const tokenMatches =
-          typeof editToken === "string" &&
-          isOrderEditTokenValid(editToken, guest?.editTokenHash);
-        if (guest && tokenMatches) {
-          mergeCandidate = candidate;
-          break;
-        }
-      }
-    }
-
     // Generate order number
     let orderNumber = generateOrderNumber();
-    let orderNumberExists = !mergeCandidate;
-    if (mergeCandidate) orderNumber = mergeCandidate.orderNumber;
+    let orderNumberExists = true;
     while (orderNumberExists) {
       const existing = await db.query.orders.findFirst({
         where: eq(orders.orderNumber, orderNumber),
@@ -601,7 +548,6 @@ export async function POST(request: NextRequest) {
       // CRITICAL: Validate products with row-level locking (SELECT FOR UPDATE) to prevent race conditions
       // This ensures that inventory is checked and updated atomically, preventing overselling
       const validatedItems = [];
-      const lockedProductsMap = new Map<string, any>();
 
       // Lock product rows and validate inventory
       for (const item of initialValidatedItems) {
@@ -617,9 +563,6 @@ export async function POST(request: NextRequest) {
         if (!product) {
           throw new Error(`Product ${item.productId} not found`);
         }
-
-        // Store locked product data for later use
-        lockedProductsMap.set(item.productId, product);
 
         // Re-check availability with locked row (prevents race conditions)
         if (product.badge === "Out of Stock" || product.badge === "Not Available") {
@@ -653,51 +596,25 @@ export async function POST(request: NextRequest) {
       const orderStatus = sanitizedPaymentMethod === "online_payment" ? "payment_pending" : "pending";
 
       let order: typeof orders.$inferSelect;
-      let previousItems: typeof orderItems.$inferSelect[] = [];
-      if (mergeCandidate) {
-        await tx.execute(sql`SELECT id FROM orders WHERE id = ${mergeCandidate.id} FOR UPDATE`);
-        const existingOrder = await tx.query.orders.findFirst({
-          where: and(
-            eq(orders.id, mergeCandidate.id),
-            inArray(orders.status, ["pending", "payment_pending"]),
-            isNull(orders.paymentVerified),
-            isNull(orders.zibalTrackId),
-            isNull(orders.discountCodeId),
-            isNull(orders.discountAmount),
-            gte(orders.createdAt, new Date(Date.now() - ORDER_EDIT_WINDOW_MS))
-          ),
-        });
-        if (!existingOrder) throw new Error("ORDER_CANNOT_BE_MERGED");
-        previousItems = await tx.query.orderItems.findMany({
-          where: eq(orderItems.orderId, existingOrder.id),
-        });
-        const [updated] = await tx
-          .update(orders)
-          .set({ invoiceRequested: existingOrder.invoiceRequested || sanitizedInvoiceRequested, updatedAt: new Date() })
-          .where(eq(orders.id, existingOrder.id))
-          .returning();
-        order = updated;
-      } else {
-        const [created] = await tx
-          .insert(orders)
-          .values({
-            userId: orderUserId,
-            orderNumber,
-            total: sanitizedTotal.toString(),
-            paymentMethod: sanitizedPaymentMethod,
-            shippingMethod: sanitizedShippingMethod,
-            status: orderStatus,
-            discountCodeId: finalDiscountCodeId,
-            discountAmount: finalDiscountAmount ? finalDiscountAmount.toString() : null,
-            invoiceRequested: sanitizedInvoiceRequested,
-            shippingProvinceId: sanitizedProvinceId || null,
-            shippingCityId: sanitizedCityId || null,
-            shippingAddress: sanitizedAddress || null,
-            shippingPostalCode: sanitizedPostalCode || null,
-          })
-          .returning();
-        order = created;
-      }
+      const [created] = await tx
+        .insert(orders)
+        .values({
+          userId: orderUserId,
+          orderNumber,
+          total: sanitizedTotal.toString(),
+          paymentMethod: sanitizedPaymentMethod,
+          shippingMethod: sanitizedShippingMethod,
+          status: orderStatus,
+          discountCodeId: finalDiscountCodeId,
+          discountAmount: finalDiscountAmount ? finalDiscountAmount.toString() : null,
+          invoiceRequested: sanitizedInvoiceRequested,
+          shippingProvinceId: sanitizedProvinceId || null,
+          shippingCityId: sanitizedCityId || null,
+          shippingAddress: sanitizedAddress || null,
+          shippingPostalCode: sanitizedPostalCode || null,
+        })
+        .returning();
+      order = created;
 
       // Create order items
       const orderItemsData = validatedItems.map((item) => ({
@@ -710,38 +627,6 @@ export async function POST(request: NextRequest) {
       }));
 
       await tx.insert(orderItems).values(orderItemsData);
-      if (mergeCandidate) {
-        for (const item of previousItems) {
-          if (lockedProductsMap.has(item.productId)) continue;
-          const product = await tx.query.products.findFirst({
-            where: eq(products.id, item.productId),
-          });
-          if (product) lockedProductsMap.set(item.productId, product);
-        }
-        const combinedItems = [...previousItems, ...orderItemsData];
-        const combinedWeight = combinedItems.reduce(
-          (weight, item) =>
-            weight + Number(lockedProductsMap.get(item.productId)?.weight || 0) * item.quantity,
-          0
-        );
-        const combinedSubtotal = combinedItems.reduce(
-          (subtotal, item) => subtotal + Number(item.price) * item.quantity,
-          0
-        );
-        const settings = await tx.query.shippingSettings.findFirst();
-        const rates = settings?.weightRates?.length
-          ? settings.weightRates
-          : DEFAULT_SHIPPING_WEIGHT_RATES;
-        const postage = sanitizedShippingMethod === "courier"
-          ? 0
-          : calculateWeightBasedShippingCost(combinedWeight, rates);
-        const [updated] = await tx
-          .update(orders)
-          .set({ total: (combinedSubtotal + postage).toString() })
-          .where(eq(orders.id, order.id))
-          .returning();
-        order = updated;
-      }
 
       // Record discount code usage if discount was applied (with row-level locking)
       if (finalDiscountCodeId && finalDiscountAmount !== null) {
@@ -795,7 +680,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Store the guest shipping/contact snapshot.
-      if (isGuestOrder && !mergeCandidate) {
+      if (isGuestOrder) {
         await tx.insert(guestOrders).values({
           orderId: order.id,
           guestName: sanitizedGuestName!,
@@ -808,19 +693,6 @@ export async function POST(request: NextRequest) {
           editTokenHash: guestEditToken ? hashOrderEditToken(guestEditToken) : null,
           editExpiresAt: new Date(order.createdAt.getTime() + ORDER_EDIT_WINDOW_MS),
         });
-      } else if (isGuestOrder && mergeCandidate) {
-        await tx.update(guestOrders).set({
-          guestName: sanitizedGuestName!,
-          guestEmail: sanitizedGuestEmail,
-          guestPhone: sanitizedGuestPhone!,
-          provinceId: sanitizedProvinceId!,
-          cityId: sanitizedCityId!,
-          address: sanitizedAddress!,
-          postalCode: sanitizedPostalCode,
-          editTokenHash: guestEditToken ? hashOrderEditToken(guestEditToken) : null,
-          editExpiresAt: new Date(order.createdAt.getTime() + ORDER_EDIT_WINDOW_MS),
-          updatedAt: new Date(),
-        }).where(eq(guestOrders.orderId, order.id));
       }
 
       // Create activity and notification for registered users
@@ -847,7 +719,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Record initial order status in history
-      if (!mergeCandidate) await tx.insert(orderStatusHistory).values({
+      await tx.insert(orderStatusHistory).values({
         orderId: order.id,
         status: "pending",
         previousStatus: null,

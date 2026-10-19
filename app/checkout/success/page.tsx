@@ -11,7 +11,6 @@ import BackButton from "@/components/ui/BackButton";
 import CheckoutProgressBar from "@/components/checkout/CheckoutProgressBar";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
-import OrderEditor from "@/components/orders/OrderEditor";
 import { FaTelegram, FaInstagram, FaWhatsapp } from "react-icons/fa";
 import { FiCheckCircle, FiCreditCard, FiSend, FiCopy, FiMessageCircle } from "react-icons/fi";
 import { formatPrice } from "@/lib/utils/formatPrice";
@@ -35,9 +34,6 @@ interface Order {
   shippingMethod: string | null;
   discountAmount: string | null;
   createdAt: Date | string;
-  isGuest: boolean;
-  canEdit: boolean;
-  editExpiresAt: string;
 }
 
 interface BankCard {
@@ -68,7 +64,6 @@ export default function CheckoutSuccessPage() {
   const [error, setError] = useState<string | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
   const [trackId, setTrackId] = useState<string | null>(null);
-  const [editToken, setEditToken] = useState<string | null>(null);
 
   useEffect(() => {
     const orderNum = searchParams.get("orderNumber");
@@ -89,7 +84,6 @@ export default function CheckoutSuccessPage() {
       }, 2000);
       return () => clearTimeout(timer);
     }
-    setEditToken(sessionStorage.getItem(`guest-order-edit:${orderNum}`));
     setOrderNumber(orderNum);
   }, [searchParams, router]);
 
@@ -297,44 +291,6 @@ export default function CheckoutSuccessPage() {
                   </div>
                 </div>
               </div>
-
-              {order.canEdit && order.editExpiresAt && !order.isGuest && (
-                <div className={styles.priceBreakdown} style={{ marginTop: "1rem" }}>
-                  <p>
-                    {t(
-                      "You can edit your order for up to one hour after placing it: change quantities, remove items or add new products. If the total increases you can pay the difference; if it decreases, the difference is added to your wallet. Shipping cost is recalculated based on your updated order and what you have paid.",
-                      "تا یک ساعت پس از ثبت سفارش می‌توانید آن را ویرایش کنید: تعداد را تغییر دهید، محصولی حذف کنید یا محصول جدید اضافه کنید. در صورت افزایش مبلغ می‌توانید مابه‌التفاوت را پرداخت کنید و در صورت کاهش، مبلغ به کیف پول شما اضافه می‌شود. هزینه ارسال نیز بر اساس سفارش جدید و مبلغ پرداخت‌شده محاسبه می‌شود."
-                    )}
-                  </p>
-                  <Link href="/dashboard?section=orders">
-                    <Button>{t("Edit my order", "ویرایش سفارش من")}</Button>
-                  </Link>
-                </div>
-              )}
-
-              {order.canEdit && order.editExpiresAt && order.isGuest && editToken && (
-                <OrderEditor
-                  orderId={order.id}
-                  items={orderItems}
-                  editExpiresAt={order.editExpiresAt}
-                  editToken={order.isGuest ? editToken : null}
-                  onSaved={(updatedTotal, updatedItems, _shippingCost, updatedDiscount, paymentRequired) => {
-                    setOrderItems(updatedItems);
-                    setOrder((current) => current
-                      ? {
-                          ...current,
-                          total: updatedTotal,
-                          discountAmount: updatedDiscount,
-                          status: updatedItems.length ? current.status : "cancelled",
-                          canEdit: updatedItems.length > 0 && !paymentRequired,
-                        }
-                      : current);
-                    if (!updatedItems.length) {
-                      toast.success(t("Order canceled", "سفارش لغو شد"));
-                    }
-                  }}
-                />
-              )}
 
               {/* Bank Card Details */}
               {bankCard && (

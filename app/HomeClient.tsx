@@ -153,6 +153,7 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
                 minOrderQuantity={product.minOrderQuantity}
                 maxOrderQuantity={product.maxOrderQuantity}
                 alignPriceAtBottom={true}
+                flushImage
               />
             ))}
           </div>

@@ -19,8 +19,3 @@ export function isOrderEditTokenValid(
   const expected = Buffer.from(expectedHash, "hex");
   return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
-
-export function isOrderWithinEditWindow(createdAt: Date, now = Date.now()): boolean {
-  const elapsed = now - createdAt.getTime();
-  return elapsed >= 0 && elapsed < ORDER_EDIT_WINDOW_MS;
-}

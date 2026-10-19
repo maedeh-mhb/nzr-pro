@@ -217,7 +217,7 @@ export default function ProductsPage() {
     <>
       <Navbar hasMainBanner={hasBanner} />
       <MidPageBanner onEnabledChange={setHasBanner} />
-      <ProductAvailabilitySection />
+      <ProductAvailabilitySection showAudio />
       
       <div className={styles.container}>
         <div className={styles.filters}>
@@ -313,7 +313,7 @@ export default function ProductsPage() {
         ) : (
           <div className={styles.productsGrid}>
             {products.map((product) => (
-              <ProductCard key={product.id} id={product.id} name={product.name} nameFa={product.nameFa} shortDescription={product.shortDescription} shortDescriptionFa={product.shortDescriptionFa} price={product.price} image={product.image} images={product.images} badge={product.badge} slug={product.slug} category={product.category} minOrderQuantity={product.minOrderQuantity} maxOrderQuantity={product.maxOrderQuantity} quantity={product.quantity} />
+              <ProductCard key={product.id} id={product.id} name={product.name} nameFa={product.nameFa} shortDescription={product.shortDescription} shortDescriptionFa={product.shortDescriptionFa} price={product.price} image={product.image} images={product.images} badge={product.badge} slug={product.slug} category={product.category} minOrderQuantity={product.minOrderQuantity} maxOrderQuantity={product.maxOrderQuantity} quantity={product.quantity} flushImage />
             ))}
           </div>
         )}

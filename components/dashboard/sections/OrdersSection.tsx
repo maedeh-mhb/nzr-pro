@@ -10,7 +10,6 @@ import { useSession } from "next-auth/react";
 import SkeletonLoader from "../SkeletonLoader";
 import EmptyState from "../EmptyState";
 import OrderStatusTimeline from "../OrderStatusTimeline";
-import OrderEditor, { EditableOrderItem } from "@/components/orders/OrderEditor";
 import styles from "@/styles/components/_dashboard.module.scss";
 
 interface OrdersSectionProps {
@@ -42,8 +41,6 @@ interface Order {
   createdAt: Date | string;
   updatedAt: Date | string;
   isCart?: boolean; // Flag to identify cart items
-  canEdit?: boolean;
-  editExpiresAt?: string;
 }
 
 interface ContactSettings {
@@ -93,31 +90,6 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
 
     fetchContactSettings();
   }, []);
-
-  const handleOrderSaved = (
-    orderId: string,
-    total: string,
-    items: EditableOrderItem[],
-    shippingCost: number,
-    discountAmount: string | null,
-    paymentRequired?: boolean
-  ) => {
-    setOrders((current) =>
-      current.map((order) =>
-        order.id === orderId
-          ? {
-              ...order,
-              total,
-              items,
-              shippingCost,
-              discountAmount,
-              status: items.length ? order.status : "cancelled",
-              canEdit: items.length && !paymentRequired ? order.canEdit : false,
-            }
-          : order
-      )
-    );
-  };
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -515,16 +487,6 @@ export default function OrdersSection({ setActiveSection }: OrdersSectionProps) 
                               deliveryConfirmedByUser={order.deliveryConfirmedByUser}
                               onRequestDeliveryConfirmation={order.status?.toLowerCase() === "delivered" && !order.deliveryConfirmedByUser ? () => setDeliveryConfirmationOrderId(order.id) : undefined}
                             />
-                            {order.canEdit && order.editExpiresAt && (
-                              <OrderEditor
-                                orderId={order.id}
-                                items={order.items}
-                                editExpiresAt={order.editExpiresAt}
-                                onSaved={(total, items, shippingCost, discountAmount, paymentRequired) =>
-                                  handleOrderSaved(order.id, total, items, shippingCost, discountAmount, paymentRequired)
-                                }
-                              />
-                            )}
                           </div>
                         )}
                       </div>
