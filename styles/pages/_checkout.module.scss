@@ -755,24 +755,30 @@ padding: 2rem !important;
   }
 }
 
-.completeProfileButton {
-  display: inline-block;
-  margin-top: $spacing-md;
-  padding: $spacing-xs $spacing-md;
-  background: #856404;
-  color: #fff3cd;
-  border: 1px solid #856404;
-  border-radius: $radius-md;
+.profileEditHint {
+  margin: $spacing-md 0 0;
   font-size: $font-sm;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.2s ease;
+}
 
-  &:hover {
-    background: darken(#856404, 8%);
-    color: #fff;
-    text-decoration: none;
+.profileEditFields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $spacing-md;
+
+  @include max-tablet {
+    grid-template-columns: 1fr;
   }
+}
+
+.profileSaveRow {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-start;
+  margin-top: $spacing-xs;
+}
+
+.saveProfileButton {
+  min-width: 180px;
 }
 
 .missingIndicator {

@@ -434,7 +434,7 @@ export default function CheckoutSuccessPage() {
                   <p className={styles.message} style={{ color: "#16a34a" }}>
                     {t(
                       "Your payment was successful! Your order is being processed.",
-                      "پرداخت شما با موفقیت انجام شد! سفارش در حال پردازش است."
+                      "پرداخت شما با موفقیت انجام شد! سفارش در حال پردازش است و نیازی به ارسال فیش پرداختی نمی‌باشد؛ جهت مشاهده‌ی سفارش خود به بخش پیگیری سفارشات مراجعه کنید.."
                     )}
                   </p>
                   <div className={styles.orderNumber}>
@@ -497,7 +497,7 @@ export default function CheckoutSuccessPage() {
               <p className={styles.message}>
                 {t(
                   "Thank you for your order. We have received your order and will process it shortly.",
-                  "از سفارش شما متشکریم. سفارش شما دریافت شده و به زودی پردازش خواهد شد."
+                  "از سفارش شما متشکریم. سفارش شما دریافت شده و به زودی پردازش خواهد شد؛ نیازی به ارسال فیش نمی‌باشد، برای مشاهده‌ی سفارش خود به بخش پیگیری سفارشات مراجعه نمایید."
                 )}
               </p>
               <div className={styles.orderNumber}>
@@ -515,11 +515,11 @@ export default function CheckoutSuccessPage() {
             </>
           )}
 
-          <div className={styles.actions}>
+          {/* <div className={styles.actions}>
             <Link href="/products">
               <Button>{t("Continue Shopping", "ادامه خرید")}</Button>
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
       <Footer />

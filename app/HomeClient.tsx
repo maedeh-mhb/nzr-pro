@@ -1,7 +1,7 @@
 "use client";
 
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -31,6 +31,67 @@ interface HomeClientProps {
 
 export default function HomeClient({ hero, featuredProducts, articles, categories, note }: HomeClientProps) {
   const { t, language } = useLanguage();
+  const [featuredSlidesPerView, setFeaturedSlidesPerView] = useState(1);
+  const [featuredSlideIndex, setFeaturedSlideIndex] = useState(0);
+  const [isFeaturedSliderPaused, setIsFeaturedSliderPaused] = useState(false);
+  const [isFeaturedLoopResetting, setIsFeaturedLoopResetting] = useState(false);
+  const featuredTouchStart = useRef<{ x: number; y: number } | null>(null);
+  const featuredSlideCount = featuredProducts.length + 1;
+  const maxFeaturedSlideIndex = Math.max(0, featuredSlideCount - featuredSlidesPerView);
+
+  const moveFeaturedSlide = useCallback(
+    (direction: 1 | -1) => {
+      const wrapsAround =
+        direction > 0
+          ? featuredSlideIndex >= maxFeaturedSlideIndex
+          : featuredSlideIndex <= 0;
+      const nextIndex = wrapsAround
+        ? direction > 0
+          ? 0
+          : maxFeaturedSlideIndex
+        : Math.max(0, Math.min(featuredSlideIndex + direction, maxFeaturedSlideIndex));
+
+      if (wrapsAround) {
+        setIsFeaturedLoopResetting(true);
+        setFeaturedSlideIndex(nextIndex);
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => setIsFeaturedLoopResetting(false));
+        });
+      } else {
+        setFeaturedSlideIndex(nextIndex);
+      }
+    },
+    [featuredSlideIndex, maxFeaturedSlideIndex]
+  );
+
+  useEffect(() => {
+    const updateSlidesPerView = () => {
+      if (window.innerWidth >= 1080) {
+        setFeaturedSlidesPerView(4);
+      } else if (window.innerWidth >= 640) {
+        setFeaturedSlidesPerView(2.5);
+      } else {
+        setFeaturedSlidesPerView(1.2);
+      }
+    };
+
+    updateSlidesPerView();
+    window.addEventListener("resize", updateSlidesPerView);
+    return () => window.removeEventListener("resize", updateSlidesPerView);
+  }, []);
+
+  useEffect(() => {
+    setFeaturedSlideIndex((currentIndex) => Math.min(currentIndex, maxFeaturedSlideIndex));
+  }, [maxFeaturedSlideIndex]);
+
+  useEffect(() => {
+    if (isFeaturedSliderPaused || maxFeaturedSlideIndex <= 0) return;
+
+    const timer = window.setInterval(() => moveFeaturedSlide(1), 4000);
+
+    return () => window.clearInterval(timer);
+  }, [isFeaturedSliderPaused, maxFeaturedSlideIndex, moveFeaturedSlide]);
+
   const heroSettings = hero;
   const noteContent = note?.isEnabled
     ? language === "fa"
@@ -124,9 +185,9 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
 
       <ProductAvailabilitySection initialData={note} />
 
-      <ArticlesSlider initialArticles={articles} />
-
       <CategoriesRibbon initialCategories={categories} />
+
+      <ArticlesSlider initialArticles={articles} />
 
       {/* Featured Products Section */}
       <section className={`${productStyles.products} ${productStyles.featuredProductsSection}`}>
@@ -134,28 +195,93 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
           {t("Featured Products", "محصولات ویژه")}
         </h2>
         {featuredProducts.length > 0 ? (
-          <div className={`${productStyles.productsGrid} ${productStyles.featuredProductsGrid}`} style={{ justifyContent: "center", margin: "0 auto" }}>
-            {featuredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                name={product.name}
-                nameFa={product.nameFa}
-                shortDescription={product.shortDescription}
-                shortDescriptionFa={product.shortDescriptionFa}
-                price={product.price}
-                image={product.image}
-                images={product.images}
-                quantity={product.quantity}
-                badge={product.badge}
-                slug={product.slug}
-                category={product.category}
-                minOrderQuantity={product.minOrderQuantity}
-                maxOrderQuantity={product.maxOrderQuantity}
-                alignPriceAtBottom={true}
-                flushImage
-              />
-            ))}
+          <div
+            className={productStyles.featuredCarouselViewport}
+            role="region"
+            aria-roledescription={t("carousel", "اسلایدر")}
+            onMouseEnter={() => setIsFeaturedSliderPaused(true)}
+            onMouseLeave={() => setIsFeaturedSliderPaused(false)}
+            onTouchStart={(event) => {
+              const touch = event.touches[0];
+              featuredTouchStart.current = { x: touch.clientX, y: touch.clientY };
+              setIsFeaturedSliderPaused(true);
+            }}
+            onTouchEnd={(event) => {
+              const start = featuredTouchStart.current;
+              const touch = event.changedTouches[0];
+              featuredTouchStart.current = null;
+
+              if (start && touch) {
+                const deltaX = touch.clientX - start.x;
+                const deltaY = touch.clientY - start.y;
+                if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+                  const isNextSwipe = language === "fa" ? deltaX > 0 : deltaX < 0;
+                  moveFeaturedSlide(isNextSwipe ? 1 : -1);
+                }
+              }
+              setIsFeaturedSliderPaused(false);
+            }}
+            onTouchCancel={() => {
+              featuredTouchStart.current = null;
+              setIsFeaturedSliderPaused(false);
+            }}
+            onFocusCapture={() => setIsFeaturedSliderPaused(true)}
+            onBlurCapture={(event) => {
+              const nextTarget = event.relatedTarget;
+              if (!(nextTarget instanceof Node) || !event.currentTarget.contains(nextTarget)) {
+                setIsFeaturedSliderPaused(false);
+              }
+            }}
+            aria-label={t("Featured products", "محصولات ویژه")}
+          >
+            <div
+              className={productStyles.featuredCarouselTrack}
+              style={{
+                width: `${(featuredSlideCount * 100) / featuredSlidesPerView}%`,
+                direction: language === "fa" ? "rtl" : "ltr",
+                transition: isFeaturedLoopResetting ? "none" : undefined,
+                transform: `translateX(${
+                  (language === "fa" ? 1 : -1) *
+                  featuredSlideIndex *
+                  (100 / featuredSlidesPerView)
+                }%)`,
+              }}
+            >
+              {featuredProducts.map((product) => (
+                <div
+                  key={product.id}
+                  className={productStyles.featuredCarouselSlide}
+                  style={{ flexBasis: `${100 / featuredSlideCount}%` }}
+                >
+                  <ProductCard
+                    id={product.id}
+                    name={product.name}
+                    nameFa={product.nameFa}
+                    shortDescription={product.shortDescription}
+                    shortDescriptionFa={product.shortDescriptionFa}
+                    price={product.price}
+                    image={product.image}
+                    images={product.images}
+                    quantity={product.quantity}
+                    badge={product.badge}
+                    slug={product.slug}
+                    category={product.category}
+                    minOrderQuantity={product.minOrderQuantity}
+                    maxOrderQuantity={product.maxOrderQuantity}
+                    alignPriceAtBottom={true}
+                    flushImage
+                  />
+                </div>
+              ))}
+              <div
+                className={productStyles.featuredCarouselSlide}
+                style={{ flexBasis: `${100 / featuredSlideCount}%` }}
+              >
+                <Link href="/products" className={productStyles.viewAllProductsCard}>
+                  {t("View all", "مشاهده همه")}
+                </Link>
+              </div>
+            </div>
           </div>
         ) : (
           <div style={{ padding: "2rem", textAlign: "center" }}>

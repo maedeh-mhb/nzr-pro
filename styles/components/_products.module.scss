@@ -71,6 +71,64 @@
   }
 }
 
+.featuredProductsSection {
+  // background: rgba(164, 175, 164, 0.2);
+}
+
+.featuredCarouselViewport {
+  width: 100%;
+  overflow: hidden;
+  touch-action: pan-y;
+  cursor: grab;
+  border-radius: $radius-card;
+   background: rgba(164, 175, 164, 0.6);
+   padding: 1.5rem;
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.featuredCarouselTrack {
+  display: flex;
+  align-items: stretch;
+  transition: transform 0.6s $ease-out;
+}
+
+.featuredCarouselSlide {
+  flex: 0 0 auto;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 0 $spacing-sm;
+  display: flex;
+
+  > * {
+    width: 100%;
+  }
+}
+
+.viewAllProductsCard {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xl;
+  border: 1px solid rgba($primary, 0.2);
+  border-radius: $radius-card;
+  background: $gradient-primary;
+  box-shadow: $shadow-md;
+  color: $text-light;
+  font-size: $font-2xl;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  transition: transform $duration-base $ease-out, box-shadow $duration-base $ease-out;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: $shadow-lg;
+  }
+}
+
 .card {
   background: $text-light;
   border-radius: $radius-xl;

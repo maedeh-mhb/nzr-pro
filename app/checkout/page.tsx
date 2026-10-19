@@ -429,8 +429,8 @@ export default function CheckoutPage() {
           if (response.ok) {
             const data = await response.json();
             setUserProfile(data);
-            if (!data.name?.trim()) setValue("guestName", "");
-            if (!data.surname?.trim()) setValue("guestSurname", "");
+            setValue("guestName", data.name?.trim() || "");
+            setValue("guestSurname", data.surname?.trim() || "");
             if (data.email) setValue("guestEmail", data.email);
             if (data.phone) setValue("guestPhone", data.phone);
           }
@@ -443,7 +443,7 @@ export default function CheckoutPage() {
     };
 
     loadUserProfile();
-  }, [sessionStatus, session]);
+  }, [sessionStatus, session, setValue]);
 
   // Handle address selection
   useEffect(() => {
@@ -694,10 +694,14 @@ export default function CheckoutPage() {
   };
 
   const orderRequirements = {
-    hasFullName: userProfile?.name && userProfile?.surname,
-    hasPersianFullName:
-      isPersianName(userProfile?.name || "") &&
-      isPersianName(userProfile?.surname || ""),
+    hasFullName: needsProfileDetails
+      ? Boolean(watch("guestName")?.trim() && watch("guestSurname")?.trim())
+      : Boolean(userProfile?.name && userProfile?.surname),
+    hasPersianFullName: needsProfileDetails
+      ? isPersianName(watch("guestName") || "") &&
+        isPersianName(watch("guestSurname") || "")
+      : isPersianName(userProfile?.name || "") &&
+        isPersianName(userProfile?.surname || ""),
     hasVerifiedPhone: userProfile?.phoneVerified,
     hasFullAddress: Boolean((selectedAddressId && savedAddresses.length > 0) || (provinceId && cityId && watch("address"))),
   };
@@ -1171,6 +1175,58 @@ export default function CheckoutPage() {
     }
   };
 
+  const saveProfileDetails = async () => {
+    const guestName = watch("guestName")?.trim() || "";
+    const guestSurname = watch("guestSurname")?.trim() || "";
+
+    if (!guestName || !guestSurname) {
+      toast.error(t("Name and family name are required", "نام و نام خانوادگی الزامی هستند"));
+      return;
+    }
+
+    if (!isPersianName(guestName) || !isPersianName(guestSurname)) {
+      toast.error(
+        t("Please enter your name and family name in Persian", "نام و نام خانوادگی خود را به فارسی وارد کنید")
+      );
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/user/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: guestName,
+          surname: guestSurname,
+          email: userProfile?.email || null,
+          phone: userProfile?.phone || null,
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.errorFa && language === "fa" ? result.errorFa : result.error || t("Unable to update your profile", "به‌روزرسانی پروفایل ممکن نشد"));
+      }
+
+      setUserProfile((current: any) => ({
+        ...current,
+        name: guestName,
+        surname: guestSurname,
+      }));
+      toast.success(t("Information saved successfully", "اطلاعات با موفقیت ثبت شد"));
+    } catch (error) {
+      console.error("Error saving profile details:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : t("Unable to update your profile", "به‌روزرسانی پروفایل ممکن نشد")
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const onSubmit = async (data: GuestCheckoutFormData) => {
     await submitOrder(data);
   };
@@ -1239,9 +1295,14 @@ export default function CheckoutPage() {
                                   <li key={index}>{req}</li>
                                 ))}
                               </ul>
-                              <Link href="/dashboard?section=profile" className={styles.completeProfileButton}>
-                                {t("Complete Profile", "تکمیل پروفایل")}
-                              </Link>
+                              {needsProfileDetails && (
+                                <p className={styles.profileEditHint}>
+                                  {t(
+                                    "Complete your name and family name below to continue.",
+                                    "برای ادامه، نام و نام خانوادگی خود را در بخش زیر تکمیل کنید."
+                                  )}
+                                </p>
+                              )}
                             </div>
                           )}
 
@@ -1251,15 +1312,40 @@ export default function CheckoutPage() {
                               <p>{t("Loading...", "در حال بارگذاری...")}</p>
                             ) : userProfile ? (
                               <div className={styles.userInfoGrid}>
-                                <div className={styles.userInfoRow}>
-                                  <span className={styles.userInfoLabel}>{t("Name", "نام")}:</span>
-                                  <span className={styles.userInfoValue}>
-                                    {userProfile.name} {userProfile.surname || ""}
-                                    {!orderRequirements.hasFullName && (
-                                      <span className={styles.missingIndicator}> *</span>
-                                    )}
-                                  </span>
-                                </div>
+                                {needsProfileDetails ? (
+                                  <div className={styles.profileEditFields}>
+                                    <Input
+                                      label={t("First Name", "نام")}
+                                      {...register("guestName")}
+                                      error={errors.guestName?.message}
+                                      placeholder={t("Enter your first name", "نام خود را وارد کنید")}
+                                    />
+                                    <Input
+                                      label={t("Family Name", "نام خانوادگی")}
+                                      {...register("guestSurname")}
+                                      error={errors.guestSurname?.message}
+                                      placeholder={t("Enter your family name", "نام خانوادگی خود را وارد کنید")}
+                                    />
+                                    <div className={styles.profileSaveRow}>
+                                      <Button
+                                        type="button"
+                                        variant="primary"
+                                        className={styles.saveProfileButton}
+                                        onClick={saveProfileDetails}
+                                        disabled={isLoading}
+                                      >
+                                        {t("Register information", "ثبت اطلاعات")}
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className={styles.userInfoRow}>
+                                    <span className={styles.userInfoLabel}>{t("Name", "نام")}:</span>
+                                    <span className={styles.userInfoValue}>
+                                      {[userProfile.name, userProfile.surname].filter(Boolean).join(" ")}
+                                    </span>
+                                  </div>
+                                )}
                                 <div className={styles.userInfoRow}>
                                   <span className={styles.userInfoLabel}>{t("Email", "ایمیل")}:</span>
                                   <span className={styles.userInfoValue}>{userProfile.email}</span>

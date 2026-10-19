@@ -2,49 +2,45 @@
 @use '../mixins' as *;
 
 .ribbonSection {
-  padding: $spacing-xl 0;
-  background: linear-gradient(135deg, rgba(164, 175, 164,0.7), darken(rgba(164, 175, 164,0.7), 12%));
+  padding: $spacing-xl 5%;
 }
 
 .title {
   text-align: center;
-  color: $text-light;
+  color: $primary;
   font-size: 1.5rem;
   margin-bottom: $spacing-lg;
 }
 
 .ribbon {
-  display: flex;
-  justify-content: space-evenly;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: $spacing-md;
-  overflow-x: auto;
-  padding: $spacing-sm 5%;
-  scroll-snap-type: x proximity;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  max-width: $max-width-xl;
+  margin: 0 auto;
+  padding: 0.1rem;
+  // @include glass-effect(18px, 0.12, rgba(255, 255, 255, 0.2));
+  // border: 1px solid rgba(255, 255, 255, 0.55);
+  // border-radius: $radius-modal;
+  // box-shadow: $shadow-md;
 }
 
 .item {
-  flex: 0 0 auto;
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: $spacing-sm;
-  padding: $spacing-sm $spacing-lg;
-  border-radius: $radius-full;
-  @include glass-effect(18px, 0.12, rgba(255, 255, 255, 0.15));
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  color: $text-light;
+  min-height: 4rem;
+  padding: $spacing-md;
+  border-radius: $radius-card;
+  @include glass-effect(18px, 0.12,rgba(164, 175, 164,0.6));
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  color: $primary;
   text-decoration: none !important;
-  white-space: nowrap;
-  scroll-snap-align: start;
   transition: background $transition-base, transform $transition-base;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.55);
     transform: translateY(-2px);
   }
 }
@@ -56,4 +52,23 @@
 
 .name {
   font-weight: 600;
+  text-align: center;
+}
+
+@include max-mobile {
+  .ribbonSection {
+    padding-right: $spacing-sm;
+    padding-left: $spacing-sm;
+  }
+
+  .ribbon {
+    gap: $spacing-sm;
+    padding: $spacing-md;
+  }
+
+  .item {
+    gap: $spacing-xs;
+    padding: $spacing-sm;
+    font-size: $font-sm;
+  }
 }
