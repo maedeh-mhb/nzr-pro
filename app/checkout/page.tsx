@@ -179,6 +179,8 @@ export default function CheckoutPage() {
   const [isValidatingDiscount, setIsValidatingDiscount] = useState(false);
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
   const [invoiceRequested, setInvoiceRequested] = useState(false);
+  const [checkoutTermsAudioUrl, setCheckoutTermsAudioUrl] = useState("");
+  const [checkoutTermsAccepted, setCheckoutTermsAccepted] = useState(false);
   // Honeypot fields for bot detection
   const [honeypotWebsite, setHoneypotWebsite] = useState("");
   const [honeypotCompany, setHoneypotCompany] = useState("");
@@ -260,6 +262,37 @@ export default function CheckoutPage() {
 
     loadCsrfToken();
   }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadCheckoutTermsAudio = async () => {
+      try {
+        const response = await fetch("/api/site-settings", { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("Failed to load checkout terms audio settings");
+        }
+
+        const data = await response.json();
+        if (isMounted) {
+          setCheckoutTermsAudioUrl(data.settings?.checkoutTermsAudioUrl?.trim() || "");
+        }
+      } catch (error) {
+        console.error("Error loading checkout terms audio:", error);
+        toast.error(
+          t(
+            "Unable to load checkout terms. Please refresh the page.",
+            "بارگذاری شرایط خرید ممکن نشد. لطفاً صفحه را تازه کنید."
+          )
+        );
+      }
+    };
+
+    loadCheckoutTermsAudio();
+    return () => {
+      isMounted = false;
+    };
+  }, [t]);
 
   // Load payment methods
   useEffect(() => {
@@ -898,6 +931,13 @@ export default function CheckoutPage() {
   };
 
   const submitOrder = async (data: GuestCheckoutFormData) => {
+    if (!checkoutTermsAccepted) {
+      toast.error(
+        "لطفا قبل از پرداخت، وویس را گوش کرده و شرایط ثبت سفارش را بپذیرید"
+      );
+      return;
+    }
+
     // Bot detection: Check honeypot fields
     if (honeypotWebsite !== "" || honeypotCompany !== "") {
       // Silent fail - don't reveal honeypot detection
@@ -1946,11 +1986,46 @@ export default function CheckoutPage() {
                       </div>
 
                       <div className={styles.checkoutActions}>
+                        {checkoutTermsAudioUrl && (
+                          <audio
+                            className={styles.checkoutTermsAudio}
+                            controls
+                            preload="metadata"
+                            src={checkoutTermsAudioUrl}
+                          >
+                            {t("Your browser does not support audio playback.", "مرورگر شما از پخش صدا پشتیبانی نمی‌کند.")}
+                          </audio>
+                        )}
+                        <label className={`${styles.checkboxLabel} ${styles.checkoutTermsLabel}`}>
+                          <span className={styles.checkboxText}>
+                            {t(
+                              "I have read and accept the website's terms and conditions",
+                              "شرایط و ضوابط خرید از سایت را پذیرفته ام"
+                            )}
+                          </span>
+                          <input
+                            type="checkbox"
+                            className={styles.customCheckbox}
+                            required
+                            checked={checkoutTermsAccepted}
+                            onChange={(event) => setCheckoutTermsAccepted(event.target.checked)}
+                          />
+                          <span className={styles.checkboxCustom}></span>
+                        </label>
+                        {!checkoutTermsAccepted && (
+                          <p className={styles.checkoutTermsError} role="alert">
+                            {t(
+                              "Please listen to the audio and accept the order terms before payment.",
+                              "لطفا قبل از پرداخت، وویس را گوش کرده و شرایط ثبت سفارش را بپذیرید"
+                            )}
+                          </p>
+                        )}
                         <Button
                           type="submit"
                           variant="primary"
                           disabled={
                             isLoading ||
+                            !checkoutTermsAccepted ||
                             paymentMethods.length === 0 ||
                             !areAllMandatoryFieldsFilled() ||
                             (orderRequirements.hasFullAddress &&
@@ -2328,11 +2403,46 @@ export default function CheckoutPage() {
                       </div>
 
                       <div className={styles.checkoutActions}>
+                        {checkoutTermsAudioUrl && (
+                          <audio
+                            className={styles.checkoutTermsAudio}
+                            controls
+                            preload="metadata"
+                            src={checkoutTermsAudioUrl}
+                          >
+                            {t("Your browser does not support audio playback.", "مرورگر شما از پخش صدا پشتیبانی نمی‌کند.")}
+                          </audio>
+                        )}
+                        <label className={`${styles.checkboxLabel} ${styles.checkoutTermsLabel}`}>
+                          <span className={styles.checkboxText}>
+                            {t(
+                              "I have read and accept the website's terms and conditions",
+                              "شرایط و ضوابط خرید از سایت را پذیرفته ام"
+                            )}
+                          </span>
+                          <input
+                            type="checkbox"
+                            className={styles.customCheckbox}
+                            required
+                            checked={checkoutTermsAccepted}
+                            onChange={(event) => setCheckoutTermsAccepted(event.target.checked)}
+                          />
+                          <span className={styles.checkboxCustom}></span>
+                        </label>
+                        {!checkoutTermsAccepted && (
+                          <p className={styles.checkoutTermsError} role="alert">
+                            {t(
+                              "Please listen to the audio and accept the order terms before payment.",
+                              "لطفا قبل از پرداخت، وویس را گوش کرده و شرایط ثبت سفارش را بپذیرید."
+                            )}
+                          </p>
+                        )}
                         <Button
                           type="submit"
                           variant="primary"
                           disabled={
                             isLoading ||
+                            !checkoutTermsAccepted ||
                             paymentMethods.length === 0 ||
                             !areAllMandatoryFieldsFilled() ||
                             (orderRequirements.hasFullAddress &&

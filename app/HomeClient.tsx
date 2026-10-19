@@ -83,10 +83,11 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
   useEffect(() => {
     if (isFeaturedSliderPaused || featuredSlideCount <= 1) return;
 
-    const timer = window.setInterval(() => moveFeaturedSlide(1), 4000);
+    const autoplayDirection = language === "fa" ? -1 : 1;
+    const timer = window.setInterval(() => moveFeaturedSlide(autoplayDirection), 4000);
 
     return () => window.clearInterval(timer);
-  }, [featuredSlideCount, isFeaturedSliderPaused, moveFeaturedSlide]);
+  }, [featuredSlideCount, isFeaturedSliderPaused, language, moveFeaturedSlide]);
 
   const heroSettings = hero;
   const noteContent = note?.isEnabled
@@ -159,6 +160,10 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
         </section>
       )}
 
+      <ProductAvailabilitySection initialData={note} />
+
+      <CategoriesRibbon initialCategories={categories} />
+
       {noteContent && (
         <div style={{
           background: "#367260",
@@ -178,12 +183,6 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
           </section>
         </div>
       )}
-
-      <ProductAvailabilitySection initialData={note} />
-
-      <CategoriesRibbon initialCategories={categories} />
-
-      <ArticlesSlider initialArticles={articles} />
 
       {/* Featured Products Section */}
       <section className={`${productStyles.products} ${productStyles.featuredProductsSection}`}>
@@ -309,6 +308,8 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
           </div>
         )}
       </section>
+
+      <ArticlesSlider initialArticles={articles} />
 
       <Footer />
       <BottomBar />

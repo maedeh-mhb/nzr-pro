@@ -86,6 +86,19 @@ const siteSettingsSchema = yup.object({
   siteDescription: yup.string(),
   checkoutNoticeEn: yup.string(),
   checkoutNoticeFa: yup.string(),
+  checkoutTermsAudioUrl: yup.string().test(
+    "external-audio-url",
+    "Enter a valid external audio URL",
+    (value) => {
+      if (!value?.trim()) return true;
+      try {
+        const url = new URL(value.trim());
+        return url.protocol === "http:" || url.protocol === "https:";
+      } catch {
+        return false;
+      }
+    }
+  ),
   shippingCostNoticeEn: yup.string(),
   shippingCostNoticeFa: yup.string(),
   maintenanceMode: yup.string().required("Maintenance mode is required"),
@@ -278,6 +291,7 @@ export default function SettingsSection() {
       siteDescription: "",
       checkoutNoticeEn: "",
       checkoutNoticeFa: "",
+      checkoutTermsAudioUrl: "",
       shippingCostNoticeEn: "",
       shippingCostNoticeFa: "",
       maintenanceMode: "off",
@@ -511,6 +525,7 @@ export default function SettingsSection() {
           siteDescription: settingsData.siteDescription || "",
           checkoutNoticeEn: settingsData.checkoutNoticeEn || "",
           checkoutNoticeFa: settingsData.checkoutNoticeFa || "",
+          checkoutTermsAudioUrl: settingsData.checkoutTermsAudioUrl || "",
           shippingCostNoticeEn: settingsData.shippingCostNoticeEn || "",
           shippingCostNoticeFa: settingsData.shippingCostNoticeFa || "",
           maintenanceMode: settingsData.maintenanceMode || "off",
@@ -1582,6 +1597,13 @@ export default function SettingsSection() {
                 error={siteSettingsErrors.checkoutNoticeFa?.message}
               />
             </div>
+            <Input
+              type="url"
+              label={t("Checkout Terms Audio URL", "لینک فایل صوتی شرایط خرید")}
+              placeholder={t("Enter an external audio URL (https://...)", "لینک خارجی فایل صوتی را وارد کنید (https://...)")}
+              {...registerSiteSettings("checkoutTermsAudioUrl")}
+              error={siteSettingsErrors.checkoutTermsAudioUrl?.message}
+            />
             <div className={formStyles.formGrid}>
               <Textarea
                 label={t("Shipping Cost Notice (English)", "متن هزینه ارسال (انگلیسی)")}

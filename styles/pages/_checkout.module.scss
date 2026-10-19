@@ -200,6 +200,26 @@ padding: 2rem !important;
   }
 }
 
+.checkoutTermsAudio {
+  width: 100%;
+  max-width: 480px;
+  align-self: center;
+}
+
+.checkoutTermsLabel {
+  justify-content: flex-start;
+  padding: $spacing-sm;
+  border-radius: $radius-md;
+  background: rgba($primary, 0.06);
+}
+
+.checkoutTermsError {
+  margin: 0;
+  color: $danger;
+  font-size: $font-sm;
+  text-align: center;
+}
+
 // Checkout Options (Sign In vs Guest)
 .checkoutOptions {
   display: flex;
@@ -640,10 +660,16 @@ padding: 2rem !important;
   align-items: center;
   justify-content: space-between;
   gap: $spacing-md;
+  direction: ltr;
   cursor: pointer;
   font-size: $font-sm;
   color: $text-dark;
   position: relative;
+
+  [dir="rtl"] & .checkboxText {
+    direction: rtl;
+    text-align: right;
+  }
 
   .customCheckbox {
     position: absolute;

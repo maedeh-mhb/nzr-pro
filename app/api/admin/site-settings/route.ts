@@ -54,9 +54,36 @@ export async function POST(request: NextRequest) {
       maintenanceMode,
       checkoutNoticeEn,
       checkoutNoticeFa,
+      checkoutTermsAudioUrl,
       shippingCostNoticeEn,
       shippingCostNoticeFa,
     } = body;
+
+    if (
+      checkoutTermsAudioUrl !== undefined &&
+      checkoutTermsAudioUrl !== null &&
+      typeof checkoutTermsAudioUrl !== "string"
+    ) {
+      return NextResponse.json(
+        { error: "Checkout audio URL must be a string" },
+        { status: 400 }
+      );
+    }
+
+    const audioUrl = typeof checkoutTermsAudioUrl === "string" ? checkoutTermsAudioUrl.trim() : "";
+    if (audioUrl) {
+      try {
+        const parsedAudioUrl = new URL(audioUrl);
+        if (parsedAudioUrl.protocol !== "http:" && parsedAudioUrl.protocol !== "https:") {
+          throw new Error("Unsupported audio URL protocol");
+        }
+      } catch {
+        return NextResponse.json(
+          { error: "Checkout audio URL must be an external HTTP or HTTPS URL" },
+          { status: 400 }
+        );
+      }
+    }
 
     // Define all settings keys (removed contactEmail, phoneNumber, telegram, whatsapp, instagram)
     const settingsToUpdate = [
@@ -68,6 +95,7 @@ export async function POST(request: NextRequest) {
       { key: "maintenanceMode", value: maintenanceMode || "off" },
       { key: "checkoutNoticeEn", value: checkoutNoticeEn || "" },
       { key: "checkoutNoticeFa", value: checkoutNoticeFa || "" },
+      { key: "checkoutTermsAudioUrl", value: audioUrl },
       { key: "shippingCostNoticeEn", value: shippingCostNoticeEn || "" },
       { key: "shippingCostNoticeFa", value: shippingCostNoticeFa || "" },
     ];
@@ -108,4 +136,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
