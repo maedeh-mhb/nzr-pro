@@ -37,6 +37,7 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
   const [isFeaturedSliderPaused, setIsFeaturedSliderPaused] = useState(false);
   const [isFeaturedLoopResetting, setIsFeaturedLoopResetting] = useState(false);
   const featuredTouchStart = useRef<{ x: number; y: number } | null>(null);
+  const featuredTrackRef = useRef<HTMLDivElement>(null);
   const featuredSlideCount = featuredProducts.length;
   const featuredTrackSlideCount = featuredSlideCount + featuredCloneCount * 2;
   const featuredTrackSlides =
@@ -81,12 +82,12 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
   }, [featuredCloneCount]);
 
   useEffect(() => {
-    if (isFeaturedSliderPaused || featuredSlideCount <= 1) return;
+    if (isFeaturedSliderPaused || featuredSlidesPerView < 2 || featuredSlideCount <= 1) return;
 
     const timer = window.setInterval(() => moveFeaturedSlide(1), 4000);
 
     return () => window.clearInterval(timer);
-  }, [featuredSlideCount, isFeaturedSliderPaused, moveFeaturedSlide]);
+  }, [featuredSlideCount, featuredSlidesPerView, isFeaturedSliderPaused, moveFeaturedSlide]);
 
   const heroSettings = hero;
   const noteContent = note?.isEnabled
@@ -105,6 +106,22 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
   if (heroSettings?.backgroundImageUrl) {
     heroSectionStyle["--hero-bg-image"] = `url(${heroSettings.backgroundImageUrl})`;
   }
+  const featuredTrackStyle: React.CSSProperties & {
+    "--featured-carousel-start": string;
+    "--featured-carousel-end": string;
+    "--featured-carousel-duration": string;
+  } = {
+    width: `${(featuredTrackSlideCount * 100) / featuredSlidesPerView}%`,
+    direction: "ltr",
+    transition: isFeaturedLoopResetting ? "none" : undefined,
+    transform: `translate3d(${
+      featuredSlideIndex *
+      (-100 / featuredTrackSlideCount)
+    }%, 0, 0)`,
+    "--featured-carousel-start": `-${(featuredCloneCount * 100) / featuredTrackSlideCount}%`,
+    "--featured-carousel-end": `-${((featuredCloneCount + featuredSlideCount) * 100) / featuredTrackSlideCount}%`,
+    "--featured-carousel-duration": `${featuredSlideCount * 3}s`,
+  };
 
   return (
     <>
@@ -199,6 +216,7 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
             onTouchStart={(event) => {
               const touch = event.touches[0];
               featuredTouchStart.current = { x: touch.clientX, y: touch.clientY };
+              featuredTrackRef.current?.getAnimations().forEach((animation) => animation.pause());
               setIsFeaturedSliderPaused(true);
             }}
             onTouchEnd={(event) => {
@@ -210,13 +228,32 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
                 const deltaX = touch.clientX - start.x;
                 const deltaY = touch.clientY - start.y;
                 if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
-                  moveFeaturedSlide(deltaX < 0 ? 1 : -1);
+                  if (featuredSlidesPerView < 2) {
+                    const animation = featuredTrackRef.current
+                      ?.getAnimations()
+                      .find((item) => item.playState !== "idle");
+                    const duration = animation?.effect?.getComputedTiming().duration;
+
+                    if (animation && typeof duration === "number" && duration > 0) {
+                      const currentTime =
+                        typeof animation.currentTime === "number" ? animation.currentTime : 0;
+                      const slideDuration = duration / featuredSlideCount;
+                      animation.currentTime =
+                        ((currentTime + (deltaX < 0 ? slideDuration : -slideDuration)) % duration +
+                          duration) %
+                        duration;
+                    }
+                  } else {
+                    moveFeaturedSlide(deltaX < 0 ? 1 : -1);
+                  }
                 }
               }
+              featuredTrackRef.current?.getAnimations().forEach((animation) => animation.play());
               setIsFeaturedSliderPaused(false);
             }}
             onTouchCancel={() => {
               featuredTouchStart.current = null;
+              featuredTrackRef.current?.getAnimations().forEach((animation) => animation.play());
               setIsFeaturedSliderPaused(false);
             }}
             onFocusCapture={() => setIsFeaturedSliderPaused(true)}
@@ -234,16 +271,9 @@ export default function HomeClient({ hero, featuredProducts, articles, categorie
               </Link>
             </div>
             <div
-              className={productStyles.featuredCarouselTrack}
-              style={{
-                width: `${(featuredTrackSlideCount * 100) / featuredSlidesPerView}%`,
-                direction: "ltr",
-                transition: isFeaturedLoopResetting ? "none" : undefined,
-                transform: `translateX(${
-                  featuredSlideIndex *
-                  (-100 / featuredTrackSlideCount)
-                }%)`,
-              }}
+              ref={featuredTrackRef}
+              className={`${productStyles.featuredCarouselTrack} ${isFeaturedSliderPaused ? productStyles.featuredCarouselPaused : ""}`}
+              style={featuredTrackStyle}
               onTransitionEnd={(event) => {
                 if (event.target !== event.currentTarget || event.propertyName !== "transform") return;
 

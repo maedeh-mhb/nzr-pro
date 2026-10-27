@@ -92,6 +92,27 @@
   display: flex;
   align-items: stretch;
   transition: transform 0.6s $ease-out;
+  will-change: transform;
+
+  @include max-tablet {
+    animation: featuredCarouselMarquee var(--featured-carousel-duration) linear infinite;
+  }
+}
+
+.featuredCarouselPaused {
+  @include max-tablet {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes featuredCarouselMarquee {
+  from {
+    transform: translate3d(var(--featured-carousel-start), 0, 0);
+  }
+
+  to {
+    transform: translate3d(var(--featured-carousel-end), 0, 0);
+  }
 }
 
 .featuredCarouselHeader {
